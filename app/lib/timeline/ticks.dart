@@ -39,13 +39,20 @@ class Ticks
 		double tickOffset = 0.0;
 		double startingTickMarkValue = 0.0;
 
-		double x = ((left-translation)/scale);
-		startingTickMarkValue = x-(x%tickDistance);
-		tickOffset = -(x%tickDistance)*scale-scaledTickDistance;
+		double y = ((translation-bottom)/scale);
+		startingTickMarkValue = y-(y%tickDistance);
+		tickOffset = -(y%tickDistance)*scale-scaledTickDistance;
 
 		// Move back by one tick.
 		tickOffset -= scaledTickDistance;
 		startingTickMarkValue -= tickDistance;
+		// double x = ((left-translation)/scale);
+		// startingTickMarkValue = x-(x%tickDistance);
+		// tickOffset = -(x%tickDistance)*scale-scaledTickDistance;
+
+		// // Move back by one tick.
+		// tickOffset -= scaledTickDistance;
+		// startingTickMarkValue -= tickDistance;
 
 		canvas.save();
 		
@@ -75,7 +82,7 @@ class Ticks
 					fontFamily: "Arial",
 					fontSize: 10.0
 				))..pushStyle(new ui.TextStyle(color:const Color.fromRGBO(0, 0, 0, 0.6)));
-				builder.addText((tt/1000000).toStringAsFixed(2));
+				builder.addText((tt).toStringAsFixed(2));
 				ui.Paragraph tickParagraph = builder.build();
 				tickParagraph.layout(new ui.ParagraphConstraints(width: Gutter));
 				

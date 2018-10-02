@@ -90,10 +90,11 @@ class Timeline
 
 	Timeline()
 	{
+		print("LOADING");
 		loadFromBundle("assets/timeline.json").then((bool success)
 		{
 			// Double check: Make sure we have height by now...
-			double scale = _height/(_entries.first.end-_entries.first.start);
+			double scale = _height == 0.0 ? 1.0 : _height/(_entries.first.end-_entries.first.start);
 			// We use the scale to pad by the bubble height when we set the first range.
 			setViewport(start: _entries.first.start - BubbleHeight/scale, end: _entries.first.end + BubbleHeight/scale);
 			advance(0.0, false);
@@ -208,6 +209,12 @@ class Timeline
 		}
 		if(height != double.maxFinite)
 		{
+			if(_height == 0.0)
+			{
+				double scale = height/(_entries.first.end-_entries.first.start);
+				_start = _start - BubbleHeight/scale;
+				_end = _end + BubbleHeight/scale;
+			}
 			_height = height;
 		}
 		if(velocity != double.maxFinite)

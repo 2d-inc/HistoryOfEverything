@@ -216,9 +216,12 @@ class TimelineRenderObject extends RenderBox
 			// ctx.fill();
 
 			double legOpacity = item.legOpacity * item.opacity;
+			canvas.drawCircle(new Offset(x + Timeline.LineWidth/2.0, item.y), Timeline.EdgeRadius, new Paint()..color = LineColors[depth%LineColors.length].withOpacity(item.opacity));
 			if(legOpacity > 0.0)
 			{
-				canvas.drawRect(new Offset(x, item.y) & new Size(Timeline.LineWidth, item.length), new Paint()..color = LineColors[depth%LineColors.length].withOpacity(legOpacity));
+				Paint legPaint = new Paint()..color = LineColors[depth%LineColors.length].withOpacity(legOpacity);
+				canvas.drawRect(new Offset(x, item.y) & new Size(Timeline.LineWidth, item.length), legPaint);
+				canvas.drawCircle(new Offset(x + Timeline.LineWidth/2.0, item.y+item.length), Timeline.EdgeRadius, legPaint);
 				// ctx.globalAlpha = item.legOpacity*item.opacity;
 				// ctx.rect(x, y, LineWidth, length);
 				// ctx.fill();
@@ -230,24 +233,35 @@ class TimelineRenderObject extends RenderBox
 				// ctx.fill();
 			}
 
+			const double MaxLabelWidth = 1200.0;
+			const double BubbleHeight = 50.0;
+			const double BubblePadding = 20.0;
+
+			ui.ParagraphBuilder builder = new ui.ParagraphBuilder(new ui.ParagraphStyle(
+				textAlign:TextAlign.start,
+				fontFamily: "Arial",
+				fontSize: 18.0
+			))..pushStyle(new ui.TextStyle(color:const Color.fromRGBO(255, 255, 255, 1.0)));
+
+			builder.addText(item.label);
+			ui.Paragraph labelParagraph = builder.build();
+			labelParagraph.layout(new ui.ParagraphConstraints(width: MaxLabelWidth));			
+			//canvas.drawParagraph(labelParagraph, new Offset(offset.dx + Gutter - labelParagraph.minIntrinsicWidth-2, offset.dy + height - o - labelParagraph.height - 5));
+
+			double textWidth = labelParagraph.maxIntrinsicWidth*item.opacity*item.labelOpacity;
 			// ctx.globalAlpha = labelOpacity*itemOpacity;
 			// ctx.save();
 			// let bubbleX = labelX-DepthOffset*renderOffsetDepth;
-
-			// let bubbleY = item.actualRenderLabelY-BubbleHeight/2.0;
-			// ctx.translate(bubbleX, bubbleY);
-
-			// double textSize = ctx.measureText(item.label);
-			// const textWidth = textSize.width*labelOpacity;
-			// this.drawBubble(ctx, textWidth + BubblePadding*2, BubbleHeight);
-			// ctx.fill();
-			// ctx.beginPath();
-			// ctx.rect(BubblePadding, 0, textWidth, BubbleHeight);
-			// ctx.clip();
-			// ctx.fillStyle = "#FFF";
-			// ctx.textBaseline="middle"; 
-			// ctx.fillText(item.label, BubblePadding, BubbleHeight/2.0);
-			// ctx.restore();
+			double bubbleX = _timeline.renderLabelX-Timeline.DepthOffset*_timeline.renderOffsetDepth;
+			double bubbleY = item.labelY-BubbleHeight/2.0;
+			canvas.save();
+			canvas.translate(bubbleX, bubbleY);
+			Path bubble = makeBubblePath(textWidth + BubblePadding*2.0, BubbleHeight);
+			canvas.drawPath(bubble, new Paint()..color = LineColors[depth%LineColors.length].withOpacity(item.opacity*item.labelOpacity));
+			canvas.clipRect(new Rect.fromLTWH(BubblePadding, 0.0, textWidth, BubbleHeight));
+			
+			canvas.drawParagraph(labelParagraph, new Offset(BubblePadding, BubbleHeight/2.0-labelParagraph.height/2.0));
+			canvas.restore();
 			if(item.children != null)
 			{
 				drawItems(context, offset, item.children, x + Timeline.DepthOffset, scale, depth+1);
@@ -255,9 +269,47 @@ class TimelineRenderObject extends RenderBox
 		}
 	}
 
-	@override
-	markNeedsPaint()
+	Path makeBubblePath(double width, double height)
 	{
-		super.markNeedsPaint();
+		const double ArrowSize = 19.0;
+		const double CornerRadius = 10.0;
+		
+		const double circularConstant = 0.55;
+		const double icircularConstant = 1.0 - circularConstant;
+
+		Path path = new Path();
+
+		path.moveTo(CornerRadius, 0.0);
+		path.lineTo(width-CornerRadius, 0.0);
+		path.cubicTo(
+						width-CornerRadius+CornerRadius*circularConstant, 0.0, 
+						width, CornerRadius*icircularConstant,
+						width, CornerRadius);
+		path.lineTo(width, height - CornerRadius);
+		path.cubicTo(
+						width, height - CornerRadius + CornerRadius * circularConstant,
+						width - CornerRadius * icircularConstant, height,
+						width - CornerRadius, height);
+		path.lineTo(CornerRadius, height);
+		path.cubicTo(
+						CornerRadius * icircularConstant, height,
+						0.0, height - CornerRadius * icircularConstant,
+						0.0, height - CornerRadius);
+
+		path.lineTo(0.0, height/2.0+ArrowSize/2.0);
+		path.lineTo(-ArrowSize/2.0, height/2.0);
+		path.lineTo(0.0, height/2.0-ArrowSize/2.0);
+
+		path.lineTo(0.0, CornerRadius);
+
+		path.cubicTo(
+						0.0, CornerRadius * icircularConstant,
+						CornerRadius * icircularConstant, 0.0,
+						CornerRadius, 0.0);
+
+		path.close();
+
+		
+		return path;
 	}
 }

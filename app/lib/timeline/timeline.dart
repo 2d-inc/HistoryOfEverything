@@ -92,7 +92,10 @@ class Timeline
 	{
 		loadFromBundle("assets/timeline.json").then((bool success)
 		{
-			setViewport(start: _entries.first.start, end: _entries.first.end);
+			// Double check: Make sure we have height by now...
+			double scale = _height/(_entries.first.end-_entries.first.start);
+			// We use the scale to pad by the bubble height when we set the first range.
+			setViewport(start: _entries.first.start - BubbleHeight/scale, end: _entries.first.end + BubbleHeight/scale);
 			advance(0.0, false);
 		});
 		setViewport(start: -1000.0, end: 100.0);
@@ -223,6 +226,7 @@ class Timeline
 		else if(!_isFrameScheduled)
 		{
 			_isFrameScheduled = true;
+			_lastFrameTime = 0.0;
 			SchedulerBinding.instance.scheduleFrameCallback(beginFrame);
 		}
 	}
@@ -295,19 +299,19 @@ class Timeline
 			doneRendering = false;
 		}
 		
+		double dl = _labelX - _renderLabelX;
+		if(!animate || dl.abs() < 1.0)
+		{
+			_renderLabelX = _labelX;
+		}
+		else
+		{
+			doneRendering = false;
+			_renderLabelX += dl*min(1.0, elapsed*6.0);
+		}
+
 		if(!isInteracting && !isScaling)
 		{
-			double dl = _labelX - _renderLabelX;
-			if(!animate || dl.abs() < 1.0)
-			{
-				_renderLabelX = _labelX;
-			}
-			else
-			{
-				doneRendering = false;
-				_renderLabelX += dl*min(1.0, elapsed*6.0);
-			}
-
 			double dd = _offsetDepth - renderOffsetDepth;
 			if(!animate || dd.abs()*DepthOffset < 1.0)
 			{
@@ -328,8 +332,9 @@ class Timeline
 		bool stillAnimating = false;
 		for(TimelineEntry item in items)
 		{
+			
 			double start = item.start-_renderStart;
-			double end = item.type == TimelineEntryType.Era ? item.end-_renderStart : item.start;
+			double end = item.type == TimelineEntryType.Era ? item.end-_renderStart : start;
 			double length = (end-start)*scale-2*EdgePadding;
 			double pad = min(1.0, length/EdgePadding)*EdgePadding;
 
@@ -339,7 +344,6 @@ class Timeline
 			double endY = end*scale-pad;
 
 			double targetLabelOpacity = y - _lastEntryY < FadeAnimationStart ? 0.0 : 1.0;
-			
 			double dt = targetLabelOpacity - item.labelOpacity;
 			if(!animate || dt.abs() < 0.01)
 			{
@@ -401,7 +405,7 @@ class Timeline
 			_lastEntryY = y;
 
 			
-			if(y < 0 && endY > _height && depth > _offsetDepth)
+			if(item.type == TimelineEntryType.Era && y < 0 && endY > _height && depth > _offsetDepth)
 			{
 				_offsetDepth = depth.toDouble();
 			}

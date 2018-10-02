@@ -1,0 +1,108 @@
+[
+	{
+		"start": -4600000000,
+		"label": "Earth",
+		"asset": 
+		{
+			"source": "earth.jpg",
+			"width": 800,
+			"height": 800
+		}
+	},
+	{
+		"start": -3800000000,
+		"label": "Life on Earth",
+		"asset": 
+		{
+			"source": "sloth.jpg",
+			"width": 800,
+			"height": 589
+		}
+	},
+	{
+		"start": -2100000000,
+		"label": "Eukaryotes Evolved",
+		"asset": 
+		{
+			"source": "little-dino.jpg",
+			"width": 800,
+			"height": 528
+		}
+	},
+	{
+		"start": -1300000000,
+		"end": -1200000000,
+		"label": "Lots in here",
+		"asset": 
+		{
+			"source": "sloth.jpg",
+			"width": 800,
+			"height": 589
+		}
+	},
+	{
+		"date": -1290000000,
+		"label": "Wow"
+	},
+	{
+		"date": -1280000000,
+		"label": "Hello",
+		"asset": 
+		{
+			"source": "dino.jpg",
+			"width": 800,
+			"height": 600
+		}
+	},
+	{
+		"start": -1270000000,
+		"end": -1255000000,
+		"label": "Stuff here"
+	},
+	{
+		"start": -1260000000,
+		"end": -1255500000,
+		"label": "Extra Stuff"
+	},
+	{
+		"date": -1255550000,
+		"label": "A little more Stuff",
+		"asset": 
+		{
+			"source": "little-dino.jpg",
+			"width": 800,
+			"height": 528
+		}
+	},
+	{
+		"start": -1250000000,
+		"end": -1240000000,
+		"label": "Testing More"
+	},
+	{
+		"date": -1245000000,
+		"label": "Aaaaand one More"
+	},
+	{
+		"date": -1100000000,
+		"label": "First reproducing organisms"
+	},
+	{
+		"date": -570000000,
+		"label": "First arthropods evolve"
+	},
+	{
+		"start": -250000000,
+		"end": -65000000,
+		"label": "Mesozoic Era"
+	},
+	{
+		"start": -200000000,
+		"end": -145000000,
+		"label": "Jurassic Period"
+	},
+	{
+		"start": -65000000,
+		"label": "Cenozoic Era"
+	}
+]

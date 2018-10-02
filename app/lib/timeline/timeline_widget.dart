@@ -28,6 +28,7 @@ class _TimelineWidgetState extends State<TimelineWidget>
 		_lastFocalPoint = details.focalPoint;
 		_scaleStartYearStart = _timeline.start;
 		_scaleStartYearEnd = _timeline.end;
+		_timeline.isInteracting = true;
 		_timeline.setViewport(velocity: 0.0, animate: true);
 	}
 
@@ -49,6 +50,7 @@ class _TimelineWidgetState extends State<TimelineWidget>
 	void _scaleEnd(ScaleEndDetails details)
 	{
 		double scale = (_timeline.end-_timeline.start)/context.size.height;
+		_timeline.isInteracting = false;
 		_timeline.setViewport(velocity: details.velocity.pixelsPerSecond.dy * scale, animate: true);
 	}
 
@@ -93,8 +95,19 @@ class TimelineRenderWidget extends LeafRenderObjectWidget
 	}
 }
 
+
 class TimelineRenderObject extends RenderBox
 {
+	static const List<Color> LineColors =
+	[
+		const Color.fromARGB(255, 125, 195, 184),
+		const Color.fromARGB(255, 190, 224, 146),
+		const Color.fromARGB(255, 238, 155, 75),
+		const Color.fromARGB(255, 202, 79, 63),
+		const Color.fromARGB(255, 128, 28, 15)
+	];
+
+
 	Ticks _ticks = new Ticks();
 	Timeline _timeline;
 
@@ -110,6 +123,7 @@ class TimelineRenderObject extends RenderBox
 		{
 			markNeedsPaint();
 		};
+		markNeedsLayout();
 	}
 
 	@override
@@ -122,6 +136,15 @@ class TimelineRenderObject extends RenderBox
 	void performResize() 
 	{
 		size = constraints.biggest;
+	}
+
+	@override
+	void performLayout() 
+	{
+		if(_timeline != null)
+		{
+			_timeline.setViewport(height:size.height, animate:true);
+		}
 	}
 
 	@override
@@ -143,7 +166,10 @@ class TimelineRenderObject extends RenderBox
 
 		if(_timeline.entries != null)
 		{
+			canvas.save();
+			canvas.clipRect(new Rect.fromLTWH(offset.dx + Timeline.GutterLeft, offset.dy, size.width-Timeline.GutterLeft, size.height));
 			drawItems(context, offset, _timeline.entries, Timeline.MarginLeft-Timeline.DepthOffset*_timeline.renderOffsetDepth, scale, 0);
+			canvas.restore();
 		}
 		
 		// double width = _aabb[2] - _aabb[0];
@@ -192,8 +218,7 @@ class TimelineRenderObject extends RenderBox
 			double legOpacity = item.legOpacity * item.opacity;
 			if(legOpacity > 0.0)
 			{
-				
-				canvas.drawRect(new Offset(x, item.y) & new Size(Timeline.LineWidth, item.length), new Paint()..color = Colors.red.withOpacity(legOpacity));
+				canvas.drawRect(new Offset(x, item.y) & new Size(Timeline.LineWidth, item.length), new Paint()..color = LineColors[depth%LineColors.length].withOpacity(legOpacity));
 				// ctx.globalAlpha = item.legOpacity*item.opacity;
 				// ctx.rect(x, y, LineWidth, length);
 				// ctx.fill();

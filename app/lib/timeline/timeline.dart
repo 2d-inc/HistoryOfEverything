@@ -55,7 +55,8 @@ class Timeline
 	double _renderOffsetDepth = 0.0;
 	double _labelX = 0.0;
 	double _renderLabelX = 0.0;
-	bool _frameScheduled = false;
+	bool _isFrameScheduled = false;
+	bool isInteracting = false;
 
 	List<TimelineEntry> get entries => _entries;
 	double get renderOffsetDepth => _renderOffsetDepth;
@@ -92,6 +93,7 @@ class Timeline
 		loadFromBundle("assets/timeline.json").then((bool success)
 		{
 			setViewport(start: _entries.first.start, end: _entries.first.end);
+			advance(0.0, false);
 		});
 		setViewport(start: -1000.0, end: 100.0);
 	}
@@ -218,16 +220,16 @@ class Timeline
 				onNeedPaint();
 			}
 		}
-		else if(!_frameScheduled)
+		else if(!_isFrameScheduled)
 		{
-			_frameScheduled = true;
+			_isFrameScheduled = true;
 			SchedulerBinding.instance.scheduleFrameCallback(beginFrame);
 		}
 	}
 
 	void beginFrame(Duration timeStamp) 
 	{
-		_frameScheduled = false;
+		_isFrameScheduled = false;
 		final double t = timeStamp.inMicroseconds / Duration.microsecondsPerMillisecond / 1000.0;
 		if(_lastFrameTime == 0)
 		{
@@ -239,9 +241,9 @@ class Timeline
 		double elapsed = t - _lastFrameTime;
 		_lastFrameTime = t;
 
-		if(!advance(elapsed) && !_frameScheduled)
+		if(!advance(elapsed, true) && !_isFrameScheduled)
 		{
-			_frameScheduled = true;
+			_isFrameScheduled = true;
 			SchedulerBinding.instance.scheduleFrameCallback(beginFrame);
 		}
 
@@ -251,7 +253,7 @@ class Timeline
 		}
 	}
 
-	bool advance(double elapsed)
+	bool advance(double elapsed, bool animate)
 	{
 		double scale = _height/(_renderEnd-_renderStart);
 
@@ -267,10 +269,10 @@ class Timeline
 		double de = _end - _renderEnd;
 		
 		bool doneRendering = true;
-		bool scaling = true;
-		if((ds*scale).abs() < 1.0 && (de*scale).abs() < 1.0)
+		bool isScaling = true;
+		if(!animate || ((ds*scale).abs() < 1.0 && (de*scale).abs() < 1.0))
 		{
-			scaling = false;
+			isScaling = false;
 			_renderStart = _start;
 			_renderEnd = _end;
 		}
@@ -281,19 +283,47 @@ class Timeline
 			_renderEnd += de*speed;
 		}
 
+		// Update scale after changing render range.
+		scale = _height/(_renderEnd-_renderStart);
+
 		_lastEntryY = -double.maxFinite;
 		_labelX = 0.0;
 		_offsetDepth = 0.0;
 		
-		if(advanceItems(_entries, MarginLeft, scale, elapsed, 0))
+		if(advanceItems(_entries, MarginLeft, scale, elapsed, animate, 0))
 		{
 			doneRendering = false;
 		}
 		
+		if(!isInteracting && !isScaling)
+		{
+			double dl = _labelX - _renderLabelX;
+			if(!animate || dl.abs() < 1.0)
+			{
+				_renderLabelX = _labelX;
+			}
+			else
+			{
+				doneRendering = false;
+				_renderLabelX += dl*min(1.0, elapsed*6.0);
+			}
+
+			double dd = _offsetDepth - renderOffsetDepth;
+			if(!animate || dd.abs()*DepthOffset < 1.0)
+			{
+				_renderOffsetDepth = _offsetDepth;
+			}
+			else
+			{
+				doneRendering = false;
+				_renderOffsetDepth += dd*min(1.0, elapsed*12.0);
+			}
+		}
+
 		return doneRendering;
 	}
 
-	bool advanceItems(List<TimelineEntry> items, double x, double scale, double elapsed, int depth)
+	bool advanceItems(List<TimelineEntry> items, double x, double scale, double elapsed, bool animate, int depth)
 	{
 		bool stillAnimating = false;
 		for(TimelineEntry item in items)
@@ -311,7 +341,7 @@ class Timeline
 			double targetLabelOpacity = y - _lastEntryY < FadeAnimationStart ? 0.0 : 1.0;
 			
 			double dt = targetLabelOpacity - item.labelOpacity;
-			if(dt.abs() < 0.01)
+			if(!animate || dt.abs() < 0.01)
 			{
 				item.labelOpacity = targetLabelOpacity;	
 			}
@@ -326,7 +356,7 @@ class Timeline
 
 			double targetLegOpacity = length > EdgeRadius/2.0 ? 1.0 : 0.0;
 			double dtl = targetLegOpacity - item.legOpacity;
-			if(dtl.abs() < 0.01)
+			if(!animate || dtl.abs() < 0.01)
 			{
 				item.legOpacity = targetLegOpacity;	
 			}
@@ -339,7 +369,7 @@ class Timeline
 
 			double targetItemOpacity = item.parent != null ? item.parent.length < MinChildLength ? 0.0 : y > item.parent.y ? 1.0 : 0.0 : 1.0;
 			dtl = targetItemOpacity - item.opacity;
-			if(dtl.abs() < 0.01)
+			if(!animate || dtl.abs() < 0.01)
 			{
 				item.opacity = targetItemOpacity;	
 			}
@@ -363,7 +393,7 @@ class Timeline
 			item.labelVelocity += dvy * elapsed*18.0;
 
 			item.labelY += item.labelVelocity * elapsed*20.0;
-			if(item.labelVelocity.abs() > 0.01 || targetLabelVelocity.abs() > 0.01)
+			if(animate && (item.labelVelocity.abs() > 0.01 || targetLabelVelocity.abs() > 0.01))
 			{
 				stillAnimating = true;
 			}
@@ -371,7 +401,7 @@ class Timeline
 			_lastEntryY = y;
 
 			
-			if(y < -BubbleHeight && endY > _height + BubbleHeight && depth > _offsetDepth)
+			if(y < 0 && endY > _height && depth > _offsetDepth)
 			{
 				_offsetDepth = depth.toDouble();
 			}
@@ -390,7 +420,7 @@ class Timeline
 
 			if(item.children != null && item.isVisible)
 			{
-				if(advanceItems(item.children, x + LineSpacing + LineWidth, scale, elapsed, depth+1))
+				if(advanceItems(item.children, x + LineSpacing + LineWidth, scale, elapsed, animate, depth+1))
 				{
 					stillAnimating = true;
 				}

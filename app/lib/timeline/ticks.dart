@@ -61,7 +61,26 @@ class Ticks
 					fontFamily: "Arial",
 					fontSize: 10.0
 				))..pushStyle(new ui.TextStyle(color:const Color.fromRGBO(0, 0, 0, 0.6)));
-				builder.addText((tt).toStringAsFixed(2));
+
+				String label;
+				int tta = tt.abs();
+				if(tta > 1000000000)
+				{
+					label = (tt/1000000000).toStringAsFixed(2) + "B";
+				}
+				else if(tta > 1000000)
+				{
+					label = (tt/1000000).toStringAsFixed(2) + "M";
+				}
+				else if(tta > 10000) // N.B. < 10,000
+				{
+					label = (tt/1000).toStringAsFixed(2) + "k";
+				}
+				else
+				{
+					label = tt.toStringAsFixed(0);
+				}
+				builder.addText(label);
 				ui.Paragraph tickParagraph = builder.build();
 				tickParagraph.layout(new ui.ParagraphConstraints(width: Gutter));			
 				canvas.drawParagraph(tickParagraph, new Offset(offset.dx + Gutter - tickParagraph.minIntrinsicWidth-2, offset.dy + height - o - tickParagraph.height - 5));

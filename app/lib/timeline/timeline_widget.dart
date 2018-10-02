@@ -140,6 +140,11 @@ class TimelineRenderObject extends RenderBox
 
 		//canvas.drawRect(new Offset(0.0, 0.0) & new Size(100.0, 100.0), new Paint()..color = Colors.red);
 		_ticks.paint(context, offset, -renderStart*scale, scale, size.height);
+
+		if(_timeline.entries != null)
+		{
+			drawItems(context, offset, _timeline.entries, Timeline.MarginLeft-Timeline.DepthOffset*_timeline.renderOffsetDepth, scale, 0);
+		}
 		
 		// double width = _aabb[2] - _aabb[0];
 		// double height = _aabb[3] - _aabb[1];
@@ -154,6 +159,75 @@ class TimelineRenderObject extends RenderBox
 		//print("SIZE IS ${size.width}, ${size.height}");
 		// canvas.scale(1.0/ui.window.devicePixelRatio, 1.0/ui.window.devicePixelRatio);
 		// _level.render(canvas);
+	}
+
+	void drawItems(PaintingContext context, Offset offset, List<TimelineEntry> entries, double x, double scale, int depth)
+	{
+		double viewStart = _timeline.renderStart;
+		final Canvas canvas = context.canvas;
+
+		for(TimelineEntry item in entries)
+		{
+			double start = item.start-viewStart;
+			double end = item.end-viewStart;
+			double length = (end-start)*scale-2*Timeline.EdgePadding;
+
+			//const {y, endY, labelOpacity, lineOpacity, legOpacity, itemOpacity} = item;
+
+
+			if(!item.isVisible || item.y > size.height + Timeline.BubbleHeight || item.endY < -Timeline.BubbleHeight)
+			{
+				continue;
+			}
+			// ctx.fillStyle = Colors[depth%Colors.length];
+			// ctx.globalAlpha = lineOpacity*itemOpacity;
+			// // if(length > EdgeRadius)
+			// // {
+			// ctx.beginPath();
+			// ctx.arc(x+LineWidth/2, y,
+			// 		EdgeRadius, 0,
+			// 		2*Math.PI);
+			// ctx.fill();
+
+			double legOpacity = item.legOpacity * item.opacity;
+			if(legOpacity > 0.0)
+			{
+				
+				canvas.drawRect(new Offset(x, item.y) & new Size(Timeline.LineWidth, item.length), new Paint()..color = Colors.red.withOpacity(legOpacity));
+				// ctx.globalAlpha = item.legOpacity*item.opacity;
+				// ctx.rect(x, y, LineWidth, length);
+				// ctx.fill();
+
+				// ctx.beginPath();
+				// ctx.arc(x+LineWidth/2, y+length,
+				// 		EdgeRadius, 0,
+				// 		2*Math.PI);
+				// ctx.fill();
+			}
+
+			// ctx.globalAlpha = labelOpacity*itemOpacity;
+			// ctx.save();
+			// let bubbleX = labelX-DepthOffset*renderOffsetDepth;
+
+			// let bubbleY = item.actualRenderLabelY-BubbleHeight/2.0;
+			// ctx.translate(bubbleX, bubbleY);
+
+			// double textSize = ctx.measureText(item.label);
+			// const textWidth = textSize.width*labelOpacity;
+			// this.drawBubble(ctx, textWidth + BubblePadding*2, BubbleHeight);
+			// ctx.fill();
+			// ctx.beginPath();
+			// ctx.rect(BubblePadding, 0, textWidth, BubbleHeight);
+			// ctx.clip();
+			// ctx.fillStyle = "#FFF";
+			// ctx.textBaseline="middle"; 
+			// ctx.fillText(item.label, BubblePadding, BubbleHeight/2.0);
+			// ctx.restore();
+			if(item.children != null)
+			{
+				drawItems(context, offset, item.children, x + Timeline.DepthOffset, scale, depth+1);
+			}
+		}
 	}
 
 	@override

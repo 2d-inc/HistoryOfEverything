@@ -103,7 +103,7 @@ class Timeline
 	static const double BubblePadding = 20.0;
 	static const double AssetPadding = 30.0;
 	static const double Parallax = 100.0;
-	static const double AssetScreenScale = 0.25;
+	static const double AssetScreenScale = 0.3;
 
 	Timeline()
 	{

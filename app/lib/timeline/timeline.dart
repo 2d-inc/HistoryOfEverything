@@ -72,7 +72,7 @@ class Timeline
 	static const double LineSpacing = 10.0;
 	static const double DepthOffset = LineSpacing+LineWidth;
 
-	static const double EdgePadding = 5.0;
+	static const double EdgePadding = 8.0;
 	static const double FadeAnimationStart = 55.0;
 	static const double MoveSpeed = 20.0;
 	static const double Deceleration = 9.0;
@@ -90,7 +90,6 @@ class Timeline
 
 	Timeline()
 	{
-		print("LOADING");
 		loadFromBundle("assets/timeline.json").then((bool success)
 		{
 			// Double check: Make sure we have height by now...
@@ -99,7 +98,7 @@ class Timeline
 			setViewport(start: _entries.first.start - BubbleHeight/scale, end: _entries.first.end + BubbleHeight/scale);
 			advance(0.0, false);
 		});
-		setViewport(start: -1000.0, end: 100.0);
+		setViewport(start: 1536.0, end: 3072.0);
 	}
 
 	Future<bool> loadFromBundle(String filename) async
@@ -209,11 +208,11 @@ class Timeline
 		}
 		if(height != double.maxFinite)
 		{
-			if(_height == 0.0)
+			if(_height == 0.0 && _entries != null && _entries.length > 0)
 			{
 				double scale = height/(_entries.first.end-_entries.first.start);
-				_start = _start - BubbleHeight/scale;
-				_end = _end + BubbleHeight/scale;
+				_start = _start + BubbleHeight/scale;
+				_end = _end - BubbleHeight/scale;
 			}
 			_height = height;
 		}
@@ -337,18 +336,28 @@ class Timeline
 	bool advanceItems(List<TimelineEntry> items, double x, double scale, double elapsed, bool animate, int depth)
 	{
 		bool stillAnimating = false;
-		for(TimelineEntry item in items)
+		double lastEnd = -double.maxFinite;
+		for(int i = 0; i < items.length; i++)
+		//for(TimelineEntry item in items)
 		{
+			TimelineEntry item = items[i];
 			
 			double start = item.start-_renderStart;
 			double end = item.type == TimelineEntryType.Era ? item.end-_renderStart : start;
-			double length = (end-start)*scale-2*EdgePadding;
-			double pad = min(1.0, length/EdgePadding)*EdgePadding;
+			// double length = (end-start)*scale-2*EdgePadding;
+			// double pad = EdgePadding;//(length/EdgePadding).clamp(0.0, 1.0)*EdgePadding;
 
-			item.length = length;
+			//item.length = length = max(0.0, (end-start)*scale-pad*2.0);
 
-			double y = start*scale+pad;
-			double endY = end*scale-pad;
+			double y = start*scale;//+pad;
+			if(i > 0 && y - lastEnd < EdgePadding)
+			{
+				y = lastEnd + EdgePadding;
+			}
+			double endY = end*scale;//-pad;
+			lastEnd = endY;
+
+			item.length = endY - y;
 
 			double targetLabelOpacity = y - _lastEntryY < FadeAnimationStart ? 0.0 : 1.0;
 			double dt = targetLabelOpacity - item.labelOpacity;
@@ -365,7 +374,7 @@ class Timeline
 			item.y = y;
 			item.endY = endY;
 
-			double targetLegOpacity = length > EdgeRadius/2.0 ? 1.0 : 0.0;
+			double targetLegOpacity = item.length > EdgeRadius ? 1.0 : 0.0;
 			double dtl = targetLegOpacity - item.legOpacity;
 			if(!animate || dtl.abs() < 0.01)
 			{
@@ -374,11 +383,11 @@ class Timeline
 			else
 			{
 				stillAnimating = true;
-				item.legOpacity += dtl * min(1.0, elapsed*10.0);
+				item.legOpacity += dtl * min(1.0, elapsed*20.0);
 			}
 
 
-			double targetItemOpacity = item.parent != null ? item.parent.length < MinChildLength ? 0.0 : y > item.parent.y ? 1.0 : 0.0 : 1.0;
+			double targetItemOpacity = item.parent != null ? item.parent.length < MinChildLength || (item.parent != null && item.parent.endY < y) ? 0.0 : y > item.parent.y ? 1.0 : 0.0 : 1.0;
 			dtl = targetItemOpacity - item.opacity;
 			if(!animate || dtl.abs() < 0.01)
 			{
@@ -387,7 +396,7 @@ class Timeline
 			else
 			{
 				stillAnimating = true;
-				item.opacity += dtl * min(1.0, elapsed*10.0);
+				item.opacity += dtl * min(1.0, elapsed*20.0);
 			}
 
 			// if(item.labelY === undefined)

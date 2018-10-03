@@ -15,7 +15,7 @@ class Ticks
 	{
 		final Canvas canvas = context.canvas;
 
-		double bottom = height + Margin;
+		double bottom = height;
 		double tickDistance = TickDistance.toDouble();
 		double textTickDistance = TextTickDistance.toDouble();
 
@@ -66,15 +66,15 @@ class Ticks
 				int tta = tt.abs();
 				if(tta > 1000000000)
 				{
-					label = (tt/1000000000).toStringAsFixed(2) + "B";
+					label = (tt/1000000000).toStringAsFixed(3) + "B";
 				}
 				else if(tta > 1000000)
 				{
-					label = (tt/1000000).toStringAsFixed(2) + "M";
+					label = (tt/1000000).toStringAsFixed(3) + "M";
 				}
 				else if(tta > 10000) // N.B. < 10,000
 				{
-					label = (tt/1000).toStringAsFixed(2) + "k";
+					label = (tt/1000).toStringAsFixed(3) + "k";
 				}
 				else
 				{

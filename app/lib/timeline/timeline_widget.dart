@@ -150,7 +150,6 @@ class TimelineRenderObject extends RenderBox
 	@override
 	void paint(PaintingContext context, Offset offset)
 	{
-		//print("Paint Nima");
 		final Canvas canvas = context.canvas;
 		if(_timeline == null)
 		{
@@ -171,49 +170,18 @@ class TimelineRenderObject extends RenderBox
 			drawItems(context, offset, _timeline.entries, Timeline.MarginLeft-Timeline.DepthOffset*_timeline.renderOffsetDepth, scale, 0);
 			canvas.restore();
 		}
-		
-		// double width = _aabb[2] - _aabb[0];
-		// double height = _aabb[3] - _aabb[1];
-
-		// double scale = max(size.width/width, size.height/height);
-		// canvas.translate(offset.dx + size.width/2.0, offset.dy + size.height/2.0);
-		// canvas.scale(scale, -scale);
-		// canvas.translate(-_aabb[0] - width/2.0, -_aabb[1] - height/2.0);
-		
-		// //canvas.translate(280.0, -1050.0);
-		// _actorInstance.draw(canvas);
-		//print("SIZE IS ${size.width}, ${size.height}");
-		// canvas.scale(1.0/ui.window.devicePixelRatio, 1.0/ui.window.devicePixelRatio);
-		// _level.render(canvas);
 	}
 
 	void drawItems(PaintingContext context, Offset offset, List<TimelineEntry> entries, double x, double scale, int depth)
 	{
-		double viewStart = _timeline.renderStart;
 		final Canvas canvas = context.canvas;
 
 		for(TimelineEntry item in entries)
 		{
-			double start = item.start-viewStart;
-			double end = item.end-viewStart;
-			double length = (end-start)*scale-2*Timeline.EdgePadding;
-
-			//const {y, endY, labelOpacity, lineOpacity, legOpacity, itemOpacity} = item;
-
-
 			if(!item.isVisible || item.y > size.height + Timeline.BubbleHeight || item.endY < -Timeline.BubbleHeight)
 			{
 				continue;
 			}
-			// ctx.fillStyle = Colors[depth%Colors.length];
-			// ctx.globalAlpha = lineOpacity*itemOpacity;
-			// // if(length > EdgeRadius)
-			// // {
-			// ctx.beginPath();
-			// ctx.arc(x+LineWidth/2, y,
-			// 		EdgeRadius, 0,
-			// 		2*Math.PI);
-			// ctx.fill();
 
 			double legOpacity = item.legOpacity * item.opacity;
 			canvas.drawCircle(new Offset(x + Timeline.LineWidth/2.0, item.y), Timeline.EdgeRadius, new Paint()..color = LineColors[depth%LineColors.length].withOpacity(item.opacity));
@@ -222,15 +190,6 @@ class TimelineRenderObject extends RenderBox
 				Paint legPaint = new Paint()..color = LineColors[depth%LineColors.length].withOpacity(legOpacity);
 				canvas.drawRect(new Offset(x, item.y) & new Size(Timeline.LineWidth, item.length), legPaint);
 				canvas.drawCircle(new Offset(x + Timeline.LineWidth/2.0, item.y+item.length), Timeline.EdgeRadius, legPaint);
-				// ctx.globalAlpha = item.legOpacity*item.opacity;
-				// ctx.rect(x, y, LineWidth, length);
-				// ctx.fill();
-
-				// ctx.beginPath();
-				// ctx.arc(x+LineWidth/2, y+length,
-				// 		EdgeRadius, 0,
-				// 		2*Math.PI);
-				// ctx.fill();
 			}
 
 			const double MaxLabelWidth = 1200.0;

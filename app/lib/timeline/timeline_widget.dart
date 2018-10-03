@@ -163,6 +163,26 @@ class TimelineRenderObject extends RenderBox
 		//canvas.drawRect(new Offset(0.0, 0.0) & new Size(100.0, 100.0), new Paint()..color = Colors.red);
 		_ticks.paint(context, offset, -renderStart*scale, scale, size.height);
 
+		if(timeline.renderAssets != null)
+		{
+			canvas.save();
+			for(TimelineEntryAsset asset in timeline.renderAssets)
+			{
+				if(asset.opacity > 0)
+				{
+					//ctx.globalAlpha = asset.opacity;
+					double rs = 0.2+asset.scale*0.8;
+
+					double w = asset.width * Timeline.AssetScreenScale;
+					double h = asset.height * Timeline.AssetScreenScale;
+					//ctx.drawImage(asset.image, width-w, item.assetY, w*rs, h*rs);
+					canvas.drawImageRect(asset.image, Rect.fromLTWH(0.0, 0.0, asset.width, asset.height), Rect.fromLTWH(offset.dx + size.width - w, asset.y, w*rs, h*rs), new Paint()..isAntiAlias=true..filterQuality=ui.FilterQuality.low..color = Colors.white.withOpacity(asset.opacity));
+					//ctx.rect(width-item.asset.width, item.assetY, item.asset.width*rs, item.asset.height*rs);
+					//ctx.fill();
+				}
+			}
+			canvas.restore();
+		}
 		if(_timeline.entries != null)
 		{
 			canvas.save();
@@ -218,9 +238,14 @@ class TimelineRenderObject extends RenderBox
 			Path bubble = makeBubblePath(textWidth + BubblePadding*2.0, BubbleHeight);
 			canvas.drawPath(bubble, new Paint()..color = LineColors[depth%LineColors.length].withOpacity(item.opacity*item.labelOpacity));
 			canvas.clipRect(new Rect.fromLTWH(BubblePadding, 0.0, textWidth, BubbleHeight));
+
 			
 			canvas.drawParagraph(labelParagraph, new Offset(BubblePadding, BubbleHeight/2.0-labelParagraph.height/2.0));
 			canvas.restore();
+			// if(item.asset != null)
+			// {
+			// 	canvas.drawImageRect(item.asset.image, Rect.fromLTWH(0.0, 0.0, item.asset.width, item.asset.height), Rect.fromLTWH(bubbleX + textWidth + BubblePadding*2.0, bubbleY, item.asset.width, item.asset.height), new Paint()..isAntiAlias=true..filterQuality=ui.FilterQuality.low);
+			// }
 			if(item.children != null)
 			{
 				drawItems(context, offset, item.children, x + Timeline.DepthOffset, scale, depth+1);

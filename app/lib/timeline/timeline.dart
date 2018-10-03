@@ -15,6 +15,18 @@ enum TimelineEntryType
 	Incident
 }
 
+class TimelineEntryAsset
+{
+	ui.Image image;
+	double width;
+	double height;
+	double opacity = 0.0;
+	double scale = 0.0;
+	double scaleVelocity = 0.0;
+	double y = 0.0;
+	double velocity = 0.0;
+}
+
 class TimelineEntry
 {
 	TimelineEntryType type;
@@ -38,6 +50,8 @@ class TimelineEntry
 	{
 		return opacity > 0.0;
 	}
+
+	TimelineEntryAsset asset;
 }
 
 class Timeline
@@ -50,6 +64,7 @@ class Timeline
 	double _lastFrameTime = 0.0;
 	double _height = 0.0;
 	List<TimelineEntry> _entries;
+	List<TimelineEntryAsset> _renderAssets;
 	double _lastEntryY = 0.0;
 	double _offsetDepth = 0.0;
 	double _renderOffsetDepth = 0.0;
@@ -57,10 +72,12 @@ class Timeline
 	double _renderLabelX = 0.0;
 	bool _isFrameScheduled = false;
 	bool isInteracting = false;
+	double _lastAssetY = 0.0;
 
 	List<TimelineEntry> get entries => _entries;
 	double get renderOffsetDepth => _renderOffsetDepth;
 	double get renderLabelX => _renderLabelX;
+	List<TimelineEntryAsset> get renderAssets => _renderAssets;
 
 	PaintCallback onNeedPaint;
 	double get start => _start;
@@ -85,8 +102,8 @@ class Timeline
 	static const double BubbleArrowSize = 19.0;
 	static const double BubblePadding = 20.0;
 	static const double AssetPadding = 30.0;
-	static const double Parallax = 200.0;
-
+	static const double Parallax = 100.0;
+	static const double AssetScreenScale = 0.25;
 
 	Timeline()
 	{
@@ -95,7 +112,7 @@ class Timeline
 			// Double check: Make sure we have height by now...
 			double scale = _height == 0.0 ? 1.0 : _height/(_entries.first.end-_entries.first.start);
 			// We use the scale to pad by the bubble height when we set the first range.
-			setViewport(start: _entries.first.start - BubbleHeight/scale, end: _entries.first.end + BubbleHeight/scale);
+			setViewport(start: _entries.first.start - BubbleHeight/scale, end: _entries.first.end + BubbleHeight/scale, animate:true);
 			advance(0.0, false);
 		});
 		setViewport(start: 1536.0, end: 3072.0);
@@ -147,6 +164,25 @@ class Timeline
 				if(map.containsKey("label"))
 				{
 					timelineEntry.label = map["label"] as String;
+				}
+
+				if(map.containsKey("asset"))
+				{
+					TimelineEntryAsset asset = new TimelineEntryAsset();
+					Map assetMap = map["asset"] as Map;
+					String source = assetMap["source"];
+					ByteData data = await rootBundle.load("assets/" + source);
+					Uint8List list = new Uint8List.view(data.buffer);
+					ui.Codec codec = await ui.instantiateImageCodec(list);
+					ui.FrameInfo frame = await codec.getNextFrame();
+					asset.image = frame.image;
+					
+					dynamic width = assetMap["width"];
+					asset.width = width is int ? width.toDouble() : width;
+					dynamic height = assetMap["height"];
+					asset.height = height is int ? height.toDouble() : height;
+
+					timelineEntry.asset = asset;
 				}
 				allEntries.add(timelineEntry);
 			}
@@ -297,12 +333,22 @@ class Timeline
 		scale = _height/(_renderEnd-_renderStart);
 
 		_lastEntryY = -double.maxFinite;
+		_lastAssetY = -double.maxFinite;
 		_labelX = 0.0;
 		_offsetDepth = 0.0;
 		
-		if(advanceItems(_entries, MarginLeft, scale, elapsed, animate, 0))
+		if(_entries != null)
 		{
-			doneRendering = false;
+			if(advanceItems(_entries, MarginLeft, scale, elapsed, animate, 0))
+			{
+				doneRendering = false;
+			}
+
+			_renderAssets = new List<TimelineEntryAsset>();
+			if(advanceAssets(_entries, elapsed, animate, _renderAssets))
+			{
+				doneRendering = false;
+			}
 		}
 		
 		double dl = _labelX - _renderLabelX;
@@ -441,6 +487,85 @@ class Timeline
 			if(item.children != null && item.isVisible)
 			{
 				if(advanceItems(item.children, x + LineSpacing + LineWidth, scale, elapsed, animate, depth+1))
+				{
+					stillAnimating = true;
+				}
+			}
+		}
+		return stillAnimating;
+	}
+
+	bool advanceAssets(List<TimelineEntry> items, double elapsed, bool animate, List<TimelineEntryAsset> renderAssets)
+	{
+		bool stillAnimating = false;
+		for(TimelineEntry item in items)
+		{
+			if(item.asset != null)
+			{
+				double y = item.y;
+				double halfHeight = _height/2.0;
+				double thresholdAssetY = y+((y-halfHeight)/halfHeight)*Parallax;//item.asset.height*AssetScreenScale/2.0;
+				double targetAssetY = thresholdAssetY-item.asset.height*AssetScreenScale/2.0; 
+				double targetAssetOpacity = (thresholdAssetY - _lastAssetY < 0 ? 0.0 : 1.0) * item.opacity * item.labelOpacity;
+
+				double targetScale = targetAssetOpacity;
+				double targetScaleVelocity = targetScale - item.asset.scale;
+				if(!animate || targetScale == 0)
+				{
+					item.asset.scaleVelocity = targetScaleVelocity;
+				}
+				else
+				{
+					double dvy = targetScaleVelocity - item.asset.scaleVelocity;
+					item.asset.scaleVelocity += dvy * elapsed*18.0;
+				}
+
+				item.asset.scale += item.asset.scaleVelocity * elapsed*20.0;//Math.min(1.0, elapsed*(10.0+f*35));
+				if(animate && (item.asset.scaleVelocity.abs() > 0.01 || targetScaleVelocity.abs() > 0.01))
+				{
+					stillAnimating = true;
+				}
+
+				double da = targetAssetOpacity - item.asset.opacity;
+				if(!animate || da.abs() < 0.01)
+				{
+					item.asset.opacity = targetAssetOpacity;	
+				}
+				else
+				{
+					stillAnimating = true;
+					item.asset.opacity += da * min(1.0, elapsed*15.0);
+				}
+
+				if(item.asset.opacity > 0.0) // visible
+				{
+					renderAssets.add(item.asset);
+					// if(item.asset.y === undefined)
+					// {
+					// 	item.asset.y = Math.max(this._lastAssetY, targetAssetY);
+					// }
+
+					double targetAssetVelocity = max(_lastAssetY, targetAssetY) - item.asset.y;
+					double dvay = targetAssetVelocity - item.asset.velocity;
+					item.asset.velocity += dvay * elapsed*15.0;
+
+					item.asset.y += item.asset.velocity * elapsed*17.0;//Math.min(1.0, elapsed*(10.0+f*35));
+					if(item.asset.velocity.abs() > 0.01 || targetAssetVelocity.abs() > 0.01)
+					{
+						stillAnimating = true;
+					}
+
+					_lastAssetY = /*item.assetY*/targetAssetY + item.asset.height * AssetScreenScale /*renderScale(item.asset.scale)*/ + AssetPadding;
+				}	
+				else
+				{
+					item.asset.y = max(_lastAssetY, targetAssetY);
+				}
+			}
+
+			if(item.children != null && item.isVisible)
+			{
+				if(advanceAssets(item.children, elapsed, animate, renderAssets))
 				{
 					stillAnimating = true;
 				}

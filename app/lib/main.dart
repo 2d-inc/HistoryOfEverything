@@ -1,4 +1,5 @@
 import 'timeline/timeline_widget.dart';
+import 'main_menu/main_menu.dart';
 import 'package:flutter/material.dart';
 
 void main() => runApp(new MyApp());
@@ -54,7 +55,7 @@ class _MyHomePageState extends State<MyHomePage> {
     // than having to individually change instances of widgets.
     return new Scaffold(
       appBar: null,
-      body: new TimelineWidget()
+      body: new MainMenuWidget()
     );
   }
 }

@@ -4,9 +4,12 @@ import 'package:flutter/rendering.dart';
 import 'package:timeline/timeline/timeline.dart';
 import 'package:timeline/timeline/timeline_render_widget.dart';
 
+typedef ShowMenuCallback();
+
 class TimelineWidget extends StatefulWidget 
 {
-	TimelineWidget({Key key}) : super(key: key);
+	final ShowMenuCallback showMenu;
+	TimelineWidget({this.showMenu, Key key}) : super(key: key);
 
 	@override
 	_TimelineWidgetState createState() => new _TimelineWidgetState();
@@ -55,19 +58,26 @@ class _TimelineWidgetState extends State<TimelineWidget>
 	@override
 	Widget build(BuildContext context) 
 	{
-		return new Stack(
-			children:<Widget>
-			[
-				new Positioned.fill(
-						child: new GestureDetector(
-							onScaleStart: _scaleStart,
-							onScaleUpdate: _scaleUpdate,
-							onScaleEnd: _scaleEnd,
-							//onTapUp: _tapUp,
-							child: new TimelineRenderWidget(timeline: _timeline)
-						)
-						// 
-				)
-			]);
+		return new GestureDetector(
+			onScaleStart: _scaleStart,
+			onScaleUpdate: _scaleUpdate,
+			onScaleEnd: _scaleEnd,
+			//onTapUp: _tapUp,
+			child: new Stack(
+				children:<Widget>
+				[
+					new TimelineRenderWidget(timeline: _timeline),
+					new Container(
+						color:Color.fromRGBO(238, 240, 242, 0.81), 
+						height: 56.0,
+						width: double.infinity,
+						child: new IconButton(
+							alignment: Alignment.centerLeft,
+							icon: new Icon(Icons.menu),
+							onPressed: () { this.widget.showMenu(); },
+						))
+				]
+			)
+		);
 	}
 }

@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class MyHomePage extends StatefulWidget {
+class MyHomePage extends StatefulWidget  {
   MyHomePage({Key key, this.title}) : super(key: key);
 
   // This widget is the home page of your application. It is stateful, meaning
@@ -44,7 +44,39 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => new _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateMixin {
+
+	AnimationController _controller;
+	static final Animatable<Offset> _slideTween = Tween<Offset>(
+		begin: const Offset(0.0, 0.0),
+		end: const Offset(-1.0, 0.0),
+	).chain(CurveTween(
+		curve: Curves.fastOutSlowIn,
+	));
+
+
+	Animation<Offset> _menuOffset;
+	initState()
+	{
+		super.initState();
+		_controller = AnimationController(
+			vsync: this,
+			duration: const Duration(milliseconds: 200),
+		);
+		_menuOffset = _controller.drive(_slideTween);						
+	}
+
+
+	void _onHideMenu()
+	{
+		_controller.forward();
+	}
+
+	void _onShowMenu()
+    {
+		_controller.reverse();
+    }
+
   @override
   Widget build(BuildContext context) {
     // This method is rerun every time setState is called, for instance as done
@@ -53,9 +85,34 @@ class _MyHomePageState extends State<MyHomePage> {
     // The Flutter framework has been optimized to make rerunning build methods
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
+
     return new Scaffold(
-      appBar: null,
-      body: new TimelineWidget()// new MainMenuWidget()
+      	appBar: null,
+      	body: new Stack(
+		  children: <Widget> [
+			  Positioned.fill( child: TimelineWidget( showMenu: _onShowMenu )),
+			  Positioned.fill( child: SlideTransition(position: _menuOffset, child:MainMenuWidget(selectItem: _onHideMenu) ))
+		  ]
+		)
     );
   }
 }
+
+/*
+
+    return new Scaffold(
+		drawer: SizedBox.expand(
+			child: new Drawer(
+				child: MainMenuWidget(selectItem: _onShowMenu),
+      		),
+		),
+      	appBar: new AppBar(
+        	title: new Text("Timeline"),
+      	),
+      	body: new Stack(
+		  children: <Widget> [
+			  Positioned.fill( child: TimelineWidget() ),
+			  //Positioned.fill( left: _menuOffset, right: -_menuOffset, child: MainMenuWidget(selectItem: _onShowMenu) )
+		  ]
+		)
+    );*/

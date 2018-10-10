@@ -2,14 +2,17 @@ import 'package:flutter/material.dart';
 import "plus_decoration.dart";
 import "../colors.dart";
 
+typedef SelectItemCallback();
+
 class MenuSection extends StatefulWidget
 {
     final String title;
     final Color backgroundColor;
     final Color accentColor;
+	final SelectItemCallback selectItem;
     final List<String> menuOptions;
 
-    MenuSection(this.title, this.backgroundColor, this.accentColor, this.menuOptions, {Key key}) : super(key: key);
+    MenuSection(this.title, this.backgroundColor, this.accentColor, this.menuOptions, this.selectItem, {Key key}) : super(key: key);
 
     @override
     State<StatefulWidget> createState() => _SectionState();
@@ -19,25 +22,26 @@ class _SectionState extends State<MenuSection> with SingleTickerProviderStateMix
 {
     Animation<double> expandAnimation;
     AnimationController expandController;
-    double _height = 150.0;
+
+	AnimationController _controller;
+	static final Animatable<double> _sizeTween = Tween<double>(
+		begin: 0.0,
+		end: 1.0,
+	).chain(CurveTween(
+		curve: Curves.fastOutSlowIn,
+	));
+
+	Animation<double> _sizeAnimation;
 
     initState()
     {
         super.initState();
-        expandController = AnimationController(
-            vsync: this,
-            duration: const Duration(milliseconds: 350)
-        );
-        expandAnimation = Tween(begin: 0.0, end: 1.0).animate(expandController)
-                        ..addListener(
-                            ()
-                            {
-                                setState(()
-                                    {
-                                        _height = 150.0 + (350.0-150.0)*expandAnimation.value;
-                                    }
-                                );
-                            });
+
+		_controller = AnimationController(
+			vsync: this,
+			duration: const Duration(milliseconds: 200),
+		);
+		_sizeAnimation = _controller.drive(_sizeTween);	
     }
 
     dispose()
@@ -48,13 +52,15 @@ class _SectionState extends State<MenuSection> with SingleTickerProviderStateMix
 
     _onExpand()
     {
-        switch(expandAnimation.status)
+        switch(_sizeAnimation.status)
         {
             case AnimationStatus.completed:
-                expandController.reverse();
+                //expandController.reverse();
+				_controller.reverse();
                 break;
             case AnimationStatus.dismissed:
-                expandController.forward();
+                //expandController.forward();
+				_controller.forward();
                 break;
             case AnimationStatus.reverse:
             case AnimationStatus.forward:
@@ -66,84 +72,97 @@ class _SectionState extends State<MenuSection> with SingleTickerProviderStateMix
     Widget build(BuildContext context) {
         return GestureDetector(
             onTap: _onExpand,
-            child: Container(
-                height: _height,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10.0),
-                    color: widget.backgroundColor
-                ),
-                child:  Column(
-                    children: 
-                    [
-                        Container(
-                            height: 150.0,
-                            child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: 
-                                [
-                                    Expanded(
-                                        child: Row(
-                                            children:
-                                            [
-                                                Container(
-                                                    height: 20.0,
-                                                    width: 20.0,
-                                                    margin: EdgeInsets.all(18.0),
-                                                    decoration: PlusDecoration(widget.accentColor, expandAnimation.value)
-                                                ),
-                                                Text(
-                                                    widget.title,
-                                                    style: TextStyle(
-                                                        fontSize: 20.0,
-                                                        fontFamily: "RobotoMedium",
-                                                        color: widget.accentColor
-                                                    ),
-                                                )
-                                            ],
-                                        )
-                                    )
-                                ]
-                            )
-                        ),
-                        Container(
-                            height: _height-150.0,
-                            child: ListView(
-                                padding: EdgeInsets.only(left: 56.0, right: 20.0, top: 10.0),
-                                children: widget.menuOptions.map(
-                                    (label) {
-                                        return GestureDetector(
-                                            onTap: () => print("GO TO MENU OPTION: $label"),
-                                            child: Row(
-                                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                                    children:
-                                                    [
-                                                        Expanded(
-                                                            child: Container(
-                                                                margin: EdgeInsets.only(bottom: 20.0),
-                                                                child:Text(
-                                                                    label, 
-                                                                    style: TextStyle(color: widget.accentColor, fontSize: 20.0, fontFamily: "RobotMedium"),
-                                                                )
-                                                            )
-                                                        ),
-                                                        Container(alignment: Alignment.center,
-                                                            child: Image.asset(
-                                                                "assets/right_arrow.png",
-                                                                color: widget.accentColor,
-                                                                height: 22.0,
-                                                                width: 22.0
-                                                            )
-                                                        )
-                                                    ]
-                                                )
-                                        );
-                                    }
-                                ).toList()
-                            )
-                        )
-                    ]
-                )
-            )
-        );
+            child: 
+				Container(
+					//height: _height,
+					decoration: BoxDecoration(
+						borderRadius: BorderRadius.circular(10.0),
+						color: widget.backgroundColor
+					),
+					child:  Column(
+						children: 
+						[
+							Container(
+								height: 150.0,
+								child: Row(
+									crossAxisAlignment: CrossAxisAlignment.end,
+									children: 
+									[
+										Expanded(
+											child: Row(
+												children:
+												[
+													Container(
+														height: 20.0,
+														width: 20.0,
+														margin: EdgeInsets.all(18.0),
+														decoration: PlusDecoration(widget.accentColor, _sizeAnimation.value)
+													),
+													Text(
+														widget.title,
+														style: TextStyle(
+															fontSize: 20.0,
+															fontFamily: "RobotoMedium",
+															color: widget.accentColor
+														),
+													)
+												],
+											)
+										)
+									]
+								)
+							),
+							new SizeTransition(
+								axisAlignment: 0.0,
+								axis: Axis.vertical,
+								sizeFactor: _sizeAnimation,
+								child:Container(
+									child: new Padding(
+										padding: EdgeInsets.only(left: 56.0, right: 20.0, top: 10.0),
+										child: Column
+										(
+											children: widget.menuOptions.map
+											(
+												(label) 
+												{
+													return GestureDetector(
+														onTap: () => 
+															//print("GO TO MENU OPTION: $label");
+															this.widget.selectItem(),
+
+														child: Row(
+																crossAxisAlignment: CrossAxisAlignment.start,
+																children:
+																[
+																	Expanded(
+																		child: Container(
+																			margin: EdgeInsets.only(bottom: 20.0),
+																			child:Text(
+																				label, 
+																				style: TextStyle(color: widget.accentColor, fontSize: 20.0, fontFamily: "RobotMedium"),
+																			)
+																		)
+																	),
+																	Container(alignment: Alignment.center,
+																		child: Image.asset(
+																			"assets/right_arrow.png",
+																			color: widget.accentColor,
+																			height: 22.0,
+																			width: 22.0
+																		)
+																	)
+																]
+															)
+													);
+												}
+											).toList()
+										)
+									)
+								)
+							)
+						]
+					)
+				)
+			);
     }
 }

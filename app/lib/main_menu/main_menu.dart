@@ -7,6 +7,9 @@ import "../colors.dart";
 
 class MainMenuWidget extends StatelessWidget
 {
+	final SelectItemCallback selectItem;
+	MainMenuWidget({this.selectItem});
+
     static final List<String> options = [
         "Big Bang", "Birth of the Mily Way", "The Earth is Born", "Heavy Bombardment"
     ];
@@ -64,7 +67,8 @@ class MainMenuWidget extends StatelessWidget
                                             "Birth of the Universe", 
                                             Color.fromRGBO(8, 49, 88, 1.0),
                                             lightText,
-                                            options
+                                            options,
+											selectItem
                                         )
                                     ),
                                     Container(
@@ -73,7 +77,8 @@ class MainMenuWidget extends StatelessWidget
                                             "Life on Earth", 
                                             Colors.white,
                                             Colors.black,
-                                            options
+                                            options,
+											selectItem
                                         )
                                     ),
                                     Container(
@@ -82,7 +87,8 @@ class MainMenuWidget extends StatelessWidget
                                             "The Future", 
                                             Color.fromRGBO(0, 29, 34, 1.0),
                                             lightText,
-                                            options
+                                            options,
+											selectItem
                                         )
                                     )
                                 ]

@@ -15,10 +15,13 @@ class SearchWidget extends StatelessWidget
                         children: 
                         [
                             Container(
-                                margin: EdgeInsets.only(left:20.0, right:15.0),
-                                height:17.5,
-                                width: 17.5,
-                                color: darkText
+                                margin: EdgeInsets.only(right:15.5),
+                                child: Image.asset(
+                                        "assets/search_icon.png",
+                                        height:17.5,
+                                        width: 17.5,
+                                        color: Colors.black.withOpacity(0.5)
+                                    ),
                                 ),
                                 Text(
                                     "Type to search...",

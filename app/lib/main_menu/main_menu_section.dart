@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import "../colors.dart";
+import "plus_decoration.dart";
 
 class MenuSection extends StatefulWidget
 {
@@ -35,8 +34,9 @@ class _SectionState extends State<MenuSection>
                                 Container(
                                     height: 20.0,
                                     width: 20.0,
-                                    color: widget.accentColor,
-                                    margin: EdgeInsets.all(18.0)
+                                    // color: widget.accentColor,
+                                    margin: EdgeInsets.all(18.0),
+                                    decoration: PlusDecoration(widget.accentColor)
                                 ),
                                 Text(
                                     widget.title,

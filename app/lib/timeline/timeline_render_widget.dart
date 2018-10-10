@@ -3,7 +3,9 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import "package:flutter/scheduler.dart";
+import 'package:nima/nima/math/aabb.dart' as nima;
 import "dart:ui" as ui;
+import "../colors.dart";
 
 import 'package:timeline/timeline/ticks.dart';
 import 'package:timeline/timeline/timeline.dart';
@@ -99,7 +101,7 @@ class TimelineRenderObject extends RenderBox
 		if(timeline.renderAssets != null)
 		{
 			canvas.save();	
-			for(TimelineEntryAsset asset in timeline.renderAssets)
+			for(TimelineAsset asset in timeline.renderAssets)
 			{
 				if(asset.opacity > 0)
 				{
@@ -108,7 +110,72 @@ class TimelineRenderObject extends RenderBox
 
 					double w = asset.width * Timeline.AssetScreenScale;
 					double h = asset.height * Timeline.AssetScreenScale;
-					canvas.drawImageRect(asset.image, Rect.fromLTWH(0.0, 0.0, asset.width, asset.height), Rect.fromLTWH(offset.dx + size.width - w, asset.y, w*rs, h*rs), new Paint()..isAntiAlias=true..filterQuality=ui.FilterQuality.low..color = Colors.white.withOpacity(asset.opacity));
+
+					if(asset is TimelineImage)
+					{
+						canvas.drawImageRect(asset.image, Rect.fromLTWH(0.0, 0.0, asset.width, asset.height), Rect.fromLTWH(offset.dx + size.width - w, asset.y, w*rs, h*rs), new Paint()..isAntiAlias=true..filterQuality=ui.FilterQuality.low..color = Colors.white.withOpacity(asset.opacity));
+					}
+					else if(asset is TimelineNima && asset.actor != null)
+					{
+						Alignment alignment = Alignment.center;
+						BoxFit fit = BoxFit.cover;
+
+						nima.AABB bounds = asset.setupAABB;
+						
+						double contentHeight = bounds[3] - bounds[1];
+						double contentWidth = bounds[2] - bounds[0];
+						double x = -bounds[0] - contentWidth/2.0 - (alignment.x * contentWidth/2.0);
+						double y =  -bounds[1] - contentHeight/2.0 + (alignment.y * contentHeight/2.0);
+
+						Offset renderOffset = new Offset(offset.dx + size.width - w, asset.y);
+						Size renderSize = new Size(w*rs, h*rs);
+
+						double scaleX = 1.0, scaleY = 1.0;
+
+						canvas.save();		
+						//canvas.clipRect(renderOffset & renderSize);
+
+						switch(fit)
+						{
+							case BoxFit.fill:
+								scaleX = renderSize.width/contentWidth;
+								scaleY = renderSize.height/contentHeight;
+								break;
+							case BoxFit.contain:
+								double minScale = min(renderSize.width/contentWidth, renderSize.height/contentHeight);
+								scaleX = scaleY = minScale;
+								break;
+							case BoxFit.cover:
+								double maxScale = max(renderSize.width/contentWidth, renderSize.height/contentHeight);
+								scaleX = scaleY = maxScale;
+								break;
+							case BoxFit.fitHeight:
+								double minScale = renderSize.height/contentHeight;
+								scaleX = scaleY = minScale;
+								break;
+							case BoxFit.fitWidth:
+								double minScale = renderSize.width/contentWidth;
+								scaleX = scaleY = minScale;
+								break;
+							case BoxFit.none:
+								scaleX = scaleY = 1.0;
+								break;
+							case BoxFit.scaleDown:
+								double minScale = min(renderSize.width/contentWidth, renderSize.height/contentHeight);
+								scaleX = scaleY = minScale < 1.0 ? minScale : 1.0;
+								break;
+						}
+						
+						canvas.translate(renderOffset.dx + renderSize.width/2.0 + (alignment.x * renderSize.width/2.0), renderOffset.dy + renderSize.height/2.0 + (alignment.y * renderSize.height/2.0));
+						canvas.scale(scaleX, -scaleY);
+						canvas.translate(x, y);
+						asset.actor.draw(canvas);
+						canvas.restore();
+						if(asset.opacity < 1.0)
+						{
+							canvas.drawRect(Rect.fromLTWH(offset.dx + size.width - w, asset.y, w*rs, h*rs), new Paint()..isAntiAlias=true..filterQuality=ui.FilterQuality.low..color = Color.fromRGBO(253, 253, 253, 1.0-asset.opacity));
+						}
+					}
 				}
 			}
 			canvas.restore();

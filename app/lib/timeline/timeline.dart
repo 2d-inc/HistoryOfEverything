@@ -6,7 +6,10 @@ import 'package:flutter/material.dart';
 import "package:flutter/scheduler.dart";
 import "dart:ui" as ui;
 import "package:flutter/services.dart" show rootBundle;
-
+import "package:nima/nima.dart" as nima;
+import "package:nima/nima/animation/actor_animation.dart" as nima;
+import "package:nima/nima/math/aabb.dart" as nima;
+import "package:nima/nima/math/vec2d.dart" as nima;
 typedef PaintCallback();
 
 enum TimelineEntryType
@@ -15,9 +18,8 @@ enum TimelineEntryType
 	Incident
 }
 
-class TimelineEntryAsset
+class TimelineAsset
 {
-	ui.Image image;
 	double width;
 	double height;
 	double opacity = 0.0;
@@ -26,6 +28,21 @@ class TimelineEntryAsset
 	double y = 0.0;
 	double velocity = 0.0;
 }
+
+class TimelineImage extends TimelineAsset
+{
+	ui.Image image;
+}
+
+class TimelineNima extends TimelineAsset
+{
+	nima.FlutterActor actor;
+	nima.ActorAnimation animation;
+	double animationTime = 0.0;
+	nima.AABB setupAABB;
+}
+
+
 
 class TimelineEntry
 {
@@ -51,7 +68,27 @@ class TimelineEntry
 		return opacity > 0.0;
 	}
 
-	TimelineEntryAsset asset;
+	TimelineAsset asset;
+}
+
+String getExtension(String filename)
+{
+	int dot = filename.lastIndexOf(".");
+	if(dot == -1)
+	{
+		return null;
+	}
+	return filename.substring(dot+1);
+}
+
+String removeExtension(String filename)
+{
+	int dot = filename.lastIndexOf(".");
+	if(dot == -1)
+	{
+		return null;
+	}
+	return filename.substring(0, dot);
 }
 
 class Timeline
@@ -64,7 +101,7 @@ class Timeline
 	double _lastFrameTime = 0.0;
 	double _height = 0.0;
 	List<TimelineEntry> _entries;
-	List<TimelineEntryAsset> _renderAssets;
+	List<TimelineAsset> _renderAssets;
 	double _lastEntryY = 0.0;
 	double _offsetDepth = 0.0;
 	double _renderOffsetDepth = 0.0;
@@ -77,7 +114,8 @@ class Timeline
 	List<TimelineEntry> get entries => _entries;
 	double get renderOffsetDepth => _renderOffsetDepth;
 	double get renderLabelX => _renderLabelX;
-	List<TimelineEntryAsset> get renderAssets => _renderAssets;
+	List<TimelineAsset> get renderAssets => _renderAssets;
+	Map<String, nima.FlutterActor> _nimaResources = new Map<String, nima.FlutterActor>();
 
 	PaintCallback onNeedPaint;
 	double get start => _start;
@@ -168,21 +206,60 @@ class Timeline
 
 				if(map.containsKey("asset"))
 				{
-					TimelineEntryAsset asset = new TimelineEntryAsset();
+					TimelineAsset asset;
 					Map assetMap = map["asset"] as Map;
 					String source = assetMap["source"];
-					ByteData data = await rootBundle.load("assets/" + source);
-					Uint8List list = new Uint8List.view(data.buffer);
-					ui.Codec codec = await ui.instantiateImageCodec(list);
-					ui.FrameInfo frame = await codec.getNextFrame();
-					asset.image = frame.image;
-					
+					String filename = "assets/" + source;
+					String extension = getExtension(source);
+					switch(extension)
+					{
+						case "nma":
+							TimelineNima nimaAsset = new TimelineNima();
+							asset = nimaAsset;
+							nima.FlutterActor actor = _nimaResources[filename];
+							if(actor == null)
+							{
+								actor = new nima.FlutterActor();
+
+								bool success = await actor.loadFromBundle(removeExtension(filename));
+								if(success)
+								{
+									_nimaResources[filename] = actor;
+								}
+							}
+							if(actor != null)
+							{
+								nimaAsset.actor = actor.makeInstance();
+								nimaAsset.animation = actor.animations[0];
+								nimaAsset.actor.advance(0.0);
+								nimaAsset.setupAABB = nimaAsset.actor.computeAABB();
+								//nima.Vec2D size = nima.AABB.size(new nima.Vec2D(), nimaAsset.setupAABB);
+								//nimaAsset.width = size[0];
+								//nimaAsset.height = size[1];
+
+							}
+							break;
+							
+						default:
+							TimelineImage imageAsset = new TimelineImage();
+							asset = imageAsset;
+
+							ByteData data = await rootBundle.load(filename);
+							Uint8List list = new Uint8List.view(data.buffer);
+							ui.Codec codec = await ui.instantiateImageCodec(list);
+							ui.FrameInfo frame = await codec.getNextFrame();
+							imageAsset.image = frame.image;
+
+							break;
+					}
+
 					dynamic width = assetMap["width"];
 					asset.width = width is int ? width.toDouble() : width;
 					dynamic height = assetMap["height"];
 					asset.height = height is int ? height.toDouble() : height;
 
 					timelineEntry.asset = asset;
+					
 				}
 				allEntries.add(timelineEntry);
 			}
@@ -344,7 +421,7 @@ class Timeline
 				doneRendering = false;
 			}
 
-			_renderAssets = new List<TimelineEntryAsset>();
+			_renderAssets = new List<TimelineAsset>();
 			if(advanceAssets(_entries, elapsed, animate, _renderAssets))
 			{
 				doneRendering = false;
@@ -495,7 +572,7 @@ class Timeline
 		return stillAnimating;
 	}
 
-	bool advanceAssets(List<TimelineEntry> items, double elapsed, bool animate, List<TimelineEntryAsset> renderAssets)
+	bool advanceAssets(List<TimelineEntry> items, double elapsed, bool animate, List<TimelineAsset> renderAssets)
 	{
 		bool stillAnimating = false;
 		for(TimelineEntry item in items)
@@ -556,6 +633,18 @@ class Timeline
 					}
 
 					_lastAssetY = /*item.assetY*/targetAssetY + item.asset.height * AssetScreenScale /*renderScale(item.asset.scale)*/ + AssetPadding;
+
+					if(item.asset is TimelineNima)
+					{
+						TimelineNima nimaAsset = item.asset;
+						
+						nimaAsset.animationTime = (nimaAsset.animationTime + elapsed) % nimaAsset.animation.duration;
+						nimaAsset.animation.apply(nimaAsset.animationTime, nimaAsset.actor, 1.0);
+						nimaAsset.actor.advance(elapsed);
+						stillAnimating = true;
+						//item.asset.animation
+						//item.asset.
+					}
 				}	
 				else
 				{

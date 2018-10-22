@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:timeline/main_menu/menu_data.dart';
 
 import "./search_widget.dart";
 import "./main_menu_section.dart";
@@ -8,11 +9,8 @@ import "../colors.dart";
 class MainMenuWidget extends StatelessWidget
 {
 	final SelectItemCallback selectItem;
-	MainMenuWidget({this.selectItem});
-
-    static final List<String> options = [
-        "Big Bang", "Birth of the Mily Way", "The Earth is Born", "Heavy Bombardment"
-    ];
+	final MenuData data;
+	MainMenuWidget({this.selectItem, this.data});
 
     @override
     Widget build(BuildContext context) 
@@ -60,38 +58,21 @@ class MainMenuWidget extends StatelessWidget
                                                 )
                                             )
                                     ),
-                                    SearchWidget(),
-                                    Container(
-                                        margin: EdgeInsets.only(top: 20.0),
-                                        child: MenuSection(
-                                            "Birth of the Universe", 
-                                            Color.fromRGBO(8, 49, 88, 1.0),
-                                            lightText,
-                                            options,
-											selectItem
-                                        )
-                                    ),
-                                    Container(
-                                        margin: EdgeInsets.only(top: 20.0),
-                                        child: MenuSection(
-                                            "Life on Earth", 
-                                            Colors.white,
-                                            Colors.black,
-                                            options,
-											selectItem
-                                        )
-                                    ),
-                                    Container(
-                                        margin: EdgeInsets.only(top: 20.0),
-                                        child: MenuSection(
-                                            "The Future", 
-                                            Color.fromRGBO(0, 29, 34, 1.0),
-                                            lightText,
-                                            options,
-											selectItem
-                                        )
-                                    )
-                                ]
+                                    SearchWidget()
+                                ]..addAll(
+									data.sections.map((MenuSectionData section) => 
+										Container(
+											margin: EdgeInsets.only(top: 20.0),
+											child: MenuSection(
+												section.label, 
+												Color.fromRGBO(8, 49, 88, 1.0),
+												lightText,
+												section.items,
+												selectItem
+											)
+                                    	)
+									)
+								)
                             )
                     )
             )

@@ -157,6 +157,16 @@ class Timeline
 		});
 	}
 
+	double screenPaddingInTime(double start, double end)
+	{
+		return (BubbleHeight+InitialViewportPadding)/computeScale(start, end);
+	}
+
+	double computeScale(double start, double end)
+	{
+		return _height == 0.0 ? 1.0 : _height/(end-start);
+	}
+
 	Future<bool> loadFromBundle(String filename) async
 	{
 		List<TimelineEntry> allEntries = new List<TimelineEntry>();

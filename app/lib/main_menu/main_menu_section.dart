@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:timeline/main_menu/menu_data.dart';
 import "plus_decoration.dart";
 import "../colors.dart";
 
-typedef SelectItemCallback();
+typedef SelectItemCallback(MenuItemData item);
 
 class MenuSection extends StatefulWidget
 {
@@ -10,7 +11,7 @@ class MenuSection extends StatefulWidget
     final Color backgroundColor;
     final Color accentColor;
 	final SelectItemCallback selectItem;
-    final List<String> menuOptions;
+    final List<MenuItemData> menuOptions;
 
     MenuSection(this.title, this.backgroundColor, this.accentColor, this.menuOptions, this.selectItem, {Key key}) : super(key: key);
 
@@ -123,12 +124,12 @@ class _SectionState extends State<MenuSection> with SingleTickerProviderStateMix
 										(
 											children: widget.menuOptions.map
 											(
-												(label) 
+												(item) 
 												{
 													return GestureDetector(
 														onTap: () => 
 															//print("GO TO MENU OPTION: $label");
-															this.widget.selectItem(),
+															this.widget.selectItem(item),
 
 														child: Row(
 																crossAxisAlignment: CrossAxisAlignment.start,
@@ -138,7 +139,7 @@ class _SectionState extends State<MenuSection> with SingleTickerProviderStateMix
 																		child: Container(
 																			margin: EdgeInsets.only(bottom: 20.0),
 																			child:Text(
-																				label, 
+																				item.label, 
 																				style: TextStyle(color: widget.accentColor, fontSize: 20.0, fontFamily: "RobotMedium"),
 																			)
 																		)

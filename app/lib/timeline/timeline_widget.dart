@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:timeline/main_menu/menu_data.dart';
 import 'package:timeline/timeline/timeline.dart';
 import 'package:timeline/timeline/timeline_render_widget.dart';
 
@@ -10,7 +11,8 @@ class TimelineWidget extends StatefulWidget
 {
 	final ShowMenuCallback showMenu;
 	final bool isActive;
-	TimelineWidget({this.showMenu, this.isActive, Key key}) : super(key: key);
+	final MenuItemData focusItem;
+	TimelineWidget({this.showMenu, this.isActive, this.focusItem, Key key}) : super(key: key);
 
 	@override
 	_TimelineWidgetState createState() => new _TimelineWidgetState();
@@ -67,7 +69,7 @@ class _TimelineWidgetState extends State<TimelineWidget>
 			child: new Stack(
 				children:<Widget>
 				[
-					new TimelineRenderWidget(timeline: _timeline, isActive:widget.isActive),
+					new TimelineRenderWidget(timeline: _timeline, isActive:widget.isActive, focusItem:widget.focusItem),
 					new Container(
 						color:Color.fromRGBO(238, 240, 242, 0.81), 
 						height: 56.0,

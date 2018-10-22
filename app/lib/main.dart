@@ -1,3 +1,5 @@
+import 'package:timeline/main_menu/menu_data.dart';
+
 import 'timeline/timeline_widget.dart';
 import 'main_menu/main_menu.dart';
 import 'package:flutter/material.dart';
@@ -47,6 +49,8 @@ class MyHomePage extends StatefulWidget  {
 class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateMixin {
 
 	bool _isTimelineActive = false;
+	MenuData _menu;
+	MenuItemData _focusItem;
 	AnimationController _controller;
 	static final Animatable<Offset> _slideTween = Tween<Offset>(
 		begin: const Offset(0.0, 0.0),
@@ -60,6 +64,17 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
 	initState()
 	{
 		super.initState();
+		MenuData menu = new MenuData();
+		menu.loadFromBundle("assets/menu.json").then((bool success)
+		{
+			setState(()
+			{
+				if(success)
+				{
+					_menu = menu;
+				}
+			});
+		});
 		_controller = AnimationController(
 			vsync: this,
 			duration: const Duration(milliseconds: 200),
@@ -67,14 +82,14 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
 		_menuOffset = _controller.drive(_slideTween);						
 	}
 
-
-	void _onHideMenu()
+	void _selectMenuItem(MenuItemData menuItem)
 	{
 		_controller.forward().whenComplete(()
 		{
 			setState(() 
 			{
 				_isTimelineActive = true;
+				_focusItem = menuItem;
 			});
 		});
 	}
@@ -86,6 +101,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
 			setState(() 
 			{
 				_isTimelineActive = false;
+				_focusItem = null;
 			});
 		});
     }
@@ -98,13 +114,18 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     // The Flutter framework has been optimized to make rerunning build methods
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
-
+	
+	if(_menu == null)
+	{
+		// Still loading.
+		return new Container();
+	}
     return new Scaffold(
       	appBar: null,
       	body: new Stack(
 		  children: <Widget> [
-			  Positioned.fill( child: TimelineWidget( showMenu: _onShowMenu, isActive:_isTimelineActive )),
-			  Positioned.fill( child: SlideTransition(position: _menuOffset, child:MainMenuWidget(selectItem: _onHideMenu) ))
+			  Positioned.fill( child: TimelineWidget( showMenu: _onShowMenu, isActive:_isTimelineActive, focusItem:_focusItem )),
+			  Positioned.fill( child: SlideTransition(position: _menuOffset, child:MainMenuWidget(selectItem: _selectMenuItem, data:_menu) ))
 		  ]
 		)
     );

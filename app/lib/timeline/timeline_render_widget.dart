@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import "package:flutter/scheduler.dart";
 import 'package:nima/nima/math/aabb.dart' as nima;
+import 'package:timeline/main_menu/menu_data.dart';
 import "dart:ui" as ui;
 import "../colors.dart";
 
@@ -14,14 +15,16 @@ class TimelineRenderWidget extends LeafRenderObjectWidget
 {
 	final Timeline timeline;
 	final bool isActive;
-	TimelineRenderWidget({Key key, this.timeline, this.isActive}): super(key: key);
+	final MenuItemData focusItem;
+	TimelineRenderWidget({Key key, this.timeline, this.isActive, this.focusItem}): super(key: key);
 
 	@override
 	RenderObject createRenderObject(BuildContext context) 
 	{
 		return new TimelineRenderObject()
 							..timeline = timeline
-							..isActive = isActive;
+							..isActive = isActive
+							..focusItem = focusItem;
 	}
 
 	@override
@@ -29,7 +32,8 @@ class TimelineRenderWidget extends LeafRenderObjectWidget
 	{
 		renderObject
 					..timeline = timeline
-					..isActive = isActive;
+					..isActive = isActive
+					..focusItem = focusItem;
 	}
 }
 
@@ -49,6 +53,7 @@ class TimelineRenderObject extends RenderBox
 	Ticks _ticks = new Ticks();
 	Timeline _timeline;
 	bool _isActive = false;
+	MenuItemData _focusItem;
 
 	Timeline get timeline => _timeline;
 	set timeline(Timeline value)
@@ -81,6 +86,22 @@ class TimelineRenderObject extends RenderBox
 			markNeedsPaint();
 			markNeedsLayout();
 		}
+	}
+
+	MenuItemData get focusItem => _focusItem;
+	set focusItem(MenuItemData value)
+	{
+		if(_focusItem == value)
+		{
+			return;
+		}
+		_focusItem = value;
+		if(_focusItem == null || timeline == null)
+		{
+			return;
+		}
+		double padding = timeline.screenPaddingInTime(value.start, value.end);
+		timeline.setViewport(start: value.start-padding, end:value.end+padding, animate:true);
 	}
 
 	@override

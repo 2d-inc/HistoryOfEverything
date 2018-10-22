@@ -5,13 +5,13 @@
         [
             {
                 "start": -13800000000,
-                "end": -13800000000,
+                "end": -13000000000,
                 "label": "Big Bang"
             },
             {
                 "start": -13800000000,
                 "end": -13800000000,
-                "label": "Birth of the Mily Way"
+                "label": "Birth of the Milky Way"
             },
             {
                 "start": -13800000000,
@@ -30,14 +30,14 @@
         "items":
         [
             {
-                "start": -13800000000,
-                "end": -13800000000,
-                "label": "Big Bang"
+                "start": -4050000000,
+                "end": -3600000000,
+                "label": "Single Celled Organisms"
             },
             {
                 "start": -13800000000,
                 "end": -13800000000,
-                "label": "Birth of the Mily Way"
+                "label": "Birth of the Milky Way"
             },
             {
                 "start": -13800000000,
@@ -63,7 +63,7 @@
             {
                 "start": -13800000000,
                 "end": -13800000000,
-                "label": "Birth of the Mily Way"
+                "label": "Birth of the Milky Way"
             },
             {
                 "start": -13800000000,
@@ -76,6 +76,5 @@
                 "label": "Heavy Bombardment"
             }
         ]
-    },
-    
+    }
 ]

@@ -47,16 +47,16 @@ class MenuData
 						MenuItemData itemData = new MenuItemData();
 						if(itemMap.containsKey("label"))
 						{
-							itemData.label = item["label"] as String;
+							itemData.label = itemMap["label"] as String;
 						}
 						if(itemMap.containsKey("start"))
 						{
-							dynamic start = map["start"];
+							dynamic start = itemMap["start"];
 							itemData.start = start is int ? start.toDouble() : start;
 						}
 						if(itemMap.containsKey("end"))
 						{
-							dynamic end = map["end"];
+							dynamic end = itemMap["end"];
 							itemData.end = end is int ? end.toDouble() : end;
 						}
 						menuSection.items.add(itemData);

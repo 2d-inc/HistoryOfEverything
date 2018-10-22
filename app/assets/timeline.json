@@ -1,38 +1,7 @@
 [
 	{
-		"start": -4600000000,
-		"label": "Earth",
-		"asset": 
-		{
-			"source": "earth.jpg",
-			"width": 800,
-			"height": 800
-		}
-	},
-	{
-		"start": -3800000000,
-		"label": "Life on Earth",
-		"asset": 
-		{
-			"source": "sloth.jpg",
-			"width": 800,
-			"height": 589
-		}
-	},
-	{
-		"start": -2100000000,
-		"label": "Eukaryotes Evolved",
-		"asset": 
-		{
-			"source": "little-dino.jpg",
-			"width": 800,
-			"height": 528
-		}
-	},
-	{
-		"start": -1300000000,
-		"end": -1200000000,
-		"label": "Lots in here",
+		"date": -13800000000,
+		"label": "Big Bang",
 		"asset": 
 		{
 			"source": "Robot.nma",
@@ -41,68 +10,97 @@
 		}
 	},
 	{
-		"date": -1290000000,
-		"label": "Wow"
-	},
-	{
-		"date": -1280000000,
-		"label": "Hello",
+		"date": -13000000000,
+		"label": "Birth of the Milky Way",
 		"asset": 
 		{
-			"source": "dino.jpg",
+			"source": "Robot.nma",
 			"width": 800,
-			"height": 600
+			"height": 800
 		}
 	},
 	{
-		"start": -1270000000,
-		"end": -1255000000,
-		"label": "Stuff here"
-	},
-	{
-		"start": -1260000000,
-		"end": -1255500000,
-		"label": "Extra Stuff"
-	},
-	{
-		"date": -1255550000,
-		"label": "A little more Stuff",
+		"date": -4600000000,
+		"label": "Sun is Born",
 		"asset": 
 		{
-			"source": "little-dino.jpg",
+			"source": "Robot.nma",
+			"width": 800,
+			"height": 800
+		}
+	},
+	{
+		"date": -4505000000,
+		"label": "Earth is Born",
+		"asset": 
+		{
+			"source": "Robot.nma",
+			"width": 800,
+			"height": 800
+		}
+	},
+	{
+		"start": -4100000000,
+		"end": -3800000000,
+		"label": "Heavy Bombardment",
+		"asset": 
+		{
+			"source": "Robot.nma",
+			"width": 800,
+			"height": 800
+		}
+	},
+	{
+		"start": -4000000000,
+		"label": "Life on Earth",
+		"asset": 
+		{
+			"source": "Robot.nma",
+			"width": 800,
+			"height": 589
+		}
+	},
+	{
+		"date": -4050000000,
+		"label": "Single Celled Organisms"
+	},
+	{
+		"start": -600000000,
+		"label": "Animals",
+		"asset": 
+		{
+			"source": "Robot.nma",
 			"width": 800,
 			"height": 528
 		}
 	},
 	{
-		"start": -1250000000,
-		"end": -1240000000,
-		"label": "Testing More"
+		"date": -600000001,
+		"label": "Fish and Stuff"
 	},
 	{
-		"date": -1245000000,
-		"label": "Aaaaand one More"
-	},
-	{
-		"date": -1100000000,
-		"label": "First reproducing organisms"
-	},
-	{
-		"date": -570000000,
-		"label": "First arthropods evolve"
-	},
-	{
-		"start": -250000000,
+		"start": -230000000,
 		"end": -65000000,
-		"label": "Mesozoic Era"
+		"label": "Dinosaur Age"
 	},
 	{
-		"start": -200000000,
-		"end": -145000000,
-		"label": "Jurassic Period"
+		"date": -200000000,
+		"label": "Mammals"
 	},
 	{
-		"start": -65000000,
-		"label": "Cenozoic Era"
+		"date": -66000000,
+		"label": "Dinosaur Extinction"
+	},
+	{
+		"start": -6000000,
+		"label": "Humans"
+	},
+	{
+		"date": -4000000,
+		"label": "Last Common Ancestor with Apes"
+	},
+	{
+		"start": -300000,
+		"label": "Homo Sapiens Sapiens"
 	}
 ]

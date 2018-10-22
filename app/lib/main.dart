@@ -46,6 +46,7 @@ class MyHomePage extends StatefulWidget  {
 
 class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateMixin {
 
+	bool _isTimelineActive = false;
 	AnimationController _controller;
 	static final Animatable<Offset> _slideTween = Tween<Offset>(
 		begin: const Offset(0.0, 0.0),
@@ -69,12 +70,24 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
 
 	void _onHideMenu()
 	{
-		_controller.forward();
+		_controller.forward().whenComplete(()
+		{
+			setState(() 
+			{
+				_isTimelineActive = true;
+			});
+		});
 	}
 
 	void _onShowMenu()
     {
-		_controller.reverse();
+		_controller.reverse().whenComplete(()
+		{
+			setState(() 
+			{
+				_isTimelineActive = false;
+			});
+		});
     }
 
   @override
@@ -90,7 +103,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
       	appBar: null,
       	body: new Stack(
 		  children: <Widget> [
-			  Positioned.fill( child: TimelineWidget( showMenu: _onShowMenu )),
+			  Positioned.fill( child: TimelineWidget( showMenu: _onShowMenu, isActive:_isTimelineActive )),
 			  Positioned.fill( child: SlideTransition(position: _menuOffset, child:MainMenuWidget(selectItem: _onHideMenu) ))
 		  ]
 		)

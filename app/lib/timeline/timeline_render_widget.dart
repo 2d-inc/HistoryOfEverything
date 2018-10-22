@@ -13,20 +13,23 @@ import 'package:timeline/timeline/timeline.dart';
 class TimelineRenderWidget extends LeafRenderObjectWidget
 {
 	final Timeline timeline;
-	TimelineRenderWidget({Key key, this.timeline}): super(key: key);
+	final bool isActive;
+	TimelineRenderWidget({Key key, this.timeline, this.isActive}): super(key: key);
 
 	@override
 	RenderObject createRenderObject(BuildContext context) 
 	{
 		return new TimelineRenderObject()
-							..timeline = timeline;
+							..timeline = timeline
+							..isActive = isActive;
 	}
 
 	@override
 	void updateRenderObject(BuildContext context, covariant TimelineRenderObject renderObject)
 	{
 		renderObject
-					..timeline = timeline;
+					..timeline = timeline
+					..isActive = isActive;
 	}
 }
 
@@ -45,6 +48,7 @@ class TimelineRenderObject extends RenderBox
 
 	Ticks _ticks = new Ticks();
 	Timeline _timeline;
+	bool _isActive = false;
 
 	Timeline get timeline => _timeline;
 	set timeline(Timeline value)
@@ -56,9 +60,27 @@ class TimelineRenderObject extends RenderBox
 		_timeline = value;
 		_timeline.onNeedPaint = ()
 		{
-			markNeedsPaint();
+			if(_isActive)
+			{
+				markNeedsPaint();
+			}
 		};
 		markNeedsLayout();
+	}
+
+	bool get isActive => _isActive;
+	set isActive(bool value)
+	{
+		if(_isActive == value)
+		{
+			return;
+		}
+		_isActive = value;
+		if(_isActive)
+		{
+			markNeedsPaint();
+			markNeedsLayout();
+		}
 	}
 
 	@override
@@ -179,6 +201,7 @@ class TimelineRenderObject extends RenderBox
 				}
 			}
 			canvas.restore();
+			//print("DREW ${timeline.renderAssets.length}");
 		}
 		if(_timeline.entries != null)
 		{

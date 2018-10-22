@@ -9,7 +9,8 @@ typedef ShowMenuCallback();
 class TimelineWidget extends StatefulWidget 
 {
 	final ShowMenuCallback showMenu;
-	TimelineWidget({this.showMenu, Key key}) : super(key: key);
+	final bool isActive;
+	TimelineWidget({this.showMenu, this.isActive, Key key}) : super(key: key);
 
 	@override
 	_TimelineWidgetState createState() => new _TimelineWidgetState();
@@ -66,7 +67,7 @@ class _TimelineWidgetState extends State<TimelineWidget>
 			child: new Stack(
 				children:<Widget>
 				[
-					new TimelineRenderWidget(timeline: _timeline),
+					new TimelineRenderWidget(timeline: _timeline, isActive:widget.isActive),
 					new Container(
 						color:Color.fromRGBO(238, 240, 242, 0.81), 
 						height: 56.0,

@@ -142,18 +142,19 @@ class Timeline
 	static const double AssetPadding = 30.0;
 	static const double Parallax = 100.0;
 	static const double AssetScreenScale = 0.3;
+	static const double InitialViewportPadding = 100.0;
 
 	Timeline()
 	{
+		setViewport(start: 1536.0, end: 3072.0);
 		loadFromBundle("assets/timeline.json").then((bool success)
 		{
 			// Double check: Make sure we have height by now...
-			double scale = _height == 0.0 ? 1.0 : _height/(_entries.first.end-_entries.first.start);
+			double scale = _height == 0.0 ? 1.0 : _height/(_entries.last.end-_entries.first.start);
 			// We use the scale to pad by the bubble height when we set the first range.
-			setViewport(start: _entries.first.start - BubbleHeight/scale, end: _entries.first.end + BubbleHeight/scale, animate:true);
+			setViewport(start: _entries.first.start - BubbleHeight/scale - InitialViewportPadding/scale, end: _entries.last.end + BubbleHeight/scale + InitialViewportPadding/scale, animate:true);
 			advance(0.0, false);
 		});
-		setViewport(start: 1536.0, end: 3072.0);
 	}
 
 	Future<bool> loadFromBundle(String filename) async
@@ -178,6 +179,7 @@ class Timeline
 				{
 					timelineEntry.type = TimelineEntryType.Era;
 					dynamic start = map["start"];
+					
 					timelineEntry.start = start is int ? start.toDouble() : start;
 				}
 				else
@@ -324,8 +326,8 @@ class Timeline
 			if(_height == 0.0 && _entries != null && _entries.length > 0)
 			{
 				double scale = height/(_entries.first.end-_entries.first.start);
-				_start = _start + BubbleHeight/scale;
-				_end = _end - BubbleHeight/scale;
+				_start = _start - (BubbleHeight+InitialViewportPadding)/scale;
+				_end = _end + (BubbleHeight+InitialViewportPadding)/scale;
 			}
 			_height = height;
 		}
@@ -616,7 +618,6 @@ class Timeline
 
 				if(item.asset.opacity > 0.0) // visible
 				{
-					renderAssets.add(item.asset);
 					// if(item.asset.y === undefined)
 					// {
 					// 	item.asset.y = Math.max(this._lastAssetY, targetAssetY);
@@ -633,7 +634,12 @@ class Timeline
 					}
 
 					_lastAssetY = /*item.assetY*/targetAssetY + item.asset.height * AssetScreenScale /*renderScale(item.asset.scale)*/ + AssetPadding;
-
+					
+					if(item.asset.y > _height || item.asset.y + item.asset.height * AssetScreenScale < 0.0)
+					{
+						// Cull it, it's not in view. Make sure we don't advance animations.
+						continue;
+					}
 					if(item.asset is TimelineNima)
 					{
 						TimelineNima nimaAsset = item.asset;
@@ -645,6 +651,7 @@ class Timeline
 						//item.asset.animation
 						//item.asset.
 					}
+					renderAssets.add(item.asset);
 				}	
 				else
 				{

@@ -1,0 +1,81 @@
+[
+    {
+        "label": "Birth of the Universe",
+        "items":
+        [
+            {
+                "start": -13800000000,
+                "end": -13800000000,
+                "label": "Big Bang"
+            },
+            {
+                "start": -13800000000,
+                "end": -13800000000,
+                "label": "Birth of the Mily Way"
+            },
+            {
+                "start": -13800000000,
+                "end": -13800000000,
+                "label": "Earth is Born"
+            },
+            {
+                "start": -13800000000,
+                "end": -13800000000,
+                "label": "Heavy Bombardment"
+            }
+        ]
+    },
+    {
+        "label": "Life on Earth",
+        "items":
+        [
+            {
+                "start": -13800000000,
+                "end": -13800000000,
+                "label": "Big Bang"
+            },
+            {
+                "start": -13800000000,
+                "end": -13800000000,
+                "label": "Birth of the Mily Way"
+            },
+            {
+                "start": -13800000000,
+                "end": -13800000000,
+                "label": "Earth is Born"
+            },
+            {
+                "start": -13800000000,
+                "end": -13800000000,
+                "label": "Heavy Bombardment"
+            }
+        ]
+    },
+    {
+        "label": "The Future",
+        "items":
+        [
+            {
+                "start": -13800000000,
+                "end": -13800000000,
+                "label": "Big Bang"
+            },
+            {
+                "start": -13800000000,
+                "end": -13800000000,
+                "label": "Birth of the Mily Way"
+            },
+            {
+                "start": -13800000000,
+                "end": -13800000000,
+                "label": "Earth is Born"
+            },
+            {
+                "start": -13800000000,
+                "end": -13800000000,
+                "label": "Heavy Bombardment"
+            }
+        ]
+    },
+    
+]

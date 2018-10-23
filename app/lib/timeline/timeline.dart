@@ -50,6 +50,7 @@ class TimelineEntry
 	double start;
 	double end;
 	String label;
+	String articleFilename;
 
 	TimelineEntry parent;
 	List<TimelineEntry> children;
@@ -214,6 +215,10 @@ class Timeline
 				if(map.containsKey("label"))
 				{
 					timelineEntry.label = map["label"] as String;
+				}
+				if(map.containsKey("article"))
+				{
+					timelineEntry.articleFilename = map["article"] as String;
 				}
 
 				if(map.containsKey("asset"))

@@ -56,6 +56,7 @@ class _MyHomePageState extends State<MyHomePage> {
 	MenuItemData _nextFocusItem;
 	bool _isMenuVisible = true;
 	bool _isArticleVisible = false;
+	TimelineEntry _article = null;
 
 	initState()
 	{
@@ -135,6 +136,7 @@ class _MyHomePageState extends State<MyHomePage> {
 	{
 		setState(() 
 		{
+			_article = entry;
 			_isMenuVisible = false;
 			_isArticleVisible = true;
 		});
@@ -154,7 +156,7 @@ class _MyHomePageState extends State<MyHomePage> {
 				children: <Widget> [
 					Positioned.fill( child: TimelineWidget( showMenu: _onShowMenu, isActive:_isTimelineActive, focusItem:_focusItem, selectItem: _selectTimelineEntry )),
 					Positioned.fill( child: MainMenuWidget( show:_isMenuVisible, selectItem: _selectMenuItem, data:_menu, visibilityChanged:_onMainMenuVisibilityChanged) ),
-					Positioned.fill( child: ArticleWidget( show:_isArticleVisible, goBack: _returnToTimeline, visibilityChanged: _onArticleVisibilityChanged) )
+					Positioned.fill( child: ArticleWidget( show:_isArticleVisible, article:_article, goBack: _returnToTimeline, visibilityChanged: _onArticleVisibilityChanged) )
 				]
 			)
 		);

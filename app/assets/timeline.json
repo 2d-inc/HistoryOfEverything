@@ -53,6 +53,8 @@
 	{
 		"start": -4000000000,
 		"label": "Life on Earth",
+		"article": "life_on_earth.txt",
+		
 		"asset": 
 		{
 			"source": "Robot.nma",

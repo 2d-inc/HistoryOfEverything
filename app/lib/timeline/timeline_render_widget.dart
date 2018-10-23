@@ -10,13 +10,15 @@ import "../colors.dart";
 
 import 'package:timeline/timeline/ticks.dart';
 import 'package:timeline/timeline/timeline.dart';
+typedef TouchBubbleCallback(Bubble bubble);
 
 class TimelineRenderWidget extends LeafRenderObjectWidget
 {
 	final Timeline timeline;
 	final bool isActive;
 	final MenuItemData focusItem;
-	TimelineRenderWidget({Key key, this.timeline, this.isActive, this.focusItem}): super(key: key);
+	final TouchBubbleCallback touchBubble;
+	TimelineRenderWidget({Key key, this.timeline, this.isActive, this.focusItem, this.touchBubble}): super(key: key);
 
 	@override
 	RenderObject createRenderObject(BuildContext context) 
@@ -24,7 +26,8 @@ class TimelineRenderWidget extends LeafRenderObjectWidget
 		return new TimelineRenderObject()
 							..timeline = timeline
 							..isActive = isActive
-							..focusItem = focusItem;
+							..focusItem = focusItem
+							..touchBubble = touchBubble;
 	}
 
 	@override
@@ -33,10 +36,17 @@ class TimelineRenderWidget extends LeafRenderObjectWidget
 		renderObject
 					..timeline = timeline
 					..isActive = isActive
-					..focusItem = focusItem;
+					..focusItem = focusItem
+						..touchBubble = touchBubble;
 	}
 }
 
+
+class Bubble
+{
+	TimelineEntry entry;
+	Rect rect;
+}
 
 class TimelineRenderObject extends RenderBox
 {
@@ -49,12 +59,24 @@ class TimelineRenderObject extends RenderBox
 		const Color.fromARGB(255, 128, 28, 15)
 	];
 
-
+	List<Bubble> _bubbles = new List<Bubble>();
 	Ticks _ticks = new Ticks();
 	Timeline _timeline;
 	bool _isActive = false;
 	MenuItemData _focusItem;
 
+	
+	TouchBubbleCallback _touchBubble;
+	TouchBubbleCallback get touchBubble => _touchBubble;
+	set touchBubble(TouchBubbleCallback value)
+	{
+		if(_touchBubble == value)
+		{
+			return;
+		}
+		_touchBubble = value;
+	}
+	
 	Timeline get timeline => _timeline;
 	set timeline(Timeline value)
 	{
@@ -108,7 +130,22 @@ class TimelineRenderObject extends RenderBox
 	bool get sizedByParent => true;
 	
 	@override
-	bool hitTestSelf(Offset screenOffset) => true;
+	bool hitTestSelf(Offset screenOffset)
+	{
+		for(Bubble bubble in _bubbles)
+		{
+			if(bubble.rect.contains(screenOffset))
+			{
+				if(_touchBubble != null)
+				{
+					_touchBubble(bubble);
+				}
+				return true;
+			}
+		}
+		_touchBubble(null);
+		return true;
+	}
 
 	@override
 	void performResize() 
@@ -134,6 +171,7 @@ class TimelineRenderObject extends RenderBox
 			return;
 		}
 
+		_bubbles.clear();
 		double renderStart = _timeline.renderStart;
 		double renderEnd = _timeline.renderEnd;
 		double scale = size.height/(renderEnd-renderStart);
@@ -274,11 +312,13 @@ class TimelineRenderObject extends RenderBox
 			// let bubbleX = labelX-DepthOffset*renderOffsetDepth;
 			double bubbleX = _timeline.renderLabelX-Timeline.DepthOffset*_timeline.renderOffsetDepth;
 			double bubbleY = item.labelY-BubbleHeight/2.0;
+			
 			canvas.save();
 			canvas.translate(bubbleX, bubbleY);
 			Path bubble = makeBubblePath(textWidth + BubblePadding*2.0, BubbleHeight);
 			canvas.drawPath(bubble, new Paint()..color = LineColors[depth%LineColors.length].withOpacity(item.opacity*item.labelOpacity*0.95));
 			canvas.clipRect(new Rect.fromLTWH(BubblePadding, 0.0, textWidth, BubbleHeight));
+			_bubbles.add(new Bubble()..entry=item..rect=Rect.fromLTWH(bubbleX, bubbleY, textWidth + BubblePadding*2.0, BubbleHeight));
 
 			
 			canvas.drawParagraph(labelParagraph, new Offset(BubblePadding, BubbleHeight/2.0-labelParagraph.height/2.0));

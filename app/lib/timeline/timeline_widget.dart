@@ -6,13 +6,15 @@ import 'package:timeline/timeline/timeline.dart';
 import 'package:timeline/timeline/timeline_render_widget.dart';
 
 typedef ShowMenuCallback();
+typedef SelectItemCallback(TimelineEntry item);
 
 class TimelineWidget extends StatefulWidget 
 {
 	final ShowMenuCallback showMenu;
 	final bool isActive;
 	final MenuItemData focusItem;
-	TimelineWidget({this.showMenu, this.isActive, this.focusItem, Key key}) : super(key: key);
+	final SelectItemCallback selectItem;
+	TimelineWidget({this.showMenu, this.isActive, this.focusItem, this.selectItem, Key key}) : super(key: key);
 
 	@override
 	_TimelineWidgetState createState() => new _TimelineWidgetState();
@@ -25,6 +27,7 @@ class _TimelineWidgetState extends State<TimelineWidget>
 	Offset _lastFocalPoint;
 	double _scaleStartYearStart = -100.0;
 	double _scaleStartYearEnd = 100.0;
+	Bubble _touchedBubble;
 
 	void _scaleStart(ScaleStartDetails details)
 	{
@@ -57,28 +60,54 @@ class _TimelineWidgetState extends State<TimelineWidget>
 		_timeline.setViewport(velocity: details.velocity.pixelsPerSecond.dy * scale, animate: true);
 	}
 
+	onTouchBubble(Bubble bubble)
+	{
+		_touchedBubble = bubble;
+	}
+
+	void _tapUp(TapUpDetails details)
+	{
+		if(_touchedBubble != null)
+		{
+			widget.selectItem(_touchedBubble.entry);
+			print("TOUCHED ${_touchedBubble.entry.label}");
+		}
+		//double scale = (_scaleStartYearEnd-_scaleStartYearStart)/context.size.height;
+		//_timeline.onTap(details.globalPosition);
+	}
+
 
 	@override
 	Widget build(BuildContext context) 
 	{
+		EdgeInsets devicePadding = MediaQuery.of(context).padding;
 		return new GestureDetector(
 			onScaleStart: _scaleStart,
 			onScaleUpdate: _scaleUpdate,
 			onScaleEnd: _scaleEnd,
-			//onTapUp: _tapUp,
+			onTapUp: _tapUp,
 			child: new Stack(
 				children:<Widget>
 				[
-					new TimelineRenderWidget(timeline: _timeline, isActive:widget.isActive, focusItem:widget.focusItem),
-					new Container(
-						color:Color.fromRGBO(238, 240, 242, 0.81), 
-						height: 56.0,
-						width: double.infinity,
-						child: new IconButton(
-							alignment: Alignment.centerLeft,
-							icon: new Icon(Icons.menu),
-							onPressed: () { this.widget.showMenu(); },
-						))
+					new TimelineRenderWidget(timeline: _timeline, isActive:widget.isActive, focusItem:widget.focusItem, touchBubble:onTouchBubble),
+					new Column(
+						children: <Widget>[
+							Container(
+								height:devicePadding.top,
+								color:Color.fromRGBO(238, 240, 242, 0.81)
+							),
+							Container(
+								color:Color.fromRGBO(238, 240, 242, 0.81), 
+								height: 56.0,
+								width: double.infinity,
+								child: new IconButton(
+									alignment: Alignment.centerLeft,
+									icon: new Icon(Icons.menu),
+									onPressed: () { this.widget.showMenu(); },
+								)
+							)
+						]
+					)
 				]
 			)
 		);

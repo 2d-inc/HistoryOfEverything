@@ -294,7 +294,7 @@ class Timeline
 				if(checkEntry.type == TimelineEntryType.Era)
 				{
 					double distance = entry.start - checkEntry.start;
-					double distanceEnd = entry.start - checkEntry.end;
+					double distanceEnd = entry.end - checkEntry.end;
 					if(distance > 0 && distanceEnd < 0 && distance < minDistance)
 					{
 						minDistance = distance;

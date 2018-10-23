@@ -1,4 +1,6 @@
+import 'package:timeline/article/article_widget.dart';
 import 'package:timeline/main_menu/menu_data.dart';
+import 'package:timeline/timeline/timeline.dart';
 
 import 'timeline/timeline_widget.dart';
 import 'main_menu/main_menu.dart';
@@ -46,21 +48,15 @@ class MyHomePage extends StatefulWidget  {
   _MyHomePageState createState() => new _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateMixin {
+class _MyHomePageState extends State<MyHomePage> {
 
 	bool _isTimelineActive = false;
 	MenuData _menu;
 	MenuItemData _focusItem;
-	AnimationController _controller;
-	static final Animatable<Offset> _slideTween = Tween<Offset>(
-		begin: const Offset(0.0, 0.0),
-		end: const Offset(-1.0, 0.0),
-	).chain(CurveTween(
-		curve: Curves.fastOutSlowIn,
-	));
+	MenuItemData _nextFocusItem;
+	bool _isMenuVisible = true;
+	bool _isArticleVisible = false;
 
-
-	Animation<Offset> _menuOffset;
 	initState()
 	{
 		super.initState();
@@ -74,62 +70,95 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
 					_menu = menu;
 				}
 			});
-		});
-		_controller = AnimationController(
-			vsync: this,
-			duration: const Duration(milliseconds: 200),
-		);
-		_menuOffset = _controller.drive(_slideTween);						
+		});					
 	}
 
 	void _selectMenuItem(MenuItemData menuItem)
 	{
-		_controller.forward().whenComplete(()
+		setState(() 
 		{
-			setState(() 
-			{
-				_isTimelineActive = true;
-				_focusItem = menuItem;
-			});
+			_nextFocusItem = menuItem;
+			_isMenuVisible = false;
+			_isArticleVisible = false;
 		});
 	}
 
 	void _onShowMenu()
     {
-		_controller.reverse().whenComplete(()
+		setState(() 
+		{
+			_isMenuVisible = true;
+			_isArticleVisible = false;
+		});
+    }
+
+	void _onMainMenuVisibilityChanged(bool isVisible)
+	{
+		setState(() 
+		{
+			if(isVisible)
+			{
+				_isTimelineActive = false;
+				_focusItem = null;
+			}
+			else
+			{
+				_isTimelineActive = true;
+				_focusItem = _nextFocusItem;
+				_nextFocusItem = null;
+			}
+		});
+	}
+
+	void _returnToTimeline()
+	{
+		setState(() 
+		{
+			_isMenuVisible = false;
+			_isArticleVisible = false;
+			_isTimelineActive = true;
+		});
+	}
+
+	void _onArticleVisibilityChanged(bool isVisible)
+	{
+		if(isVisible)
 		{
 			setState(() 
 			{
 				_isTimelineActive = false;
-				_focusItem = null;
 			});
-		});
-    }
-
-  @override
-  Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
-	
-	if(_menu == null)
-	{
-		// Still loading.
-		return new Container();
+		}
 	}
-    return new Scaffold(
-      	appBar: null,
-      	body: new Stack(
-		  children: <Widget> [
-			  Positioned.fill( child: TimelineWidget( showMenu: _onShowMenu, isActive:_isTimelineActive, focusItem:_focusItem )),
-			  Positioned.fill( child: SlideTransition(position: _menuOffset, child:MainMenuWidget(selectItem: _selectMenuItem, data:_menu) ))
-		  ]
-		)
-    );
-  }
+
+	void _selectTimelineEntry(TimelineEntry entry)
+	{
+		setState(() 
+		{
+			_isMenuVisible = false;
+			_isArticleVisible = true;
+		});
+	}
+
+	@override
+	Widget build(BuildContext context) 
+	{
+		if(_menu == null)
+		{
+			// Still loading.
+			return new Container();
+		}
+		return new Scaffold(
+			appBar: null,
+			body: new Stack(
+				children: <Widget> [
+					Positioned.fill( child: TimelineWidget( showMenu: _onShowMenu, isActive:_isTimelineActive, focusItem:_focusItem, selectItem: _selectTimelineEntry )),
+					Positioned.fill( child: MainMenuWidget( show:_isMenuVisible, selectItem: _selectMenuItem, data:_menu, visibilityChanged:_onMainMenuVisibilityChanged) ),
+					Positioned.fill( child: ArticleWidget( show:_isArticleVisible, goBack: _returnToTimeline, visibilityChanged: _onArticleVisibilityChanged) )
+				]
+			)
+		);
+	}
 }
 
 /*

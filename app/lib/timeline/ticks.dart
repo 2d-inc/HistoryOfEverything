@@ -44,7 +44,7 @@ class Ticks
 		
 		final Paint tickPaint = new Paint()..color = Color.fromRGBO(0, 0, 0, 0.3);
 		final Paint smallTickPaint = new Paint()..color = Color.fromRGBO(0, 0, 0, 0.1);
-		canvas.drawRect(Rect.fromLTWH(offset.dx, offset.dy, Gutter, height), new Paint()..color = Color.fromRGBO(200, 200, 200, 0.5));
+		canvas.drawRect(Rect.fromLTWH(offset.dx, offset.dy, Gutter, height), new Paint()..color = Color.fromRGBO(235, 235, 235, 0.9));
 		
 		for(int i = 0; i < numTicks; i++)
 		{

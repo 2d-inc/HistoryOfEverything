@@ -10,6 +10,7 @@ import "package:nima/nima.dart" as nima;
 import "package:nima/nima/animation/actor_animation.dart" as nima;
 import "package:nima/nima/math/aabb.dart" as nima;
 import "package:nima/nima/math/vec2d.dart" as nima;
+import 'package:nima/nima/actor_image.dart' as nima;
 typedef PaintCallback();
 
 enum TimelineEntryType
@@ -259,6 +260,7 @@ class Timeline
 								nimaAsset.setupAABB = nimaAsset.actor.computeAABB();
 								nimaAsset.animation.apply(nimaAsset.animationTime, nimaAsset.actor, 1.0);
 								nimaAsset.actor.advance(0.0);
+								print("AABB $source ${nimaAsset.setupAABB}");
 								//nima.Vec2D size = nima.AABB.size(new nima.Vec2D(), nimaAsset.setupAABB);
 								//nimaAsset.width = size[0];
 								//nimaAsset.height = size[1];
@@ -289,7 +291,7 @@ class Timeline
 					asset.width = width is int ? width.toDouble() : width;
 					dynamic height = assetMap["height"];
 					asset.height = height is int ? height.toDouble() : height;
-
+					print("ENTRY ${timelineEntry.label} $asset");
 					timelineEntry.asset = asset;
 					
 				}
@@ -314,7 +316,7 @@ class Timeline
 				if(checkEntry.type == TimelineEntryType.Era)
 				{
 					double distance = entry.start - checkEntry.start;
-					double distanceEnd = entry.end - checkEntry.end;
+					double distanceEnd = entry.start - checkEntry.end;
 					if(distance > 0 && distanceEnd < 0 && distance < minDistance)
 					{
 						minDistance = distance;
@@ -445,7 +447,7 @@ class Timeline
 		_lastAssetY = -double.maxFinite;
 		_labelX = 0.0;
 		_offsetDepth = 0.0;
-		
+
 		if(_entries != null)
 		{
 			if(advanceItems(_entries, MarginLeft, scale, elapsed, animate, 0))
@@ -647,6 +649,7 @@ class Timeline
 				}
 
 				TimelineAsset asset = item.asset;
+
 				if(asset.opacity > 0.0) // visible
 				{
 					// if(asset.y === undefined)
@@ -680,22 +683,24 @@ class Timeline
 								nimaAsset.animationTime = -1.0;
 							}
 						}
-						continue;
 					}
-					if(asset is TimelineNima && isActive)
+					else
 					{
-						asset.animationTime += elapsed;
-						if(asset.loop)
+						if(asset is TimelineNima && isActive)
 						{
-							asset.animationTime %= asset.animation.duration;
+							asset.animationTime += elapsed;
+							if(asset.loop)
+							{
+								asset.animationTime %= asset.animation.duration;
+							}
+							asset.animation.apply(asset.animationTime, asset.actor, 1.0);
+							asset.actor.advance(elapsed);
+							stillAnimating = true;
+							//item.asset.animation
+							//item.asset.
 						}
-						asset.animation.apply(asset.animationTime, asset.actor, 1.0);
-						asset.actor.advance(elapsed);
-						stillAnimating = true;
-						//item.asset.animation
-						//item.asset.
+						renderAssets.add(item.asset);
 					}
-					renderAssets.add(item.asset);
 				}	
 				else
 				{

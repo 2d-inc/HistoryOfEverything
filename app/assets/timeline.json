@@ -2,6 +2,7 @@
 	{
 		"date": -13800000000,
 		"label": "Big Bang",
+		"article":"big_bang.txt",
 
 		"asset": 
 		{
@@ -18,7 +19,7 @@
 		"label": "Birth of the Milky Way",
 		"asset": 
 		{
-			"source": "Robot.nma",
+			"source": "Milky Way/Milky Way.nma",
 			"width": 800,
 			"height": 800
 		}
@@ -44,8 +45,7 @@
 		}
 	},
 	{
-		"start": -4100000000,
-		"end": -3800000000,
+		"date": -4100000000,
 		"label": "Heavy Bombardment",
 		"asset": 
 		{
@@ -68,7 +68,13 @@
 	},
 	{
 		"date": -4050000000,
-		"label": "Single Celled Organisms"
+		"label": "Single Celled Organisms",
+		"asset": 
+		{
+			"source": "Cells/Cells.nma",
+			"width": 800,
+			"height": 400
+		}
 	},
 	{
 		"start": -600000000,
@@ -81,21 +87,69 @@
 		}
 	},
 	{
-		"date": -600000001,
-		"label": "Fish and Stuff"
+		"date": -550000000,
+		"label": "Fish and Stuff",
+		"asset": 
+		{
+			"source": "Fish_and_Stuff/Fish_and_Stuff.nma",
+			"width": 800,
+			"height": 400
+		}
+	},
+	{
+		"date": -490000000,
+		"label": "Insects",
+		"asset": 
+		{
+			"source": "Insects/Insects.nma",
+			"width": 800,
+			"height": 528
+		}
+	},
+	{
+		"date": -312000000,
+		"label": "Reptiles",
+		"asset": 
+		{
+			"source": "Reptiles/Reptiles.nma",
+			"width": 400,
+			"height": 600
+		}
 	},
 	{
 		"start": -230000000,
 		"end": -65000000,
-		"label": "Dinosaur Age"
+		"label": "Dinosaur Age",
+		"article": "dinosaurs.txt",
+		"asset": 
+		{
+			"source": "Dinosaurs/Dinosaurs.nma",
+			"width": 800,
+			"height": 770,
+			"offset":-275,
+			"gap": -40
+		}
 	},
 	{
 		"date": -200000000,
-		"label": "Mammals"
+		"label": "Mammals",
+		"asset": 
+		{
+			"source": "Mammals/Mammals.nma",
+			"offset":-20,
+			"width": 600,
+			"height": 600
+		}
 	},
 	{
 		"date": -66000000,
-		"label": "Dinosaur Extinction"
+		"label": "Dinosaur Extinction",
+		"asset": 
+		{
+			"source": "Dinosaur_Demise/Dinosaur_Demise.nma",
+			"width": 800,
+			"height": 400
+		}
 	},
 	{
 		"start": -6000000,
@@ -108,5 +162,26 @@
 	{
 		"start": -300000,
 		"label": "Homo Sapiens Sapiens"
+	},
+	{
+		"start": 1914,
+		"end": 1918,
+		"label": "World War I",
+		"asset": 
+		{
+			"source": "World_War_I/World_War_I.nma",
+			"width": 800,
+			"height": 528
+		}
+	},
+	{
+		"date": 1969,
+		"label": "Moon Landing",
+		"asset": 
+		{
+			"source": "Moon/Moon.nma",
+			"width": 800,
+			"height": 528
+		}
 	}
 ]

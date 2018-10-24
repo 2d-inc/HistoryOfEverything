@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import "package:flutter/scheduler.dart";
 import 'package:nima/nima/math/aabb.dart' as nima;
+import 'package:nima/nima/actor_image.dart' as nima;
 import 'package:timeline/main_menu/menu_data.dart';
 import "dart:ui" as ui;
 import "../colors.dart";
@@ -253,12 +254,9 @@ class TimelineRenderObject extends RenderBox
 						canvas.translate(renderOffset.dx + renderSize.width/2.0 + (alignment.x * renderSize.width/2.0), renderOffset.dy + renderSize.height/2.0 + (alignment.y * renderSize.height/2.0));
 						canvas.scale(scaleX, -scaleY);
 						canvas.translate(x, y);
-						asset.actor.draw(canvas);
+						
+						asset.actor.draw(canvas, asset.opacity);
 						canvas.restore();
-						if(asset.opacity < 1.0)
-						{
-							canvas.drawRect(Rect.fromLTWH(offset.dx + size.width - w, asset.y, w*rs, h*rs), new Paint()..isAntiAlias=true..filterQuality=ui.FilterQuality.low..color = Color.fromRGBO(253, 253, 253, 1.0-asset.opacity));
-						}
 					}
 				}
 			}

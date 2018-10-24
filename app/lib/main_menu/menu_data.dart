@@ -1,9 +1,12 @@
 import 'dart:convert';
+import 'dart:ui';
 import "package:flutter/services.dart" show rootBundle;
 
 class MenuSectionData
 {
 	String label;
+	Color textColor;
+	Color backgroundColor;
 	List<MenuItemData> items = new List<MenuItemData>();
 }
 
@@ -33,6 +36,14 @@ class MenuData
 				if(map.containsKey("label"))
 				{
 					menuSection.label = map["label"] as String;
+				}
+				if(map.containsKey("background"))
+				{
+					menuSection.backgroundColor = new Color(int.parse((map["background"] as String).substring(1, 7), radix: 16) + 0xFF000000);
+				}
+				if(map.containsKey("color"))
+				{
+					menuSection.textColor = new Color(int.parse((map["color"] as String).substring(1, 7), radix: 16) + 0xFF000000);
 				}
 				if(map.containsKey("items"))
 				{

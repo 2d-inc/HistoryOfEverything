@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:timeline/article/article_vignette.dart';
 import 'package:timeline/timeline/timeline.dart';
 import "../colors.dart";
 import "package:flutter/services.dart" show rootBundle;
@@ -73,11 +74,11 @@ class _ArticleWidgetState extends State<ArticleWidget> with SingleTickerProvider
 		_articleOffset = _controller.drive(_slideTween);
 		if(widget.show)
 		{
-			_controller.reverse();
+			_controller.reverse(from:0.0);
 		}
 		else
 		{
-			_controller.forward();
+			_controller.forward(from:1.0);
 		}					
 
 		TextStyle style = new TextStyle(
@@ -220,7 +221,7 @@ class _ArticleWidgetState extends State<ArticleWidget> with SingleTickerProvider
 										crossAxisAlignment: CrossAxisAlignment.start,
 										children: <Widget>
 										[
-											new Container(height:280, color:Colors.red),
+											new Container(height:280, child: ArticleVignette(isActive: widget.show, timelineEntry: widget.article)),
 											Text(
 												_title,
 												textAlign: TextAlign.left,

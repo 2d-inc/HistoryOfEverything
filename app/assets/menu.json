@@ -1,17 +1,19 @@
 [
     {
         "label": "Birth of the Universe",
+        "background": "#083158",
+        "color": "#ffffff",
         "items":
         [
             {
-                "start": -13800000000,
-                "end": -13000000000,
+                "start": -16200000000,
+                "end": -11000000000,
                 "label": "Big Bang"
             },
             {
-                "start": -13800000000,
-                "end": -13800000000,
-                "label": "Birth of the Milky Way"
+                "start": -16200000000,
+                "end": -4600000000,
+                "label": "Birth of the Sun"
             },
             {
                 "start": -13800000000,
@@ -27,18 +29,29 @@
     },
     {
         "label": "Life on Earth",
-        "article": "life_on_earth.txt",
+        "background": "#fdfdfd",
+        "color": "#000000",
         "items":
         [
             {
-                "start": -4050000000,
-                "end": -3600000000,
+                "start": -4080000000,
+                "end": -4000000000,
                 "label": "Single Celled Organisms"
             },
             {
-                "start": -13800000000,
-                "end": -13800000000,
-                "label": "Birth of the Milky Way"
+                "start": -624000000,
+                "end": -350000000,
+                "label": "Animals"
+            },
+            {
+                "start": -270000000,
+                "end": -65000000,
+                "label": "Dinosaur Age"
+            },
+            {
+                "start": -250000000,
+                "end": -66000000,
+                "label": "Mammals"
             },
             {
                 "start": -13800000000,
@@ -53,28 +66,15 @@
         ]
     },
     {
-        "label": "The Future",
+        "label": "Modern Times",
+        "background": "#001d22",
+        "color": "#ffffff",
         "items":
         [
             {
-                "start": -13800000000,
-                "end": -13800000000,
-                "label": "Big Bang"
-            },
-            {
-                "start": -13800000000,
-                "end": -13800000000,
-                "label": "Birth of the Milky Way"
-            },
-            {
-                "start": -13800000000,
-                "end": -13800000000,
-                "label": "Earth is Born"
-            },
-            {
-                "start": -13800000000,
-                "end": -13800000000,
-                "label": "Heavy Bombardment"
+                "start": 1900,
+                "end": 1990,
+                "label": "World War I"
             }
         ]
     }

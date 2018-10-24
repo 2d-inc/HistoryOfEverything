@@ -136,8 +136,8 @@ class _MainMenuWidgetState extends State<MainMenuWidget> with SingleTickerProvid
 												margin: EdgeInsets.only(top: 20.0),
 												child: MenuSection(
 													section.label, 
-													Color.fromRGBO(8, 49, 88, 1.0),
-													lightText,
+													section.backgroundColor,
+													section.textColor,
 													section.items,
 													widget.selectItem
 												)

@@ -16,6 +16,7 @@ dependencies:
   flutter:
     sdk: flutter
   nima:
+    path: ../dependencies/Nima-Flutter
   flutter_markdown: ^0.2.0
 
   # The following adds the Cupertino Icons font to your application.
@@ -48,6 +49,16 @@ flutter:
   assets:
     - assets/
     - assets/Big_Bang/
+    - assets/Milky Way/
+    - assets/Mammals/
+    - assets/Dinosaurs/
+    - assets/Insects/
+    - assets/Fish_and_Stuff/
+    - assets/Cells/
+    - assets/Dinosaur_Demise/
+    - assets/Reptiles/
+    - assets/World_War_I/
+    - assets/Moon/
     # - assets/search_icon.png
     # - assets/flutter_logo.png
     # - assets/right_arrow.png

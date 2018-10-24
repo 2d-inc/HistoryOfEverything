@@ -47,6 +47,7 @@ class _SectionState extends State<MenuSection> with SingleTickerProviderStateMix
 
     dispose()
     {
+        _controller.dispose();
         expandController.dispose();
         super.dispose();
     }

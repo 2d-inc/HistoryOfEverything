@@ -88,65 +88,73 @@ class _MainMenuWidgetState extends State<MainMenuWidget> with SingleTickerProvid
 				color: background,
 				child: Container(
 					margin: EdgeInsets.only(top:devicePadding.top, left: 20.0, right: 20.0),
-					child: SingleChildScrollView(
-						child: new Padding(
-							padding: EdgeInsets.only(top: 35.0, left:devicePadding.left, right:devicePadding.right, bottom:devicePadding.bottom),
-							child: Column(
-								crossAxisAlignment: CrossAxisAlignment.start,
-								children: 
-								[
-									Row(
-										children:
-										[
-											Image.asset(
-												"assets/flutter_logo.png",
-												color: Colors.black.withOpacity(0.62),
-												height: 22.0,
-												width: 22.0
-											),
-											Container(
-												margin: EdgeInsets.only(left: 10.0),
-												child: Text(
-													"Flutter Presents",
-													style: TextStyle(
-														color: darkText.withOpacity(darkText.opacity*0.75),
-														fontSize: 16.0,
-														fontFamily: "Roboto"
-														)
-												)
-											)
-										]),
-										Container(
-											// color: Color.fromRGBO(0, 0, 0, 1.0),
-											margin: EdgeInsets.only(top: 14.0, bottom: 22.0),
-											child: Text(
-												"The History & Future\nof Everything",
-												textAlign: TextAlign.left,
-												style: TextStyle(
-														color: darkText.withOpacity(darkText.opacity*0.75),
-														fontSize: 34.0,
-														fontFamily: "RobotoMedium"
-													)
-												)
-										),
-										SearchWidget()
-									]..addAll(
-										widget.data.sections.map((MenuSectionData section) => 
-											Container(
-												margin: EdgeInsets.only(top: 20.0),
-												child: MenuSection(
-													section.label, 
-													section.backgroundColor,
-													section.textColor,
-													section.items,
-													widget.selectItem
-												)
-											)
-										)
-									)
-								)
-						)
-					)
+                    child: NestedScrollView(
+                        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled)
+                        => <Widget>[
+                            SliverList(
+                                delegate: SliverChildListDelegate(
+                                    [
+                                        Row(
+                                            children: <Widget>[
+                                                Image.asset("assets/flutter_logo.png",
+                                                    color: Colors.black.withOpacity(0.62),
+                                                    height: 22.0,
+                                                    width: 22.0
+                                                ),
+                                                Container(
+                                                    margin: EdgeInsets.only(left: 10.0),
+                                                    child: Text(
+                                                        "Flutter Presents",
+                                                        style: TextStyle(
+                                                            color: darkText.withOpacity(darkText.opacity*0.75),
+                                                            fontSize: 16.0,
+                                                            fontFamily: "Roboto"
+                                                            )
+                                                    )
+                                                )
+                                            ],
+                                        ),
+                                        Container(
+                                            margin: EdgeInsets.only(top: 14.0),
+                                            child: Text(
+                                                "The History & Future\nof Everything",
+                                                textAlign: TextAlign.left,
+                                                style: TextStyle(
+                                                        color: darkText.withOpacity(darkText.opacity*0.75),
+                                                        fontSize: 34.0,
+                                                        fontFamily: "RobotoMedium"
+                                                    )
+                                                )
+                                        )
+                                    ]
+                                ),
+                            ),
+                            SliverAppBar(
+                                backgroundColor: background,
+                                pinned: true,
+                                title: SearchWidget(),
+                                titleSpacing: 0.0
+                            ),
+                        ],
+                        body: SingleChildScrollView(
+                            child: Column(
+                                children: []..addAll(
+                                    widget.data.sections.map((MenuSectionData section)
+                                        => Container(
+                                            margin: EdgeInsets.only(top:20.0),
+                                            child: MenuSection(
+                                                section.label, 
+                                                section.backgroundColor, 
+                                                section.textColor, 
+                                                section.items,
+                                                widget.selectItem
+                                                )
+                                            )
+                                        )
+                                    )
+                                )
+                            )
+                    )
 				)
 			)
 		);

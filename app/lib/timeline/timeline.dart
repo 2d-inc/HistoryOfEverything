@@ -567,9 +567,16 @@ class Timeline
 			// 	item.velocity = 0.0;
 			// }
 			double dvy = targetLabelVelocity - item.labelVelocity;
-			item.labelVelocity += dvy * elapsed*18.0;
-
-			item.labelY += item.labelVelocity * elapsed*20.0;
+			if(dvy.abs() > _height)
+			{
+				item.labelY = y;
+				item.labelVelocity = 0.0;
+			}
+			else
+			{
+				item.labelVelocity += dvy * elapsed*18.0;
+				item.labelY += item.labelVelocity * elapsed*20.0;
+			}
 			if(animate && (item.labelVelocity.abs() > 0.01 || targetLabelVelocity.abs() > 0.01))
 			{
 				stillAnimating = true;
@@ -586,7 +593,7 @@ class Timeline
 			if(y > _height + BubbleHeight || endY < -BubbleHeight)
 			{
 				item.labelY = y;
-				continue;
+				//continue;
 			}
 
 			double lx = x + LineSpacing + LineSpacing;
@@ -637,18 +644,23 @@ class Timeline
 					stillAnimating = true;
 				}
 
-				double da = targetAssetOpacity - item.asset.opacity;
+				TimelineAsset asset = item.asset;
+				if(asset.opacity == 0.0)
+				{
+					// Item was invisible, just pop it to the right place and stop velocity.
+					asset.y = targetAssetY;
+					asset.velocity = 0.0;
+				}
+				double da = targetAssetOpacity - asset.opacity;
 				if(!animate || da.abs() < 0.01)
 				{
-					item.asset.opacity = targetAssetOpacity;	
+					asset.opacity = targetAssetOpacity;	
 				}
 				else
 				{
 					stillAnimating = true;
-					item.asset.opacity += da * min(1.0, elapsed*15.0);
+					asset.opacity += da * min(1.0, elapsed*15.0);
 				}
-
-				TimelineAsset asset = item.asset;
 
 				if(asset.opacity > 0.0) // visible
 				{
@@ -656,12 +668,19 @@ class Timeline
 					// {
 					// 	asset.y = Math.max(this._lastAssetY, targetAssetY);
 					// }
-
+					
 					double targetAssetVelocity = max(_lastAssetY, targetAssetY) - asset.y;
 					double dvay = targetAssetVelocity - asset.velocity;
-					asset.velocity += dvay * elapsed*15.0;
-
-					asset.y += asset.velocity * elapsed*17.0;//Math.min(1.0, elapsed*(10.0+f*35));
+					if(dvay.abs() > _height)
+					{
+						asset.y = targetAssetY;
+						asset.velocity = 0.0;
+					}
+					else
+					{
+						asset.velocity += dvay * elapsed*15.0;
+						asset.y += asset.velocity * elapsed*17.0;
+					}
 					if(asset.velocity.abs() > 0.01 || targetAssetVelocity.abs() > 0.01)
 					{
 						stillAnimating = true;
@@ -699,6 +718,7 @@ class Timeline
 							//item.asset.animation
 							//item.asset.
 						}
+
 						renderAssets.add(item.asset);
 					}
 				}	

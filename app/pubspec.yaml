@@ -59,6 +59,10 @@ flutter:
     - assets/Reptiles/
     - assets/World_War_I/
     - assets/Moon/
+    - assets/Newton/
+    - assets/Cold_war/
+    - assets/Crusades/
+    - assets/Sapiens/
     # - assets/search_icon.png
     # - assets/flutter_logo.png
     # - assets/right_arrow.png

@@ -199,11 +199,9 @@ class _ArticleWidgetState extends State<ArticleWidget> with SingleTickerProvider
 						new Column(
 						children: <Widget>[
 							Container(
-								height:devicePadding.top,
-								color:Color.fromRGBO(238, 240, 242, 0.81)
+								height:devicePadding.top
 							),
 							Container(
-								color:Color.fromRGBO(238, 240, 242, 0.81), 
 								height: 56.0,
 								width: double.infinity,
 								child: new IconButton(

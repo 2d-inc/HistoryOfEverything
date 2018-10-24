@@ -161,7 +161,41 @@
 	},
 	{
 		"start": -300000,
-		"label": "Homo Sapiens Sapiens"
+		"label": "Homo Sapiens Sapiens",
+		"asset": 
+		{
+			"source": "Sapiens/Sapiens.nma",
+			"width": 528,
+			"height": 528,
+			"offset": -40
+		}
+	},
+	{
+		"start": 0,
+		"label": "Common Era"
+	},
+	{
+		"start": 1095,
+		"end": 1091,
+		"label": "Crusades",
+		"asset": 
+		{
+			"source": "Crusades/Crusades.nma",
+			"width": 528,
+			"height": 528,
+			"offset": -60,
+			"gap": -20
+		}
+	},
+	{
+		"date": 1687,
+		"label": "Newton's Theory of Gravity",
+		"asset": 
+		{
+			"source": "Newton/Newton.nma",
+			"width": 800,
+			"height": 800
+		}
 	},
 	{
 		"start": 1914,
@@ -170,8 +204,20 @@
 		"asset": 
 		{
 			"source": "World_War_I/World_War_I.nma",
-			"width": 800,
+			"width": 528,
 			"height": 528
+		}
+	},
+	{
+		"start": 1947,
+		"end": 1991,
+		"label": "Cold War",
+		"asset": 
+		{
+			"source": "Cold_war/Cold_war.nma",
+			"width": 528,
+			"height": 528,
+			"offset": -80
 		}
 	},
 	{
@@ -180,8 +226,9 @@
 		"asset": 
 		{
 			"source": "Moon/Moon.nma",
-			"width": 800,
-			"height": 528
+			"width": 528,
+			"height": 528,
+			"offset": -40
 		}
 	}
 ]

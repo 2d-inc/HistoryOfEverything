@@ -2,11 +2,15 @@
 	{
 		"date": -13800000000,
 		"label": "Big Bang",
+
 		"asset": 
 		{
-			"source": "Robot.nma",
-			"width": 800,
-			"height": 800
+			"source": "Big_Bang/Big_Bang.nma",
+			"width": 2048,
+			"height": 2048,
+			"offset": 700,
+			"gap": -1000,
+			"loop": false
 		}
 	},
 	{
@@ -54,7 +58,7 @@
 		"start": -4000000000,
 		"label": "Life on Earth",
 		"article": "life_on_earth.txt",
-		
+
 		"asset": 
 		{
 			"source": "Robot.nma",

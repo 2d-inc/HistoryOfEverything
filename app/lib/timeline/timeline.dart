@@ -40,6 +40,9 @@ class TimelineNima extends TimelineAsset
 	nima.ActorAnimation animation;
 	double animationTime = 0.0;
 	nima.AABB setupAABB;
+	bool loop;
+	double offset = 0.0;
+	double gap = 0.0;
 }
 
 
@@ -111,6 +114,7 @@ class Timeline
 	bool _isFrameScheduled = false;
 	bool isInteracting = false;
 	double _lastAssetY = 0.0;
+	bool isActive = false;
 
 	List<TimelineEntry> get entries => _entries;
 	double get renderOffsetDepth => _renderOffsetDepth;
@@ -153,7 +157,8 @@ class Timeline
 			// Double check: Make sure we have height by now...
 			double scale = _height == 0.0 ? 1.0 : _height/(_entries.last.end-_entries.first.start);
 			// We use the scale to pad by the bubble height when we set the first range.
-			setViewport(start: _entries.first.start - BubbleHeight/scale - InitialViewportPadding/scale, end: _entries.last.end + BubbleHeight/scale + InitialViewportPadding/scale, animate:true);
+			//setViewport(start: _entries.first.start - BubbleHeight/scale - InitialViewportPadding/scale, end: _entries.last.end + BubbleHeight/scale + InitialViewportPadding/scale, animate:true);
+			setViewport(start: _entries.first.start*2.0, end: _entries.first.start, animate:true);
 			advance(0.0, false);
 		});
 	}
@@ -248,11 +253,21 @@ class Timeline
 							{
 								nimaAsset.actor = actor.makeInstance();
 								nimaAsset.animation = actor.animations[0];
+								nimaAsset.animationTime = 0.0;
 								nimaAsset.actor.advance(0.0);
+								
 								nimaAsset.setupAABB = nimaAsset.actor.computeAABB();
+								nimaAsset.animation.apply(nimaAsset.animationTime, nimaAsset.actor, 1.0);
+								nimaAsset.actor.advance(0.0);
 								//nima.Vec2D size = nima.AABB.size(new nima.Vec2D(), nimaAsset.setupAABB);
 								//nimaAsset.width = size[0];
 								//nimaAsset.height = size[1];
+								dynamic loop = assetMap["loop"];
+								nimaAsset.loop = loop is bool ? loop : true;
+								dynamic offset = assetMap["offset"];
+								nimaAsset.offset = offset == null ? 0.0 : offset is int ? offset.toDouble() : offset;
+								dynamic gap = assetMap["gap"];
+								nimaAsset.gap = gap == null ? 0.0 : gap is int ? gap.toDouble() : gap;
 
 							}
 							break;
@@ -340,7 +355,7 @@ class Timeline
 		{
 			if(_height == 0.0 && _entries != null && _entries.length > 0)
 			{
-				double scale = height/(_entries.first.end-_entries.first.start);
+				double scale = height/(_end-_start);
 				_start = _start - (BubbleHeight+InitialViewportPadding)/scale;
 				_end = _end + (BubbleHeight+InitialViewportPadding)/scale;
 			}
@@ -631,37 +646,51 @@ class Timeline
 					item.asset.opacity += da * min(1.0, elapsed*15.0);
 				}
 
-				if(item.asset.opacity > 0.0) // visible
+				TimelineAsset asset = item.asset;
+				if(asset.opacity > 0.0) // visible
 				{
-					// if(item.asset.y === undefined)
+					// if(asset.y === undefined)
 					// {
-					// 	item.asset.y = Math.max(this._lastAssetY, targetAssetY);
+					// 	asset.y = Math.max(this._lastAssetY, targetAssetY);
 					// }
 
-					double targetAssetVelocity = max(_lastAssetY, targetAssetY) - item.asset.y;
-					double dvay = targetAssetVelocity - item.asset.velocity;
-					item.asset.velocity += dvay * elapsed*15.0;
+					double targetAssetVelocity = max(_lastAssetY, targetAssetY) - asset.y;
+					double dvay = targetAssetVelocity - asset.velocity;
+					asset.velocity += dvay * elapsed*15.0;
 
-					item.asset.y += item.asset.velocity * elapsed*17.0;//Math.min(1.0, elapsed*(10.0+f*35));
-					if(item.asset.velocity.abs() > 0.01 || targetAssetVelocity.abs() > 0.01)
+					asset.y += asset.velocity * elapsed*17.0;//Math.min(1.0, elapsed*(10.0+f*35));
+					if(asset.velocity.abs() > 0.01 || targetAssetVelocity.abs() > 0.01)
 					{
 						stillAnimating = true;
 					}
 
-					_lastAssetY = /*item.assetY*/targetAssetY + item.asset.height * AssetScreenScale /*renderScale(item.asset.scale)*/ + AssetPadding;
-					
-					if(item.asset.y > _height || item.asset.y + item.asset.height * AssetScreenScale < 0.0)
+					_lastAssetY = /*assetY*/targetAssetY + asset.height * AssetScreenScale /*renderScale(asset.scale)*/ + AssetPadding;
+					if(asset is TimelineNima)
+					{
+						_lastAssetY += asset.gap;
+					}
+					if(asset.y > _height || asset.y + asset.height * AssetScreenScale < 0.0)
 					{
 						// Cull it, it's not in view. Make sure we don't advance animations.
+						if(asset is TimelineNima)
+						{
+							TimelineNima nimaAsset = asset;
+							if(!nimaAsset.loop)
+							{
+								nimaAsset.animationTime = -1.0;
+							}
+						}
 						continue;
 					}
-					if(item.asset is TimelineNima)
+					if(asset is TimelineNima && isActive)
 					{
-						TimelineNima nimaAsset = item.asset;
-						
-						nimaAsset.animationTime = (nimaAsset.animationTime + elapsed) % nimaAsset.animation.duration;
-						nimaAsset.animation.apply(nimaAsset.animationTime, nimaAsset.actor, 1.0);
-						nimaAsset.actor.advance(elapsed);
+						asset.animationTime += elapsed;
+						if(asset.loop)
+						{
+							asset.animationTime %= asset.animation.duration;
+						}
+						asset.animation.apply(asset.animationTime, asset.actor, 1.0);
+						asset.actor.advance(elapsed);
 						stillAnimating = true;
 						//item.asset.animation
 						//item.asset.

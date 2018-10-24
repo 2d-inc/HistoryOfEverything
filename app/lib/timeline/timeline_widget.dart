@@ -89,7 +89,7 @@ class _TimelineWidgetState extends State<TimelineWidget>
 			child: new Stack(
 				children:<Widget>
 				[
-					new TimelineRenderWidget(timeline: _timeline, isActive:widget.isActive, focusItem:widget.focusItem, touchBubble:onTouchBubble),
+					new TimelineRenderWidget(timeline: _timeline, topOverlap:56.0+devicePadding.top, isActive:widget.isActive, focusItem:widget.focusItem, touchBubble:onTouchBubble),
 					new Column(
 						children: <Widget>[
 							Container(

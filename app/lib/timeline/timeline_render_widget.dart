@@ -18,7 +18,8 @@ class TimelineRenderWidget extends LeafRenderObjectWidget
 	final bool isActive;
 	final MenuItemData focusItem;
 	final TouchBubbleCallback touchBubble;
-	TimelineRenderWidget({Key key, this.timeline, this.isActive, this.focusItem, this.touchBubble}): super(key: key);
+	final double topOverlap;
+	TimelineRenderWidget({Key key, this.timeline, this.isActive, this.focusItem, this.touchBubble, this.topOverlap}): super(key: key);
 
 	@override
 	RenderObject createRenderObject(BuildContext context) 
@@ -27,7 +28,8 @@ class TimelineRenderWidget extends LeafRenderObjectWidget
 							..timeline = timeline
 							..isActive = isActive
 							..focusItem = focusItem
-							..touchBubble = touchBubble;
+							..touchBubble = touchBubble
+							..topOverlap = topOverlap;
 	}
 
 	@override
@@ -37,7 +39,8 @@ class TimelineRenderWidget extends LeafRenderObjectWidget
 					..timeline = timeline
 					..isActive = isActive
 					..focusItem = focusItem
-						..touchBubble = touchBubble;
+					..touchBubble = touchBubble
+					..topOverlap = topOverlap;
 	}
 }
 
@@ -65,7 +68,7 @@ class TimelineRenderObject extends RenderBox
 	bool _isActive = false;
 	MenuItemData _focusItem;
 
-	
+	double topOverlap = 0.0;
 	TouchBubbleCallback _touchBubble;
 	TouchBubbleCallback get touchBubble => _touchBubble;
 	set touchBubble(TouchBubbleCallback value)
@@ -102,6 +105,7 @@ class TimelineRenderObject extends RenderBox
 		{
 			return;
 		}
+		_timeline.isActive = value;
 		_isActive = value;
 		if(_isActive)
 		{
@@ -177,7 +181,6 @@ class TimelineRenderObject extends RenderBox
 		double scale = size.height/(renderEnd-renderStart);
 
 		//canvas.drawRect(new Offset(0.0, 0.0) & new Size(100.0, 100.0), new Paint()..color = Colors.red);
-		_ticks.paint(context, offset, -renderStart*scale, scale, size.height);
 
 		if(timeline.renderAssets != null)
 		{
@@ -205,7 +208,7 @@ class TimelineRenderObject extends RenderBox
 						
 						double contentHeight = bounds[3] - bounds[1];
 						double contentWidth = bounds[2] - bounds[0];
-						double x = -bounds[0] - contentWidth/2.0 - (alignment.x * contentWidth/2.0);
+						double x = -bounds[0] - contentWidth/2.0 - (alignment.x * contentWidth/2.0) + asset.offset;
 						double y =  -bounds[1] - contentHeight/2.0 + (alignment.y * contentHeight/2.0);
 
 						Offset renderOffset = new Offset(offset.dx + size.width - w, asset.y);
@@ -262,6 +265,12 @@ class TimelineRenderObject extends RenderBox
 			canvas.restore();
 			//print("DREW ${timeline.renderAssets.length}");
 		}
+
+		canvas.save();
+		canvas.clipRect(new Rect.fromLTWH(offset.dx, offset.dy+topOverlap, size.width, size.height));
+		_ticks.paint(context, offset, -renderStart*scale, scale, size.height);
+		canvas.restore();
+
 		if(_timeline.entries != null)
 		{
 			canvas.save();

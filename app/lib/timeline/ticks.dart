@@ -40,11 +40,11 @@ class Ticks
 		tickOffset -= scaledTickDistance;
 		startingTickMarkValue -= tickDistance;
 
-		canvas.save();
+		//canvas.save();
 		
 		final Paint tickPaint = new Paint()..color = Color.fromRGBO(0, 0, 0, 0.3);
 		final Paint smallTickPaint = new Paint()..color = Color.fromRGBO(0, 0, 0, 0.1);
-		canvas.drawRect(Rect.fromLTWH(offset.dx, offset.dy, Gutter, height), smallTickPaint);
+		canvas.drawRect(Rect.fromLTWH(offset.dx, offset.dy, Gutter, height), new Paint()..color = Color.fromRGBO(200, 200, 200, 0.5));
 		
 		for(int i = 0; i < numTicks; i++)
 		{

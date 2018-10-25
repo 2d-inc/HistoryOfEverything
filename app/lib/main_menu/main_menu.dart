@@ -87,32 +87,35 @@ class _MainMenuWidgetState extends State<MainMenuWidget> with SingleTickerProvid
 			child: new Container(
 				color: background,
 				child: Container(
-					margin: EdgeInsets.only(top:devicePadding.top, left: 20.0, right: 20.0),
+					padding: EdgeInsets.only(left: 20.0, right: 20.0),
                     child: NestedScrollView(
                         headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled)
                         => <Widget>[
                             SliverList(
                                 delegate: SliverChildListDelegate(
                                     [
-                                        Row(
-                                            children: <Widget>[
-                                                Image.asset("assets/flutter_logo.png",
-                                                    color: Colors.black.withOpacity(0.62),
-                                                    height: 22.0,
-                                                    width: 22.0
-                                                ),
-                                                Container(
-                                                    margin: EdgeInsets.only(left: 10.0),
-                                                    child: Text(
-                                                        "Flutter Presents",
-                                                        style: TextStyle(
-                                                            color: darkText.withOpacity(darkText.opacity*0.75),
-                                                            fontSize: 16.0,
-                                                            fontFamily: "Roboto"
-                                                            )
+                                        Padding(
+                                            padding: EdgeInsets.only(top: 36.0),
+                                            child: Row(
+                                                children: <Widget>[
+                                                    Image.asset("assets/flutter_logo.png",
+                                                        color: Colors.black.withOpacity(0.62),
+                                                        height: 22.0,
+                                                        width: 22.0
+                                                    ),
+                                                    Container(
+                                                        margin: EdgeInsets.only(left: 10.0),
+                                                        child: Text(
+                                                            "Flutter Presents",
+                                                            style: TextStyle(
+                                                                color: darkText.withOpacity(darkText.opacity*0.75),
+                                                                fontSize: 16.0,
+                                                                fontFamily: "Roboto"
+                                                                )
+                                                        )
                                                     )
-                                                )
-                                            ],
+                                                ],
+                                            )
                                         ),
                                         Container(
                                             margin: EdgeInsets.only(top: 14.0),

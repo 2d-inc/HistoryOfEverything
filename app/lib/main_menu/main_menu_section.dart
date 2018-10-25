@@ -21,16 +21,11 @@ class MenuSection extends StatefulWidget
 
 class _SectionState extends State<MenuSection> with SingleTickerProviderStateMixin
 {
-    Animation<double> expandAnimation;
-    AnimationController expandController;
-
 	AnimationController _controller;
 	static final Animatable<double> _sizeTween = Tween<double>(
 		begin: 0.0,
 		end: 1.0,
-	).chain(CurveTween(
-		curve: Curves.fastOutSlowIn,
-	));
+	);
 
 	Animation<double> _sizeAnimation;
 
@@ -42,13 +37,17 @@ class _SectionState extends State<MenuSection> with SingleTickerProviderStateMix
 			vsync: this,
 			duration: const Duration(milliseconds: 200),
 		);
-		_sizeAnimation = _controller.drive(_sizeTween);	
+        final CurvedAnimation curve = CurvedAnimation(parent: _controller, curve: Curves.fastOutSlowIn);
+		_sizeAnimation = _sizeTween.animate(curve);
+        _controller.addListener((){
+            // print("VALUE: ${_sizeAnimation.value}");
+            setState(() { /* Update so PlusDecoration can rebuild. */});
+        });
     }
 
     dispose()
     {
         _controller.dispose();
-        expandController.dispose();
         super.dispose();
     }
 
@@ -57,11 +56,9 @@ class _SectionState extends State<MenuSection> with SingleTickerProviderStateMix
         switch(_sizeAnimation.status)
         {
             case AnimationStatus.completed:
-                //expandController.reverse();
 				_controller.reverse();
                 break;
             case AnimationStatus.dismissed:
-                //expandController.forward();
 				_controller.forward();
                 break;
             case AnimationStatus.reverse:
@@ -76,7 +73,6 @@ class _SectionState extends State<MenuSection> with SingleTickerProviderStateMix
             onTap: _onExpand,
             child: 
 				Container(
-					//height: _height,
 					decoration: BoxDecoration(
 						borderRadius: BorderRadius.circular(10.0),
 						color: widget.backgroundColor
@@ -129,7 +125,6 @@ class _SectionState extends State<MenuSection> with SingleTickerProviderStateMix
 												{
 													return GestureDetector(
 														onTap: () => 
-															//print("GO TO MENU OPTION: $label");
 															this.widget.selectItem(item),
 
 														child: Row(
@@ -141,7 +136,7 @@ class _SectionState extends State<MenuSection> with SingleTickerProviderStateMix
 																			margin: EdgeInsets.only(bottom: 20.0),
 																			child:Text(
 																				item.label, 
-																				style: TextStyle(color: widget.accentColor, fontSize: 20.0, fontFamily: "RobotMedium"),
+																				style: TextStyle(color: widget.accentColor, fontSize: 20.0, fontFamily: "RobotoMedium"),
 																			)
 																		)
 																	),

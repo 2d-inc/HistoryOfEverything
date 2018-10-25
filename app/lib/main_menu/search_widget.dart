@@ -12,6 +12,7 @@ class SearchWidget extends StatelessWidget
                     color: lightGrey,
                     shape: RoundedRectangleBorder(borderRadius: new BorderRadius.circular(20.0)),
                     child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: 
                         [
                             Container(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import "package:share/share.dart";
 import 'package:timeline/main_menu/menu_data.dart';
 
 import "./search_widget.dart";
@@ -81,13 +82,12 @@ class _MainMenuWidgetState extends State<MainMenuWidget> with SingleTickerProvid
     @override
     Widget build(BuildContext context) 
     {
-		EdgeInsets devicePadding = MediaQuery.of(context).padding;
         return SlideTransition(
 			position: _menuOffset, 
 			child: new Container(
 				color: background,
 				child: Container(
-					padding: EdgeInsets.only(left: 20.0, right: 20.0),
+					padding: EdgeInsets.only(left: 20.0),
                     child: NestedScrollView(
                         headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled)
                         => <Widget>[
@@ -135,16 +135,20 @@ class _MainMenuWidgetState extends State<MainMenuWidget> with SingleTickerProvid
                             SliverAppBar(
                                 backgroundColor: background,
                                 pinned: true,
-                                title: SearchWidget(),
+                                title: Padding(
+                                    padding: EdgeInsets.only(right: 20.0),
+                                    child: SearchWidget()
+                                ),
                                 titleSpacing: 0.0
                             ),
                         ],
                         body: SingleChildScrollView(
                             child: Column(
-                                children: []..addAll(
+                                children: 
+                                    []..addAll(
                                     widget.data.sections.map((MenuSectionData section)
                                         => Container(
-                                            margin: EdgeInsets.only(top:20.0),
+                                            margin: EdgeInsets.only(top:20.0, right:20.0),
                                             child: MenuSection(
                                                 section.label, 
                                                 section.backgroundColor, 
@@ -153,6 +157,102 @@ class _MainMenuWidgetState extends State<MainMenuWidget> with SingleTickerProvid
                                                 widget.selectItem
                                                 )
                                             )
+                                        )
+                                    )..add(
+                                        Container(
+                                            margin: EdgeInsets.symmetric(vertical:40.0),
+                                            height: 1.0,
+                                            color: const Color.fromRGBO(151, 151, 151, 0.29),
+                                        )
+                                    )
+                                    ..add(
+                                        FlatButton(
+                                            onPressed: () => print("FAVS"),
+                                            color: Colors.transparent,
+                                            child: Row(
+                                                crossAxisAlignment: CrossAxisAlignment.center,
+                                                children: 
+                                                [
+                                                    Container(
+                                                        margin: EdgeInsets.only(right:15.5),
+                                                        child: Image.asset(
+                                                                "assets/heart_icon.png",
+                                                                height:20.0,
+                                                                width: 20.0,
+                                                                color: Colors.black
+                                                            ),
+                                                        ),
+                                                        Text(
+                                                            "Your Favorites",
+                                                            style: TextStyle(
+                                                                fontSize: 20.0,
+                                                                fontFamily: "RobotoMedium",
+                                                                color: darkText
+                                                            ),
+                                                        )
+                                                ]
+                                            )
+                                        )
+                                    )
+                                    ..add(
+                                        FlatButton(
+                                            onPressed: () => Share.share("Build your own animations at www.2dimensions.com"),
+                                            color: Colors.transparent,
+                                            child: Row(
+                                                crossAxisAlignment: CrossAxisAlignment.center,
+                                                children: 
+                                                [
+                                                    Container(
+                                                        margin: EdgeInsets.only(right:15.5),
+                                                        child: Image.asset(
+                                                                "assets/share_icon.png",
+                                                                height:20.0,
+                                                                width: 20.0,
+                                                                color: Colors.black
+                                                            ),
+                                                        ),
+                                                        Text(
+                                                            "Share",
+                                                            style: TextStyle(
+                                                                fontSize: 20.0,
+                                                                fontFamily: "RobotoMedium",
+                                                                color: darkText
+                                                            ),
+                                                        )
+                                                ]
+                                            )
+                                        )
+                                    )
+                                    ..add(
+                                        Padding(
+                                          padding: const EdgeInsets.only(bottom: 30.0),
+                                          child: FlatButton(
+                                              onPressed: () => print("ABOUT?"),
+                                              color: Colors.transparent,
+                                              child: Row(
+                                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                                  children: 
+                                                  [
+                                                      Container(
+                                                          margin: EdgeInsets.only(right:15.5),
+                                                          child: Image.asset(
+                                                                  "assets/info_icon.png",
+                                                                  height:20.0,
+                                                                  width: 20.0,
+                                                                  color: Colors.black
+                                                              ),
+                                                          ),
+                                                          Text(
+                                                              "About",
+                                                              style: TextStyle(
+                                                                  fontSize: 20.0,
+                                                                  fontFamily: "RobotoMedium",
+                                                                  color: darkText
+                                                              ),
+                                                          )
+                                                  ]
+                                              )
+                                          ),
                                         )
                                     )
                                 )

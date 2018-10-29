@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:timeline/main_menu/menu_data.dart';
 import "plus_decoration.dart";
-import "../colors.dart";
 
 typedef SelectItemCallback(MenuItemData item);
 

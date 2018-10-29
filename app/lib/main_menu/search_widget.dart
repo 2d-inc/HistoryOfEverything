@@ -4,36 +4,17 @@ import "../colors.dart";
 
 class SearchWidget extends StatefulWidget
 {
+    final FocusNode _searchFocusNode;
+    final TextEditingController _searchController;
+
+    SearchWidget(this._searchFocusNode, this._searchController, {Key key}) : super(key: key);
+
     @override
     State<StatefulWidget> createState() => _SearchState();
 }
 
 class _SearchState extends State<SearchWidget>
 {
-    final FocusNode searchFocus = FocusNode();
-    bool _isSearching = false;
-
-    @override
-    initState()
-    {
-        super.initState();
-        searchFocus.addListener(()
-        {
-            setState(
-                (){
-                    _isSearching = searchFocus.hasFocus;
-                }
-            );
-        });
-    }
-
-    @override
-    void dispose() 
-    {
-        searchFocus.dispose();
-        super.dispose();
-    }
-
     @override
     Widget build(BuildContext context) 
     {
@@ -52,20 +33,23 @@ class _SearchState extends State<SearchWidget>
                                 primaryColor: darkText.withOpacity(darkText.opacity*0.5),
                             ),
                             child: TextField(
-                                focusNode: searchFocus,
+                                controller: widget._searchController,
+                                focusNode: widget._searchFocusNode,
                                 decoration: new InputDecoration(
                                     hintText: "Search",
                                     hintStyle: TextStyle(
-                                        height: 18.0/16.0, // Set line to 18
+                                        height: 18.0/16.0, // Set line height to 18.
                                         fontSize: 16.0,
                                         fontFamily: "Roboto",
                                         color: darkText.withOpacity(darkText.opacity*0.5),
                                     ),
                                     prefixIcon: Icon(Icons.search),
-                                    suffixIcon: searchFocus.hasFocus ? IconButton(
+                                    suffixIcon: widget._searchFocusNode.hasFocus ? IconButton(
                                         icon: Icon(Icons.cancel),
-                                        onPressed: () => searchFocus.unfocus(),
-                                        ) : null,
+                                        onPressed: () {
+                                            widget._searchFocusNode.unfocus();
+                                            widget._searchController.clear();
+                                        }) : null,
                                     border: InputBorder.none
                                 ),
                                 style: TextStyle(

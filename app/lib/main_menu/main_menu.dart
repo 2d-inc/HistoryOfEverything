@@ -1,13 +1,17 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import "dart:async";
+
+import "package:flutter/material.dart";
+import "package:flutter/widgets.dart";
 import "package:share/share.dart";
-import 'package:timeline/main_menu/menu_data.dart';
 
-import "./search_widget.dart";
-import "./main_menu_section.dart";
+import "menu_data.dart";
+import "search_widget.dart";
+import "main_menu_section.dart";
+import "search_result_widget.dart";
+import "../search_manager.dart";
 import "../colors.dart";
-typedef VisibilityChanged(bool isVisible);
 
+typedef VisibilityChanged(bool isVisible);
 
 class MainMenuWidget extends StatefulWidget  
 {
@@ -32,9 +36,43 @@ class _MainMenuWidgetState extends State<MainMenuWidget> with SingleTickerProvid
 	));
 	Animation<Offset> _menuOffset;
 
+    ScrollController _scrollController;
+    bool _isSearching = false;
+    List<SearchResult> _searchResults = [];
+    
+    // This is passed to the SearchWidget so we can handle text edits and display the search results on the main menu.
+    final TextEditingController _searchTextController = TextEditingController();
+    final FocusNode _searchFocusNode = FocusNode();
+    Timer _searchTimer;
+
 	initState()
 	{
 		super.initState();
+
+        _scrollController = new ScrollController();
+        _searchTextController.addListener(() {
+            String txt = _searchTextController.text.trim();
+            if(_searchTimer != null && _searchTimer.isActive)
+            {
+                // Remove old timer.
+                _searchTimer.cancel();
+            }
+            // Perform search.
+            _searchTimer = new Timer(const Duration(milliseconds:350), (){
+                Set<SearchResult> res = SearchManager().performSearch(txt);
+                setState(() {
+                    _searchResults = res.toList();   
+                });
+            });
+        });
+
+        _searchFocusNode.addListener(()
+        {
+            setState(() {
+                _isSearching = _searchFocusNode.hasFocus;
+                if(!_isSearching) _searchResults.clear();
+            } );
+        });
 
 		_controller = AnimationController(
 			vsync: this,
@@ -89,10 +127,12 @@ class _MainMenuWidgetState extends State<MainMenuWidget> with SingleTickerProvid
 				child: Container(
 					padding: EdgeInsets.only(left: 20.0),
                     child: NestedScrollView(
+                        controller: _scrollController,
                         headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled)
                         => <Widget>[
                             SliverList(
                                 delegate: SliverChildListDelegate(
+                                    _isSearching ? [] :
                                     [
                                         Padding(
                                             padding: EdgeInsets.only(top: 36.0),
@@ -137,13 +177,22 @@ class _MainMenuWidgetState extends State<MainMenuWidget> with SingleTickerProvid
                                 pinned: true,
                                 title: Padding(
                                     padding: EdgeInsets.only(right: 20.0),
-                                    child: SearchWidget()
+                                    child: SearchWidget(_searchFocusNode, _searchTextController)
                                 ),
                                 titleSpacing: 0.0
                             ),
                         ],
                         body: SingleChildScrollView(
-                            child: Column(
+                            child: 
+                            _isSearching ? Column(
+                                children: [
+                                    ]..addAll(
+                                    _searchResults.map((SearchResult sr)
+                                        => SearchResultWidget(sr.label, sr.formatYearsAgo(), "assets/dino.jpg")
+                                    )
+                                )
+                            ) :
+                                Column(
                                 children: 
                                     []..addAll(
                                     widget.data.sections.map((MenuSectionData section)
@@ -262,5 +311,4 @@ class _MainMenuWidgetState extends State<MainMenuWidget> with SingleTickerProvid
 			)
 		);
     }
-
 }

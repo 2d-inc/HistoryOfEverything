@@ -1,9 +1,8 @@
 import 'package:timeline/article/article_widget.dart';
 import 'package:timeline/main_menu/menu_data.dart';
-import 'package:timeline/search_manager.dart';
-import 'package:timeline/timeline/timeline.dart';
 
 import 'timeline/timeline_widget.dart';
+import 'timeline/timeline_entry.dart';
 import 'main_menu/main_menu.dart';
 import 'package:flutter/material.dart';
 
@@ -62,7 +61,6 @@ class _MyHomePageState extends State<MyHomePage> {
 	initState()
 	{
 		super.initState();
-        SearchManager();
 		MenuData menu = new MenuData();
 		menu.loadFromBundle("assets/menu.json").then((bool success)
 		{

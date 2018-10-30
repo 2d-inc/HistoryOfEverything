@@ -1,16 +1,15 @@
 import 'dart:math';
 import 'dart:ui';
+import "dart:ui" as ui;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import "package:flutter/scheduler.dart";
-import 'package:nima/nima/math/aabb.dart' as nima;
 import 'package:nima/nima/actor_image.dart' as nima;
-import 'package:timeline/main_menu/menu_data.dart';
-import "dart:ui" as ui;
-import "../colors.dart";
+import 'package:nima/nima/math/aabb.dart' as nima;
+import '../timeline/timeline.dart';
+import '../timeline/timeline_entry.dart';
 
-import 'package:timeline/timeline/ticks.dart';
-import 'package:timeline/timeline/timeline.dart';
 
 class ArticleVignette extends LeafRenderObjectWidget
 {

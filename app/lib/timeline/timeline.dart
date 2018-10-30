@@ -1,34 +1,18 @@
-import 'dart:convert';
-import 'dart:math';
-import 'dart:typed_data';
-import 'dart:ui';
-import 'package:flutter/material.dart';
-import "package:flutter/scheduler.dart";
+import "dart:convert";
+import "dart:math";
+import "dart:typed_data";
 import "dart:ui" as ui;
+
+import "package:flutter/scheduler.dart";
 import "package:flutter/services.dart" show rootBundle;
 import "package:nima/nima.dart" as nima;
+import "package:nima/nima/actor_image.dart" as nima;
 import "package:nima/nima/animation/actor_animation.dart" as nima;
 import "package:nima/nima/math/aabb.dart" as nima;
 import "package:nima/nima/math/vec2d.dart" as nima;
-import 'package:nima/nima/actor_image.dart' as nima;
+import "timeline_entry.dart";
+import "../search_manager.dart";
 typedef PaintCallback();
-
-enum TimelineEntryType
-{
-	Era,
-	Incident
-}
-
-class TimelineAsset
-{
-	double width;
-	double height;
-	double opacity = 0.0;
-	double scale = 0.0;
-	double scaleVelocity = 0.0;
-	double y = 0.0;
-	double velocity = 0.0;
-}
 
 class TimelineImage extends TimelineAsset
 {
@@ -44,36 +28,6 @@ class TimelineNima extends TimelineAsset
 	bool loop;
 	double offset = 0.0;
 	double gap = 0.0;
-}
-
-
-
-class TimelineEntry
-{
-	TimelineEntryType type;
-	double start;
-	double end;
-	String label;
-	String articleFilename;
-
-	TimelineEntry parent;
-	List<TimelineEntry> children;
-
-	double y = 0.0;
-	double endY = 0.0;
-	double length = 0.0;
-	double opacity = 0.0;
-	double labelOpacity = 0.0;
-	double legOpacity = 0.0;
-	double labelY = 0.0;
-	double labelVelocity = 0.0;
-
-	bool get isVisible
-	{
-		return opacity > 0.0;
-	}
-
-	TimelineAsset asset;
 }
 
 String getExtension(String filename)
@@ -339,6 +293,9 @@ class Timeline
 				_entries.add(entry);
 			}
 		}
+
+        // Initialize the SearchDictionary.
+        SearchManager.init(allEntries);
 
 		return true;	
 	}

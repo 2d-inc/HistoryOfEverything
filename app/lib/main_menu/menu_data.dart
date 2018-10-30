@@ -15,6 +15,9 @@ class MenuItemData
 	String label;
 	double start;
 	double end;
+
+    MenuItemData();
+    MenuItemData.fromData(this.label,  this.start, this.end);
 }
 
 class MenuData

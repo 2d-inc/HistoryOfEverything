@@ -1,9 +1,10 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:timeline/main_menu/menu_data.dart';
-import 'package:timeline/timeline/timeline.dart';
-import 'package:timeline/timeline/timeline_render_widget.dart';
+import '../main_menu/menu_data.dart';
+import '../timeline/timeline.dart';
+import '../timeline/timeline_entry.dart';
+import '../timeline/timeline_render_widget.dart';
 
 typedef ShowMenuCallback();
 typedef SelectItemCallback(TimelineEntry item);

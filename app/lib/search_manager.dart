@@ -1,132 +1,61 @@
 import "dart:collection";
-import "dart:convert";
 
-import "package:flutter/services.dart" show rootBundle;
+import "timeline/timeline_entry.dart";
 
 class SearchManager
 {
     static final SearchManager _searchManager = new SearchManager._internal();
-    final SplayTreeMap<String, Set<SearchResult>> _queryMap = new SplayTreeMap<String, Set<SearchResult>>();
+    final SplayTreeMap<String, Set<TimelineEntry>> _queryMap = new SplayTreeMap<String, Set<TimelineEntry>>();
 
-    List<SearchResult> labels;
+    SearchManager._internal();
 
-    SearchManager._internal()
+    _fill(List<TimelineEntry> entries)
     {
-        labels = [];
-        _loadFromBundle("assets/timeline.json").then((bool success)
+        _queryMap.clear(); // Cleanup.
+
+        // Fill the map with all the search substrings.
+        for(TimelineEntry e in entries)
         {
-            print("Processed all the entries! $labels");
-        });
-    }
-
-    Future<bool> _loadFromBundle(String filepath) async
-    {
-        String data = await rootBundle.loadString(filepath);
-        List jsonEntries = json.decode(data) as List;
-
-        for(dynamic entry in jsonEntries)
-        {
-            Map map = entry as Map;
-
-            if(map != null)
+            String label = e.label;
+            int len = label.length;
+            for(int i = 0; i < len; i++)
             {
-                String label;
-                int startTime;
-                if(map.containsKey("label"))
+                for(int j = i+1; j <= len; j++)
                 {
-                    label = map["label"] as String;
-                }
-                if(map.containsKey("date"))
-                {
-                    num start = map["date"];
-                    startTime = start.toInt();
-                }
-                else if(map.containsKey("start"))
-                {
-                    num start = map["start"];
-                    startTime = start.toInt();
-                }
-
-                SearchResult sr = new SearchResult(label, startTime);
-                labels.add(sr);
-                // Add to the map all the substrings of this label, to perform a search more efficiently.
-                int len = label.length;
-                for(int i = 0; i < len; i++)
-                {
-                    for(int j = i+1; j <= len; j++)
+                    String substring = label.substring(i, j).toLowerCase();
+                    if(_queryMap.containsKey(substring))
                     {
-                        String substring = label.substring(i, j).toLowerCase();
-                        if(_queryMap.containsKey(substring))
-                        {
-                            Set<SearchResult> labels = _queryMap[substring];
-                            labels.add(sr);
-                        }
-                        else
-                        {
-                            _queryMap.putIfAbsent(substring, () => new Set.from([sr]));
-                        }
+                        Set<TimelineEntry> labels = _queryMap[substring];
+                        labels.add(e);
+                    }
+                    else
+                    {
+                        _queryMap.putIfAbsent(substring, () => new Set.from([e]));
                     }
                 }
             }
         }
-        for(MapEntry<String, Set<SearchResult>> entry in _queryMap.entries)
-        {
-            print("${entry.key}, ${entry.value}");
-        }
-        return true;
     }
 
-    factory SearchManager()
+    factory SearchManager.init([List<TimelineEntry> entries])
     {
+        if(entries != null)
+        {
+            _searchManager._fill(entries);
+        }
         return _searchManager;
     }
 
-    Set<SearchResult> performSearch(String query)
+    Set<TimelineEntry> performSearch(String query)
     {
         if(_queryMap.containsKey(query))
             return _queryMap[query];
-        return Set();
-    }
-}
-
-
-class SearchResult
-{
-    final String label;
-    final int startTime;
-    // TODO: final String imagePath;
-    SearchResult(this.label, this.startTime);
-
-    String formatYearsAgo()
-    {
-        String label;
-        int valueAbs = startTime.abs();
-        if(valueAbs > 1000000000)
+        Iterable<String> keys = _queryMap.keys;
+        Set<TimelineEntry> res = Set();
+        for(String k in keys)
         {
-            double v = (valueAbs/100000000.0).floorToDouble()/10.0;
-            
-            label = (valueAbs/1000000000).toStringAsFixed(v == v.floorToDouble() ? 0 : 1) + " Billion";
+            res.addAll(_queryMap[k]);
         }
-        else if(valueAbs > 1000000)
-        {
-            double v = (valueAbs/100000.0).floorToDouble()/10.0;
-            label = (valueAbs/1000000).toStringAsFixed(v == v.floorToDouble() ? 0 : 1) + " Million";
-        }
-        else if(valueAbs > 10000) // N.B. < 10,000
-        {
-            double v = (valueAbs/100.0).floorToDouble()/10.0;
-            label = (valueAbs/1000).toStringAsFixed(v == v.floorToDouble() ? 0 : 1) + " Thousand";
-        }
-        else
-        {
-            label = valueAbs.toStringAsFixed(0) + " Years Ago";
-        }
-        return "$label Years Ago";
-    }
-
-    @override
-    String toString()
-    {
-        return "$label: $startTime";
+        return res;
     }
 }

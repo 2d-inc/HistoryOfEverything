@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import "package:flutter/services.dart" show rootBundle;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:timeline/article/article_vignette.dart';
-import 'package:timeline/timeline/timeline.dart';
+
 import "../colors.dart";
-import "package:flutter/services.dart" show rootBundle;
+import '../timeline/timeline_entry.dart';
 
 typedef GoBackCallback();
 typedef ArticleVisibilityChanged(bool isVisible);
@@ -19,33 +20,6 @@ class ArticleWidget extends StatefulWidget
 
 	@override
 	 _ArticleWidgetState createState() => new _ArticleWidgetState();
-}
-
-String formatYearsAgo(int value)
-{
-	String label;
-	int valueAbs = value.abs();
-	if(valueAbs > 1000000000)
-	{
-		double v = (valueAbs/100000000.0).floorToDouble()/10.0;
-		
-		label = (valueAbs/1000000000).toStringAsFixed(v == v.floorToDouble() ? 0 : 1) + " Billion";
-	}
-	else if(valueAbs > 1000000)
-	{
-		double v = (valueAbs/100000.0).floorToDouble()/10.0;
-		label = (valueAbs/1000000).toStringAsFixed(v == v.floorToDouble() ? 0 : 1) + " Million";
-	}
-	else if(valueAbs > 10000) // N.B. < 10,000
-	{
-		double v = (valueAbs/100.0).floorToDouble()/10.0;
-		label = (valueAbs/1000).toStringAsFixed(v == v.floorToDouble() ? 0 : 1) + " Thousand";
-	}
-	else
-	{
-		label = valueAbs.toStringAsFixed(0) + " Years Ago";
-	}
-	return "$label Years Ago";
 }
 
 class _ArticleWidgetState extends State<ArticleWidget> with SingleTickerProviderStateMixin
@@ -151,7 +125,7 @@ class _ArticleWidgetState extends State<ArticleWidget> with SingleTickerProvider
 					return;	
 				}
 				_title = widget.article.label;
-				_subTitle = formatYearsAgo(widget.article.start.round());
+				_subTitle = widget.article.formatYearsAgo();
 				_articleMarkdown = "";
 			});
 			if(widget.article.articleFilename != null)

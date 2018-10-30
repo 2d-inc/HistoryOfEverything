@@ -1,6 +1,7 @@
 import "dart:async";
 
 import "package:flutter/material.dart";
+import "package:flutter/services.dart";
 import "package:flutter/widgets.dart";
 import "package:share/share.dart";
 
@@ -10,6 +11,7 @@ import "main_menu_section.dart";
 import "search_result_widget.dart";
 import "../search_manager.dart";
 import "../colors.dart";
+import "../timeline/timeline_entry.dart";
 
 typedef VisibilityChanged(bool isVisible);
 
@@ -38,7 +40,7 @@ class _MainMenuWidgetState extends State<MainMenuWidget> with SingleTickerProvid
 
     ScrollController _scrollController;
     bool _isSearching = false;
-    List<SearchResult> _searchResults = [];
+    List<TimelineEntry> _searchResults = [];
     
     // This is passed to the SearchWidget so we can handle text edits and display the search results on the main menu.
     final TextEditingController _searchTextController = TextEditingController();
@@ -59,7 +61,7 @@ class _MainMenuWidgetState extends State<MainMenuWidget> with SingleTickerProvid
             }
             // Perform search.
             _searchTimer = new Timer(const Duration(milliseconds:350), (){
-                Set<SearchResult> res = SearchManager().performSearch(txt);
+                Set<TimelineEntry> res = SearchManager.init().performSearch(txt);
                 setState(() {
                     _searchResults = res.toList();   
                 });
@@ -187,8 +189,26 @@ class _MainMenuWidgetState extends State<MainMenuWidget> with SingleTickerProvid
                             _isSearching ? Column(
                                 children: [
                                     ]..addAll(
-                                    _searchResults.map((SearchResult sr)
-                                        => SearchResultWidget(sr.label, sr.formatYearsAgo(), "assets/dino.jpg")
+                                    _searchResults.map((TimelineEntry sr)
+                                        {
+                                            return SearchResultWidget(sr, "assets/dino.jpg", () {
+                                                TimelineEntry te = sr;
+                                                SystemChannels.textInput.invokeMethod('TextInput.hide');
+                                                double start = te.start;
+                                                double end = (te.type == TimelineEntryType.Era) ? te.start : te.end;
+                                                if(start == end)
+                                                {
+                                                    // Use 2.5% of the current timeline entry date to estimate start/end.
+                                                    double distance = start * 0.025;
+                                                    print("CHANGING START: $start, $end, $distance");
+                                                    start += distance;
+                                                    end -= distance;
+                                                    print("Changed to: $start, $end, $distance");
+                                                }
+
+                                                widget.selectItem(MenuItemData.fromData(sr.label, start, end));
+                                            });
+                                        }
                                     )
                                 )
                             ) :

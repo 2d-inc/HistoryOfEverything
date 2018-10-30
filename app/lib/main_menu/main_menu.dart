@@ -9,6 +9,7 @@ import "menu_data.dart";
 import "search_widget.dart";
 import "main_menu_section.dart";
 import "search_result_widget.dart";
+import "about_page.dart";
 import "../search_manager.dart";
 import "../colors.dart";
 import "../timeline/timeline_entry.dart";
@@ -296,7 +297,23 @@ class _MainMenuWidgetState extends State<MainMenuWidget> with SingleTickerProvid
                                         Padding(
                                           padding: const EdgeInsets.only(bottom: 30.0),
                                           child: FlatButton(
-                                              onPressed: () => print("ABOUT?"),
+                                              onPressed: () => Navigator.of(context).push(
+                                                    PageRouteBuilder(
+                                                        opaque: true,
+                                                        transitionDuration: const Duration(milliseconds: 200),
+                                                        pageBuilder: (context, _, __) => AboutPage(),
+                                                        transitionsBuilder: (_, Animation<double> animation, __, Widget child)
+                                                        {
+                                                            return new SlideTransition(
+                                                                child: child,
+                                                                position: new Tween<Offset>(
+                                                                    begin: const Offset(-1.0, 0.0),
+                                                                    end: Offset.zero
+                                                                ).animate(animation)
+                                                            );
+                                                        }
+                                                    )
+                                                ),
                                               color: Colors.transparent,
                                               child: Row(
                                                   crossAxisAlignment: CrossAxisAlignment.center,

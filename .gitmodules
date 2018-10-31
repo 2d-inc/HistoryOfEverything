@@ -1,3 +1,6 @@
 [submodule "dependencies/Nima-Flutter"]
 	path = dependencies/Nima-Flutter
 	url = git@github.com:2d-inc/Nima-Flutter.git
+[submodule "dependencies/Flare-Flutter"]
+	path = dependencies/Flare-Flutter
+	url = git@github.com:2d-inc/Flare-Flutter.git

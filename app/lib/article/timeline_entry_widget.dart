@@ -13,11 +13,11 @@ import '../timeline/timeline.dart';
 import '../timeline/timeline_entry.dart';
 
 
-class ArticleVignette extends LeafRenderObjectWidget
+class TimelineEntryWidget extends LeafRenderObjectWidget
 {
 	final bool isActive;
 	final TimelineEntry timelineEntry;
-	ArticleVignette({Key key, this.isActive, this.timelineEntry}): super(key: key);
+	TimelineEntryWidget({Key key, this.isActive, this.timelineEntry}): super(key: key);
 
 	@override
 	RenderObject createRenderObject(BuildContext context) 

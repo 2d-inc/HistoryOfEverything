@@ -1,3 +1,4 @@
+import "thumbnail.dart";
 import "package:flutter/material.dart";
 import "../colors.dart";
 import "../timeline/timeline_entry.dart";
@@ -5,7 +6,7 @@ import "../timeline/timeline_entry.dart";
 class SearchResultWidget extends StatelessWidget
 {
     final TimelineEntry timelineEntry;
-    final imagePath;
+    final String imagePath;
     final VoidCallback _onSelected;
 
     SearchResultWidget(this.timelineEntry, this.imagePath, this._onSelected, {Key key}) : super(key:key);
@@ -24,10 +25,7 @@ class SearchResultWidget extends StatelessWidget
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: 
                             [
-                                CircleAvatar(
-                                    radius: 17.0,
-                                    backgroundImage: AssetImage(imagePath), 
-                                ),
+                                ThumbnailWidget(timelineEntry),
                                 Container(
                                     margin: EdgeInsets.only(left: 17.0),  
                                     child: Column(

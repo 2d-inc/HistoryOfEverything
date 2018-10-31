@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import "package:flutter/services.dart" show rootBundle;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
-import 'package:timeline/article/article_vignette.dart';
+import 'package:timeline/article/timeline_entry_widget.dart';
 
 import "../colors.dart";
 import '../timeline/timeline_entry.dart';
@@ -193,7 +193,7 @@ class _ArticleWidgetState extends State<ArticleWidget> with SingleTickerProvider
 										crossAxisAlignment: CrossAxisAlignment.start,
 										children: <Widget>
 										[
-											new Container(height:280, child: ArticleVignette(isActive: widget.show, timelineEntry: widget.article)),
+											new Container(height:280, child: TimelineEntryWidget(isActive: widget.show, timelineEntry: widget.article)),
 											Text(
 												_title,
 												textAlign: TextAlign.left,

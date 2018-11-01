@@ -1,7 +1,6 @@
 import "dart:async";
 
 import "package:flutter/material.dart";
-import "package:flutter/services.dart";
 import "package:flutter/widgets.dart";
 import "package:share/share.dart";
 
@@ -10,6 +9,7 @@ import "search_widget.dart";
 import "main_menu_section.dart";
 import "search_result_widget.dart";
 import "about_page.dart";
+import "favorites_page.dart";
 import "../search_manager.dart";
 import "../colors.dart";
 import "../timeline/timeline_entry.dart";
@@ -192,23 +192,7 @@ class _MainMenuWidgetState extends State<MainMenuWidget> with SingleTickerProvid
                                     ]..addAll(
                                     _searchResults.map((TimelineEntry sr)
                                         {
-                                            return SearchResultWidget(sr, "assets/dino.jpg", () {
-                                                TimelineEntry te = sr;
-                                                SystemChannels.textInput.invokeMethod('TextInput.hide');
-                                                double start = te.start;
-                                                double end = (te.type == TimelineEntryType.Era) ? te.start : te.end;
-                                                if(start == end)
-                                                {
-                                                    // Use 2.5% of the current timeline entry date to estimate start/end.
-                                                    double distance = start * 0.025;
-                                                    print("CHANGING START: $start, $end, $distance");
-                                                    start += distance;
-                                                    end -= distance;
-                                                    print("Changed to: $start, $end, $distance");
-                                                }
-
-                                                widget.selectItem(MenuItemData.fromData(sr.label, start, end));
-                                            });
+                                            return SearchResultWidget(widget.selectItem, sr);
                                         }
                                     )
                                 )
@@ -237,7 +221,26 @@ class _MainMenuWidgetState extends State<MainMenuWidget> with SingleTickerProvid
                                     )
                                     ..add(
                                         FlatButton(
-                                            onPressed: () => print("FAVS"),
+                                            onPressed: () => Navigator.of(context).push(
+                                                PageRouteBuilder(
+                                                    opaque: true,
+                                                    transitionDuration: const Duration(milliseconds: 300),
+                                                    pageBuilder: (context, _, __) => FavoritesPage(widget.selectItem),
+                                                    transitionsBuilder: (_, Animation<double> animation, __, Widget child)
+                                                    {
+                                                        return new SlideTransition(
+                                                            child: child,
+                                                            position: new Tween<Offset>(
+                                                                begin: const Offset(-1.0, 0.0),
+                                                                end: Offset.zero
+                                                            ).animate(CurvedAnimation(
+                                                                parent: animation,
+                                                                curve: Curves.fastOutSlowIn
+                                                            ))
+                                                        );
+                                                    }
+                                                )
+                                            ),
                                             color: Colors.transparent,
                                             child: Row(
                                                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -300,7 +303,7 @@ class _MainMenuWidgetState extends State<MainMenuWidget> with SingleTickerProvid
                                               onPressed: () => Navigator.of(context).push(
                                                     PageRouteBuilder(
                                                         opaque: true,
-                                                        transitionDuration: const Duration(milliseconds: 200),
+                                                        transitionDuration: const Duration(milliseconds: 300),
                                                         pageBuilder: (context, _, __) => AboutPage(),
                                                         transitionsBuilder: (_, Animation<double> animation, __, Widget child)
                                                         {
@@ -309,7 +312,10 @@ class _MainMenuWidgetState extends State<MainMenuWidget> with SingleTickerProvid
                                                                 position: new Tween<Offset>(
                                                                     begin: const Offset(-1.0, 0.0),
                                                                     end: Offset.zero
-                                                                ).animate(animation)
+                                                                ).animate(CurvedAnimation(
+                                                                    parent: animation,
+                                                                    curve: Curves.fastOutSlowIn
+                                                                ))
                                                             );
                                                         }
                                                     )

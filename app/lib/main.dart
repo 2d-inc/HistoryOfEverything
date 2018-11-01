@@ -1,6 +1,7 @@
 import 'package:timeline/article/article_widget.dart';
 import 'package:timeline/main_menu/menu_data.dart';
 
+import "bloc_provider.dart";
 import 'timeline/timeline_widget.dart';
 import 'timeline/timeline_entry.dart';
 import 'main_menu/main_menu.dart';
@@ -142,6 +143,12 @@ class _MyHomePageState extends State<MyHomePage> {
 		});
 	}
 
+    @override
+    dispose()
+    {
+        super.dispose();
+    }
+
 	@override
 	Widget build(BuildContext context) 
 	{
@@ -150,15 +157,17 @@ class _MyHomePageState extends State<MyHomePage> {
 			// Still loading.
 			return new Container();
 		}
-		return new Scaffold(
-			appBar: null,
-			body: new Stack(
-				children: <Widget> [
-					Positioned.fill( child: TimelineWidget( showMenu: _onShowMenu, isActive:_isTimelineActive, focusItem:_focusItem, selectItem: _selectTimelineEntry )),
-					Positioned.fill( child: MainMenuWidget( show:_isMenuVisible, selectItem: _selectMenuItem, data:_menu, visibilityChanged:_onMainMenuVisibilityChanged) ),
-					Positioned.fill( child: ArticleWidget( show:_isArticleVisible, article:_article, goBack: _returnToTimeline, visibilityChanged: _onArticleVisibilityChanged) )
-				]
-			)
+		return BlocProvider(
+            child: new Scaffold(
+                appBar: null,
+                body: new Stack(
+                    children: <Widget> [
+                        Positioned.fill( child: TimelineWidget( showMenu: _onShowMenu, isActive:_isTimelineActive, focusItem:_focusItem, selectItem: _selectTimelineEntry )),
+                        Positioned.fill( child: MainMenuWidget( show:_isMenuVisible, selectItem: _selectMenuItem, data:_menu, visibilityChanged:_onMainMenuVisibilityChanged) ),
+                        Positioned.fill( child: ArticleWidget( show:_isArticleVisible, article:_article, goBack: _returnToTimeline, visibilityChanged: _onArticleVisibilityChanged) )
+                    ]
+                )
+            ),
 		);
 	}
 }

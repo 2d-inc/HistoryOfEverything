@@ -4,7 +4,9 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:timeline/article/timeline_entry_widget.dart';
 
+import "../bloc_provider.dart";
 import "../colors.dart";
+import "../blocs/favorites_bloc.dart";
 import '../timeline/timeline_entry.dart';
 
 typedef GoBackCallback();
@@ -29,6 +31,8 @@ class _ArticleWidgetState extends State<ArticleWidget> with SingleTickerProvider
 	String _subTitle = "";
 	MarkdownStyleSheet _markdownStyleSheet;
 	AnimationController _controller;
+    bool _isFavorite = false;
+
 	static final Animatable<Offset> _slideTween = Tween<Offset>(
 		begin: const Offset(0.0, 0.0),
 		end: const Offset(1.0, 0.0),
@@ -61,6 +65,20 @@ class _ArticleWidgetState extends State<ArticleWidget> with SingleTickerProvider
 			height: 1.75,
 			fontFamily: "Roboto"
 		);
+		TextStyle h1 = new TextStyle(
+			color: darkText,
+			fontSize: 32.0,
+			height: 1.625,
+			fontFamily: "Roboto",
+            fontWeight: FontWeight.bold
+		);
+		TextStyle h2 = new TextStyle(
+			color: darkText,
+			fontSize: 24.0,
+			height: 2,
+			fontFamily: "Roboto",
+            fontWeight: FontWeight.bold
+		);
 		TextStyle strong = new TextStyle(
 			color: darkText,
 			fontSize: 16.0,
@@ -78,8 +96,8 @@ class _ArticleWidgetState extends State<ArticleWidget> with SingleTickerProvider
 			a: style,
 			p: style,
 			code: style,
-			h1: style,
-			h2: style,
+			h1: h1,
+			h2: h2,
 			h3: style,
 			h4: style,
 			h5: style,
@@ -156,6 +174,16 @@ class _ArticleWidgetState extends State<ArticleWidget> with SingleTickerProvider
 				});
 			}
 		}
+        FavoritesBloc bloc = FavoritesBloc();
+        bloc.fetchFavorites().then((List<TimelineEntry> favs)
+        {
+            bool isFav = favs.any((TimelineEntry te) => te.label.toLowerCase() == _title.toLowerCase());
+            if(isFav != _isFavorite)
+            {
+                setState(() => _isFavorite = isFav);
+            }
+        }
+        );
 	}
 
     @override
@@ -187,35 +215,65 @@ class _ArticleWidgetState extends State<ArticleWidget> with SingleTickerProvider
 							Expanded(
 								child: SingleChildScrollView
 								(
-									padding: EdgeInsets.only(left: 20, right:20, bottom:devicePadding.bottom),
+									padding: EdgeInsets.only(left: 20, right:20, bottom: 20),
 									child: Column
 									(
 										crossAxisAlignment: CrossAxisAlignment.start,
 										children: <Widget>
 										[
 											new Container(height:280, child: TimelineEntryWidget(isActive: widget.show, timelineEntry: widget.article)),
-											Text(
-												_title,
-												textAlign: TextAlign.left,
-												style: TextStyle(
-														color: darkText,
-														fontSize: 24.0,
-														height: 1.3333333,
-														fontFamily: "Roboto"
-													)
-												),
-											Text(
-												_subTitle,
-												textAlign: TextAlign.left,
-												style: TextStyle(
-														color: darkText.withOpacity(darkText.opacity*0.5),
-														fontSize: 16.0,
-														height: 1.5,
-														fontFamily: "Roboto"
-													)
-												),
+                                            Row(
+                                                children:
+                                                [
+                                                    Column(
+                                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                                        children:
+                                                        [
+                                                            Text(
+                                                                _title,
+                                                                textAlign: TextAlign.left,
+                                                                style: TextStyle(
+                                                                        color: darkText,
+                                                                        fontSize: 24.0,
+                                                                        height: 1.3333333,
+                                                                        fontFamily: "Roboto"
+                                                                    )
+                                                                ),
+                                                            Text(
+                                                                _subTitle,
+                                                                textAlign: TextAlign.left,
+                                                                style: TextStyle(
+                                                                        color: darkText.withOpacity(darkText.opacity*0.5),
+                                                                        fontSize: 16.0,
+                                                                        height: 1.5,
+                                                                        fontFamily: "Roboto"
+                                                                    )
+                                                                )
+                                                        ]
+                                                    ),
+                                                    Expanded(child: Container()), // Fill the Row with empty space
+                                                    IconButton(
+                                                        icon: Image.asset(
+                                                            _isFavorite ? "assets/heart_icon.png" : "assets/heart_outline_icon.png", 
+                                                            height: 18.0
+                                                            ),
+                                                        onPressed: (){
+                                                            setState(() { _isFavorite = !_isFavorite; });
+                                                            if(_isFavorite)
+                                                            {
+                                                                BlocProvider.of(context).addFavorite(widget.article);
+                                                            }
+                                                            else
+                                                            {
+                                                                BlocProvider.of(context).removeFavorite(widget.article);
+                                                            }
+                                                        },
+                                                    )
+                                                    
+                                                ]
+                                            ),
 											Container(margin:EdgeInsets.only(top:13, bottom:13), height:1, color:Colors.black.withOpacity(0.11)),
-											MarkdownBody(data: _articleMarkdown, styleSheet: _markdownStyleSheet,)
+                                            MarkdownBody(data: _articleMarkdown, styleSheet: _markdownStyleSheet)
 										],
 									)
 								)

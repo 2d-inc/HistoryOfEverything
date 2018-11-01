@@ -1,58 +1,30 @@
-import "thumbnail.dart";
+import "package:flutter/services.dart";
 import "package:flutter/material.dart";
-import "../colors.dart";
+
+import "thumbnail_detail_widget.dart";
+import "menu_data.dart";
+import "main_menu_section.dart";
 import "../timeline/timeline_entry.dart";
 
-class SearchResultWidget extends StatelessWidget
+class SearchResultWidget extends ThumbnailDetailWidget
 {
-    final TimelineEntry timelineEntry;
-    final String imagePath;
-    final VoidCallback _onSelected;
+    final SelectItemCallback _onSelected;
 
-    SearchResultWidget(this.timelineEntry, this.imagePath, this._onSelected, {Key key}) : super(key:key);
+    SearchResultWidget(this._onSelected, TimelineEntry timelineEntry, {Key key}) : super(timelineEntry, key:key);
 
     @override
-    Widget build(BuildContext context)
+    onTap()
     {
-        // Use (Material + InkWell) to show a ripple effect on the row.
-        return Material(
-            color: Colors.transparent,
-            child: InkWell(
-                onTap: _onSelected,
-                child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 14.0),
-                        child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: 
-                            [
-                                ThumbnailWidget(timelineEntry),
-                                Container(
-                                    margin: EdgeInsets.only(left: 17.0),  
-                                    child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: 
-                                        [
-                                            Text(timelineEntry.label,
-                                                style: TextStyle(
-                                                    fontFamily: "RobotoMedium",
-                                                    fontSize: 20.0,
-                                                    color: darkText.withOpacity(darkText.opacity*0.75)
-                                                )
-                                            ,),
-                                            Text(timelineEntry.formatYearsAgo(),
-                                                style: TextStyle(
-                                                    fontFamily: "Roboto",
-                                                    fontSize: 14.0,
-                                                    color: Colors.black.withOpacity(0.5)
-                                                )
-                                            )
-                                        ]
-                                    ),
-                                )
-                            ],
-                        ),
-                    ),
-            )
-        );
+        SystemChannels.textInput.invokeMethod('TextInput.hide');
+        double start = timelineEntry.start;
+        double end = (timelineEntry.type == TimelineEntryType.Era) ? timelineEntry.start : timelineEntry.end;
+        if(start == end)
+        {
+            // Use 2.5% of the current timeline entry date to estimate start/end.
+            double distance = start * 0.025;
+            start += distance;
+            end -= distance;
+        }
+        this._onSelected(MenuItemData.fromData(timelineEntry.label, start, end));
     }
 }

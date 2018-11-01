@@ -17,8 +17,11 @@ dependencies:
     sdk: flutter
   nima:
     path: ../dependencies/Nima-Flutter
+  flare:
+    path: ../dependencies/Flare-Flutter
   flutter_markdown: ^0.2.0
   share: ^0.5.3
+  intl: ">=0.14.0"
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -63,7 +66,7 @@ flutter:
     - assets/Newton/
     - assets/Cold_war/
     - assets/Crusades/
-    - assets/Sapiens/
+    - assets/Homo_Sapiens_Sapiens/
     # - assets/search_icon.png
     # - assets/flutter_logo.png
     # - assets/right_arrow.png

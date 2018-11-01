@@ -42,9 +42,21 @@ class TimelineEntry
 
 	TimelineAsset asset;
 
+
     String formatYearsAgo()
     {
-        String label;
+        return TimelineEntry.formatYears(start) + " Ago";
+    }
+
+    @override
+    String toString()
+    {
+        return "TIMELINE ENTRY: $label -($start,$end)";
+    }
+
+	static String formatYears(double start)
+	{
+		String label;
         int valueAbs = start.round().abs();
         if(valueAbs > 1000000000)
         {
@@ -64,14 +76,8 @@ class TimelineEntry
         }
         else
         {
-            label = valueAbs.toStringAsFixed(0) + " Years Ago";
+            label = valueAbs.toStringAsFixed(0);
         }
-        return "$label Years Ago";
-    }
-
-    @override
-    String toString()
-    {
-        return "TIMELINE ENTRY: $label -($start,$end)";
-    }
+        return label + " Years";
+	}
 }

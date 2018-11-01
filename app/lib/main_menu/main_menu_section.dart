@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:timeline/main_menu/menu_data.dart';
 import "plus_decoration.dart";
-
+import "package:flare/flare_actor.dart";
 typedef SelectItemCallback(MenuItemData item);
 
 class MenuSection extends StatefulWidget
@@ -27,6 +27,7 @@ class _SectionState extends State<MenuSection> with SingleTickerProviderStateMix
 	);
 
 	Animation<double> _sizeAnimation;
+	bool _isExpanded = false;
 
     initState()
     {
@@ -50,8 +51,12 @@ class _SectionState extends State<MenuSection> with SingleTickerProviderStateMix
         super.dispose();
     }
 
-    _onExpand()
+    _toggleExpand()
     {
+		setState(() 
+		{
+			_isExpanded = !_isExpanded;
+		});
         switch(_sizeAnimation.status)
         {
             case AnimationStatus.completed:
@@ -69,7 +74,7 @@ class _SectionState extends State<MenuSection> with SingleTickerProviderStateMix
     @override
     Widget build(BuildContext context) {
         return GestureDetector(
-            onTap: _onExpand,
+            onTap: _toggleExpand,
             child: 
 				Container(
 					decoration: BoxDecoration(
@@ -93,7 +98,7 @@ class _SectionState extends State<MenuSection> with SingleTickerProviderStateMix
 														height: 20.0,
 														width: 20.0,
 														margin: EdgeInsets.all(18.0),
-														decoration: PlusDecoration(widget.accentColor, _sizeAnimation.value)
+														child: new FlareActor("assets/Expand_Collapse.flr", color:widget.accentColor, animation: _isExpanded ? "Collapse" : "Expand")
 													),
 													Text(
 														widget.title,

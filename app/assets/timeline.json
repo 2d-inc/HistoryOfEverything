@@ -10,7 +10,7 @@
 			"width": 2048,
 			"height": 2048,
 			"offset": 700,
-			"gap": -1000,
+			"gap": -1000, 
 			"loop": false
 		}
 	},
@@ -164,7 +164,7 @@
 		"label": "Homo Sapiens Sapiens",
 		"asset": 
 		{
-			"source": "Sapiens/Sapiens.nma",
+			"source": "Homo_Sapiens_Sapiens/Homo_Sapiens_Sapiens.nma",
 			"width": 528,
 			"height": 528,
 			"offset": -40

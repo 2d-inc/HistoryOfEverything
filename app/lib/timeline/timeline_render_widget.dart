@@ -1,7 +1,7 @@
 import 'dart:math';
 import 'dart:ui';
 import "dart:ui" as ui;
-
+import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:nima/nima/actor_image.dart' as nima;
@@ -277,6 +277,62 @@ class TimelineRenderObject extends RenderBox
 			drawItems(context, offset, _timeline.entries, Timeline.MarginLeft-Timeline.DepthOffset*_timeline.renderOffsetDepth, scale, 0);
 			canvas.restore();
 		}
+
+		if(_timeline.nextEntry != null && _timeline.nextEntryOpacity > 0.0)
+		{
+			Color color = Color.fromRGBO(69, 211, 197, _timeline.nextEntryOpacity);
+			double pageSize = (_timeline.renderEnd-_timeline.renderStart);
+			double pageReference = _timeline.renderEnd;//_timeline.renderStart + pageSize/2.0;
+
+			const double MaxLabelWidth = 1200.0;
+			ui.ParagraphBuilder builder = new ui.ParagraphBuilder(new ui.ParagraphStyle(
+				textAlign:TextAlign.start,
+				fontFamily: "Roboto",
+				fontSize: 20.0
+			))..pushStyle(new ui.TextStyle(color:color));
+
+			builder.addText(_timeline.nextEntry.label);
+			ui.Paragraph labelParagraph = builder.build();
+			labelParagraph.layout(new ui.ParagraphConstraints(width: MaxLabelWidth));	
+
+			double y = offset.dy + size.height - 200.0;
+			canvas.drawParagraph(labelParagraph, new Offset(offset.dx + size.width/2.0 - labelParagraph.maxIntrinsicWidth/2.0, y));
+			y += labelParagraph.height;
+
+
+			const double radius = 25.0;
+			y += 15+radius;
+			canvas.drawCircle(new Offset(offset.dx + size.width/2.0, y), radius, new Paint()..color=color..style=PaintingStyle.fill);
+
+			Path path = new Path();
+			double arrowSize = 6.0;
+			path.moveTo(offset.dx + size.width/2.0-arrowSize, y-arrowSize+arrowSize/2.0);
+			path.lineTo(offset.dx + size.width/2.0, y+arrowSize/2.0);
+			path.lineTo(offset.dx + size.width/2.0+arrowSize, y-arrowSize+arrowSize/2.0);
+			canvas.drawPath(path, new  Paint()..color=Colors.white..style=PaintingStyle.stroke..strokeWidth=2.0);
+			y += 15+radius;
+
+
+			builder = new ui.ParagraphBuilder(new ui.ParagraphStyle(
+				textAlign:TextAlign.center,
+				fontFamily: "Roboto",
+				fontSize: 14.0,
+				lineHeight: 1.428
+			))..pushStyle(new ui.TextStyle(color:color));
+
+
+			double timeUntil = _timeline.nextEntry.start - pageReference;
+			double pages = timeUntil/pageSize;
+			NumberFormat formatter = new NumberFormat.compact();
+			String pagesFormatted = formatter.format(pages);
+			String until = "in " + TimelineEntry.formatYears(timeUntil).toLowerCase() + "\n($pagesFormatted page scrolls)";
+			builder.addText(until);
+			labelParagraph = builder.build();
+			labelParagraph.layout(new ui.ParagraphConstraints(width: size.width));			
+			canvas.drawParagraph(labelParagraph, new Offset(offset.dx, y));
+			y += labelParagraph.height;
+
+		}
 	}
 
 	void drawItems(PaintingContext context, Offset offset, List<TimelineEntry> entries, double x, double scale, int depth)
@@ -300,13 +356,13 @@ class TimelineRenderObject extends RenderBox
 			}
 
 			const double MaxLabelWidth = 1200.0;
-			const double BubbleHeight = 50.0;
-			const double BubblePadding = 20.0;
+			const double BubbleHeight = 55.0;
+			const double BubblePadding = 24.0;
 
 			ui.ParagraphBuilder builder = new ui.ParagraphBuilder(new ui.ParagraphStyle(
 				textAlign:TextAlign.start,
-				fontFamily: "Arial",
-				fontSize: 18.0
+				fontFamily: "Roboto",
+				fontSize: 20.0
 			))..pushStyle(new ui.TextStyle(color:const Color.fromRGBO(255, 255, 255, 1.0)));
 
 			builder.addText(item.label);

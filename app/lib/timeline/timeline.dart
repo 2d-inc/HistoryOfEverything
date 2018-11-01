@@ -1,3 +1,4 @@
+import 'dart:async';
 import "dart:convert";
 import "dart:math";
 import "dart:typed_data";
@@ -62,14 +63,19 @@ class Timeline
 	List<TimelineEntry> _entries;
 	List<TimelineAsset> _renderAssets;
 	double _lastEntryY = 0.0;
+	double _lastOnScreenEntryY = 0.0;
 	double _offsetDepth = 0.0;
 	double _renderOffsetDepth = 0.0;
 	double _labelX = 0.0;
 	double _renderLabelX = 0.0;
 	bool _isFrameScheduled = false;
-	bool isInteracting = false;
+	bool _isInteracting = false;
 	double _lastAssetY = 0.0;
 	bool isActive = false;
+	TimelineEntry _nextEntry;
+	TimelineEntry _renderNextEntry;
+	double _nextEntryOpacity = 0.0;
+	double _distanceToNextEntry = 0.0;
 
 	List<TimelineEntry> get entries => _entries;
 	double get renderOffsetDepth => _renderOffsetDepth;
@@ -78,10 +84,67 @@ class Timeline
 	Map<String, nima.FlutterActor> _nimaResources = new Map<String, nima.FlutterActor>();
 
 	PaintCallback onNeedPaint;
+	Timer _steadyTimer;
 	double get start => _start;
 	double get end => _end;
 	double get renderStart => _renderStart;
 	double get renderEnd => _renderEnd;
+	bool get isInteracting => _isInteracting;
+
+	bool _isScaling = false;
+	set isInteracting(bool value)
+	{
+		if(value != _isInteracting)
+		{
+			_isInteracting = value;
+			updateSteady();
+		}
+	}
+	set isScaling(bool value)
+	{
+		if(value != _isScaling)
+		{
+			_isScaling = value;
+			updateSteady();
+		}
+	}
+
+	bool _isSteady = false;
+
+	void updateSteady()
+	{
+		bool isIt = !_isInteracting && !_isScaling;
+
+		if(_steadyTimer != null)
+		{
+			_steadyTimer.cancel();
+			_steadyTimer = null;
+		}
+
+		if(isIt)
+		{
+			_steadyTimer = new Timer(new Duration(seconds: 1), ()
+			{
+				_steadyTimer = null;
+				_isSteady = true;
+			});
+		}
+		else
+		{
+			_isSteady = false;
+		}
+	}
+
+	void startRendering()
+	{
+		if(!_isFrameScheduled)
+		{
+			_isFrameScheduled = true;
+			_lastFrameTime = 0.0;
+			SchedulerBinding.instance.scheduleFrameCallback(beginFrame);
+		}
+	}
+
 
 	static const double LineWidth = 2.0;
 	static const double LineSpacing = 10.0;
@@ -110,7 +173,7 @@ class Timeline
 		loadFromBundle("assets/timeline.json").then((bool success)
 		{
 			// Double check: Make sure we have height by now...
-			double scale = _height == 0.0 ? 1.0 : _height/(_entries.last.end-_entries.first.start);
+			//double scale = _height == 0.0 ? 1.0 : _height/(_entries.last.end-_entries.first.start);
 			// We use the scale to pad by the bubble height when we set the first range.
 			//setViewport(start: _entries.first.start - BubbleHeight/scale - InitialViewportPadding/scale, end: _entries.last.end + BubbleHeight/scale + InitialViewportPadding/scale, animate:true);
 			setViewport(start: _entries.first.start*2.0, end: _entries.first.start, animate:true);
@@ -127,6 +190,9 @@ class Timeline
 	{
 		return _height == 0.0 ? 1.0 : _height/(end-start);
 	}
+
+	TimelineEntry get nextEntry => _renderNextEntry;
+	double get nextEntryOpacity => _nextEntryOpacity;
 
 	Future<bool> loadFromBundle(String filename) async
 	{
@@ -198,7 +264,7 @@ class Timeline
 							{
 								actor = new nima.FlutterActor();
 
-								bool success = await actor.loadFromBundle(removeExtension(filename));
+								bool success = await actor.loadFromBundle(filename);
 								if(success)
 								{
 									_nimaResources[filename] = actor;
@@ -214,7 +280,7 @@ class Timeline
 								nimaAsset.setupAABB = nimaAsset.actor.computeAABB();
 								nimaAsset.animation.apply(nimaAsset.animationTime, nimaAsset.actor, 1.0);
 								nimaAsset.actor.advance(0.0);
-								print("AABB $source ${nimaAsset.setupAABB}");
+								//print("AABB $source ${nimaAsset.setupAABB}");
 								//nima.Vec2D size = nima.AABB.size(new nima.Vec2D(), nimaAsset.setupAABB);
 								//nimaAsset.width = size[0];
 								//nimaAsset.height = size[1];
@@ -245,7 +311,7 @@ class Timeline
 					asset.width = width is int ? width.toDouble() : width;
 					dynamic height = assetMap["height"];
 					asset.height = height is int ? height.toDouble() : height;
-					print("ENTRY ${timelineEntry.label} $asset");
+					//print("ENTRY ${timelineEntry.label} $asset");
 					timelineEntry.asset = asset;
 					
 				}
@@ -383,10 +449,10 @@ class Timeline
 		double de = _end - _renderEnd;
 		
 		bool doneRendering = true;
-		bool isScaling = true;
+		bool stillScaling = true;
 		if(!animate || ((ds*scale).abs() < 1.0 && (de*scale).abs() < 1.0))
 		{
-			isScaling = false;
+			stillScaling = false;
 			_renderStart = _start;
 			_renderEnd = _end;
 		}
@@ -396,15 +462,17 @@ class Timeline
 			_renderStart += ds*speed;
 			_renderEnd += de*speed;
 		}
+		isScaling = stillScaling;
 
 		// Update scale after changing render range.
 		scale = _height/(_renderEnd-_renderStart);
 
 		_lastEntryY = -double.maxFinite;
+		_lastOnScreenEntryY = -double.maxFinite;
 		_lastAssetY = -double.maxFinite;
 		_labelX = 0.0;
 		_offsetDepth = 0.0;
-
+		_nextEntry = null;
 		if(_entries != null)
 		{
 			if(advanceItems(_entries, MarginLeft, scale, elapsed, animate, 0))
@@ -418,7 +486,24 @@ class Timeline
 				doneRendering = false;
 			}
 		}
-		
+
+		if(_nextEntryOpacity == 0.0)
+		{
+			_renderNextEntry = _nextEntry;
+		}
+		double targetNextEntryOpacity = _lastOnScreenEntryY > _height/2.0 || !_isSteady || _distanceToNextEntry < 0.01 || _nextEntry != _renderNextEntry  ? 0.0 : 1.0;
+		double dt = targetNextEntryOpacity - _nextEntryOpacity;
+
+		if(!animate || dt.abs() < 0.01)
+		{
+			_nextEntryOpacity = targetNextEntryOpacity;	
+		}
+		else
+		{
+			doneRendering = false;
+			_nextEntryOpacity += dt * min(1.0, elapsed*10.0);
+		}
+	
 		double dl = _labelX - _renderLabelX;
 		if(!animate || dl.abs() < 1.0)
 		{
@@ -430,7 +515,7 @@ class Timeline
 			_renderLabelX += dl*min(1.0, elapsed*6.0);
 		}
 
-		if(!isInteracting && !isScaling)
+		if(_isSteady)
 		{
 			double dd = _offsetDepth - renderOffsetDepth;
 			if(!animate || dd.abs()*DepthOffset < 1.0)
@@ -540,6 +625,10 @@ class Timeline
 			}
 			
 			_lastEntryY = y;
+			if(_lastEntryY < _height)
+			{
+				_lastOnScreenEntryY = _lastEntryY;
+			}
 
 			
 			if(item.type == TimelineEntryType.Era && y < 0 && endY > _height && depth > _offsetDepth)
@@ -547,10 +636,19 @@ class Timeline
 				_offsetDepth = depth.toDouble();
 			}
 
-			if(y > _height + BubbleHeight || endY < -BubbleHeight)
+			if(y > _height + BubbleHeight)
 			{
 				item.labelY = y;
+				if(_nextEntry == null)
+				{
+					_nextEntry = item;
+					_distanceToNextEntry = (y - _height)/_height;
+				}
 				//continue;
+			}
+			else if(endY < -BubbleHeight)
+			{
+				item.labelY = y;
 			}
 
 			double lx = x + LineSpacing + LineSpacing;

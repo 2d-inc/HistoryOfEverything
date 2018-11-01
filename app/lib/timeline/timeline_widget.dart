@@ -60,7 +60,7 @@ class _TimelineWidgetState extends State<TimelineWidget>
 		_timeline.isInteracting = false;
 		_timeline.setViewport(velocity: details.velocity.pixelsPerSecond.dy * scale, animate: true);
 	}
-
+	
 	onTouchBubble(Bubble bubble)
 	{
 		_touchedBubble = bubble;

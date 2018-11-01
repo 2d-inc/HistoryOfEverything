@@ -29,6 +29,7 @@ class _TimelineWidgetState extends State<TimelineWidget>
 	double _scaleStartYearStart = -100.0;
 	double _scaleStartYearEnd = 100.0;
 	Bubble _touchedBubble;
+	TimelineEntry _touchedEntry;
 
 	void _scaleStart(ScaleStartDetails details)
 	{
@@ -66,12 +67,47 @@ class _TimelineWidgetState extends State<TimelineWidget>
 		_touchedBubble = bubble;
 	}
 
+	onTouchEntry(TimelineEntry entry)
+	{
+		_touchedEntry = entry;
+	}
+
 	void _tapUp(TapUpDetails details)
 	{
 		if(_touchedBubble != null)
 		{
 			widget.selectItem(_touchedBubble.entry);
-			print("TOUCHED ${_touchedBubble.entry.label}");
+		}
+		else if(_touchedEntry != null)
+		{	
+			TimelineEntry next = _touchedEntry.next;
+			while(next != null && next.start == _touchedEntry.start)
+			{
+				next = next.next;
+			}
+			if(next != null)
+			{
+				print("SETTING RANGE TO START ${_touchedEntry.start}, ${next.start}");
+				_timeline.setViewport(start:_touchedEntry.start, end:next.start, animate: true, pad: true);
+			}
+			else
+			{
+				TimelineEntry prev = _touchedEntry.previous;
+				while(prev != null && prev.start == _touchedEntry.start)
+				{
+					prev = prev.previous;
+				}
+				if(prev != null)
+				{
+					print("SETTING RANGE TO PREV ${prev.start}, ${_touchedEntry.start}");
+					_timeline.setViewport(start:prev.start, end:_touchedEntry.start, animate: true, pad: true);
+				}
+				else
+				{
+					print("Couldn't find a range.");
+				}
+			}
+			
 		}
 		//double scale = (_scaleStartYearEnd-_scaleStartYearStart)/context.size.height;
 		//_timeline.onTap(details.globalPosition);
@@ -90,7 +126,7 @@ class _TimelineWidgetState extends State<TimelineWidget>
 			child: new Stack(
 				children:<Widget>
 				[
-					new TimelineRenderWidget(timeline: _timeline, topOverlap:56.0+devicePadding.top, isActive:widget.isActive, focusItem:widget.focusItem, touchBubble:onTouchBubble),
+					new TimelineRenderWidget(timeline: _timeline, topOverlap:56.0+devicePadding.top, isActive:widget.isActive, focusItem:widget.focusItem, touchBubble:onTouchBubble, touchEntry:onTouchEntry),
 					new Column(
 						children: <Widget>[
 							Container(

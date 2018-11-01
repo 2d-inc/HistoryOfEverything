@@ -25,6 +25,8 @@ class TimelineEntry
 
 	TimelineEntry parent;
 	List<TimelineEntry> children;
+	TimelineEntry next;
+	TimelineEntry previous;
 
 	double y = 0.0;
 	double endY = 0.0;

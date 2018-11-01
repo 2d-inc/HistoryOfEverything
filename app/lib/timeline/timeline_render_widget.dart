@@ -6,12 +6,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:nima/nima/actor_image.dart' as nima;
 import 'package:nima/nima/math/aabb.dart' as nima;
+import 'package:flare/flare/actor_image.dart' as flare;
+import 'package:flare/flare/math/aabb.dart' as flare;
 import '../main_menu/menu_data.dart';
 import '../timeline/ticks.dart';
 import '../timeline/timeline.dart';
 import '../timeline/timeline_entry.dart';
 
 typedef TouchBubbleCallback(Bubble bubble);
+typedef TouchEntryCallback(TimelineEntry entry);
 
 class TimelineRenderWidget extends LeafRenderObjectWidget
 {
@@ -19,8 +22,9 @@ class TimelineRenderWidget extends LeafRenderObjectWidget
 	final bool isActive;
 	final MenuItemData focusItem;
 	final TouchBubbleCallback touchBubble;
+	final TouchEntryCallback touchEntry;
 	final double topOverlap;
-	TimelineRenderWidget({Key key, this.timeline, this.isActive, this.focusItem, this.touchBubble, this.topOverlap}): super(key: key);
+	TimelineRenderWidget({Key key, this.timeline, this.isActive, this.focusItem, this.touchBubble, this.touchEntry, this.topOverlap}): super(key: key);
 
 	@override
 	RenderObject createRenderObject(BuildContext context) 
@@ -30,6 +34,7 @@ class TimelineRenderWidget extends LeafRenderObjectWidget
 							..isActive = isActive
 							..focusItem = focusItem
 							..touchBubble = touchBubble
+							..touchEntry = touchEntry
 							..topOverlap = topOverlap;
 	}
 
@@ -41,6 +46,7 @@ class TimelineRenderWidget extends LeafRenderObjectWidget
 					..isActive = isActive
 					..focusItem = focusItem
 					..touchBubble = touchBubble
+					..touchEntry = touchEntry
 					..topOverlap = topOverlap;
 	}
 }
@@ -68,18 +74,11 @@ class TimelineRenderObject extends RenderBox
 	Timeline _timeline;
 	bool _isActive = false;
 	MenuItemData _focusItem;
+	Rect _nextEntryRect;
 
 	double topOverlap = 0.0;
-	TouchBubbleCallback _touchBubble;
-	TouchBubbleCallback get touchBubble => _touchBubble;
-	set touchBubble(TouchBubbleCallback value)
-	{
-		if(_touchBubble == value)
-		{
-			return;
-		}
-		_touchBubble = value;
-	}
+	TouchBubbleCallback touchBubble;
+	TouchEntryCallback touchEntry;
 	
 	Timeline get timeline => _timeline;
 	set timeline(Timeline value)
@@ -142,14 +141,20 @@ class TimelineRenderObject extends RenderBox
 		{
 			if(bubble.rect.contains(screenOffset))
 			{
-				if(_touchBubble != null)
+				if(touchBubble != null)
 				{
-					_touchBubble(bubble);
+					touchBubble(bubble);
 				}
 				return true;
 			}
 		}
-		_touchBubble(null);
+		touchBubble(null);
+
+		if(timeline.nextEntry != null && _nextEntryRect != null && _nextEntryRect.contains(screenOffset))
+		{
+			touchEntry(timeline.nextEntry);
+		}
+
 		return true;
 	}
 
@@ -259,6 +264,63 @@ class TimelineRenderObject extends RenderBox
 						asset.actor.draw(canvas, asset.opacity);
 						canvas.restore();
 					}
+					else if(asset is TimelineFlare && asset.actor != null)
+					{
+						Alignment alignment = Alignment.center;
+						BoxFit fit = BoxFit.cover;
+
+						flare.AABB bounds = asset.setupAABB;
+						double contentWidth = bounds[2] - bounds[0];
+						double contentHeight = bounds[3] - bounds[1];
+						double x = -bounds[0] - contentWidth/2.0 - (alignment.x * contentWidth/2.0) + asset.offset;
+						double y =  -bounds[1] - contentHeight/2.0 + (alignment.y * contentHeight/2.0);
+
+						Offset renderOffset = new Offset(offset.dx + size.width - w, asset.y);
+						Size renderSize = new Size(w*rs, h*rs);
+
+						double scaleX = 1.0, scaleY = 1.0;
+
+						canvas.save();		
+						//canvas.clipRect(renderOffset & renderSize);
+
+						switch(fit)
+						{
+							case BoxFit.fill:
+								scaleX = renderSize.width/contentWidth;
+								scaleY = renderSize.height/contentHeight;
+								break;
+							case BoxFit.contain:
+								double minScale = min(renderSize.width/contentWidth, renderSize.height/contentHeight);
+								scaleX = scaleY = minScale;
+								break;
+							case BoxFit.cover:
+								double maxScale = max(renderSize.width/contentWidth, renderSize.height/contentHeight);
+								scaleX = scaleY = maxScale;
+								break;
+							case BoxFit.fitHeight:
+								double minScale = renderSize.height/contentHeight;
+								scaleX = scaleY = minScale;
+								break;
+							case BoxFit.fitWidth:
+								double minScale = renderSize.width/contentWidth;
+								scaleX = scaleY = minScale;
+								break;
+							case BoxFit.none:
+								scaleX = scaleY = 1.0;
+								break;
+							case BoxFit.scaleDown:
+								double minScale = min(renderSize.width/contentWidth, renderSize.height/contentHeight);
+								scaleX = scaleY = minScale < 1.0 ? minScale : 1.0;
+								break;
+						}
+						
+						canvas.translate(renderOffset.dx + renderSize.width/2.0 + (alignment.x * renderSize.width/2.0), renderOffset.dy + renderSize.height/2.0 + (alignment.y * renderSize.height/2.0));
+						canvas.scale(scaleX, scaleY);
+						canvas.translate(x, y);
+
+						asset.actor.draw(canvas, opacity:asset.opacity);
+						canvas.restore();
+					}
 				}
 			}
 			canvas.restore();
@@ -278,6 +340,7 @@ class TimelineRenderObject extends RenderBox
 			canvas.restore();
 		}
 
+		_nextEntryRect = null;
 		if(_timeline.nextEntry != null && _timeline.nextEntryOpacity > 0.0)
 		{
 			Color color = Color.fromRGBO(69, 211, 197, _timeline.nextEntryOpacity);
@@ -296,14 +359,18 @@ class TimelineRenderObject extends RenderBox
 			labelParagraph.layout(new ui.ParagraphConstraints(width: MaxLabelWidth));	
 
 			double y = offset.dy + size.height - 200.0;
-			canvas.drawParagraph(labelParagraph, new Offset(offset.dx + size.width/2.0 - labelParagraph.maxIntrinsicWidth/2.0, y));
+			double x = offset.dx + size.width/2.0 - labelParagraph.maxIntrinsicWidth/2.0;
+			canvas.drawParagraph(labelParagraph, new Offset(x, y));
 			y += labelParagraph.height;
+
+			_nextEntryRect = new Rect.fromLTWH(x, y, labelParagraph.maxIntrinsicWidth, offset.dy+size.height-y);
 
 
 			const double radius = 25.0;
+			x = offset.dx + size.width/2.0;
 			y += 15+radius;
-			canvas.drawCircle(new Offset(offset.dx + size.width/2.0, y), radius, new Paint()..color=color..style=PaintingStyle.fill);
-
+			canvas.drawCircle(new Offset(x, y), radius, new Paint()..color=color..style=PaintingStyle.fill);
+			_nextEntryRect.expandToInclude(Rect.fromLTWH(x-radius, y-radius, radius*2.0, radius*2.0));
 			Path path = new Path();
 			double arrowSize = 6.0;
 			path.moveTo(offset.dx + size.width/2.0-arrowSize, y-arrowSize+arrowSize/2.0);

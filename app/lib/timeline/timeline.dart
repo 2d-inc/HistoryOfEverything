@@ -11,6 +11,10 @@ import "package:nima/nima/actor_image.dart" as nima;
 import "package:nima/nima/animation/actor_animation.dart" as nima;
 import "package:nima/nima/math/aabb.dart" as nima;
 import "package:nima/nima/math/vec2d.dart" as nima;
+import "package:flare/flare.dart" as flare;
+import "package:flare/flare/animation/actor_animation.dart" as flare;
+import "package:flare/flare/math/aabb.dart" as flare;
+import "package:flare/flare/math/vec2d.dart" as flare;
 import "timeline_entry.dart";
 import "../search_manager.dart";
 typedef PaintCallback();
@@ -26,6 +30,17 @@ class TimelineNima extends TimelineAsset
 	nima.ActorAnimation animation;
 	double animationTime = 0.0;
 	nima.AABB setupAABB;
+	bool loop;
+	double offset = 0.0;
+	double gap = 0.0;
+}
+
+class TimelineFlare extends TimelineAsset
+{
+	flare.FlutterActor actor;
+	flare.ActorAnimation animation;
+	double animationTime = 0.0;
+	flare.AABB setupAABB;
 	bool loop;
 	double offset = 0.0;
 	double gap = 0.0;
@@ -82,6 +97,7 @@ class Timeline
 	double get renderLabelX => _renderLabelX;
 	List<TimelineAsset> get renderAssets => _renderAssets;
 	Map<String, nima.FlutterActor> _nimaResources = new Map<String, nima.FlutterActor>();
+	Map<String, flare.FlutterActor> _flareResources = new Map<String, flare.FlutterActor>();
 
 	PaintCallback onNeedPaint;
 	Timer _steadyTimer;
@@ -127,11 +143,13 @@ class Timeline
 			{
 				_steadyTimer = null;
 				_isSteady = true;
+				startRendering();
 			});
 		}
 		else
 		{
 			_isSteady = false;
+			startRendering();
 		}
 	}
 
@@ -166,6 +184,7 @@ class Timeline
 	static const double Parallax = 100.0;
 	static const double AssetScreenScale = 0.3;
 	static const double InitialViewportPadding = 100.0;
+	static const double TravelViewportPaddingTop = 400.0;
 
 	Timeline()
 	{
@@ -256,6 +275,43 @@ class Timeline
 					String extension = getExtension(source);
 					switch(extension)
 					{
+						case "flr":
+							TimelineFlare flareAsset = new TimelineFlare();
+							asset = flareAsset;
+							flare.FlutterActor actor = _flareResources[filename];
+							if(actor == null)
+							{
+								actor = new flare.FlutterActor();
+
+								bool success = await actor.loadFromBundle(filename);
+								if(success)
+								{
+									_flareResources[filename] = actor;
+								}
+							}
+							if(actor != null)
+							{
+								flareAsset.actor = actor.makeInstance();
+								flareAsset.animation = actor.animations[0];
+								print("ANIMATION ${flareAsset.animation.name}");
+								flareAsset.animationTime = 0.0;
+								flareAsset.actor.advance(0.0);
+
+								flareAsset.setupAABB = flareAsset.actor.computeAABB();
+								flareAsset.animation.apply(flareAsset.animationTime, flareAsset.actor, 1.0);
+								flareAsset.actor.advance(0.0);
+								//print("AABB $source ${flareAsset.setupAABB}");
+								//nima.Vec2D size = nima.AABB.size(new nima.Vec2D(), flareAsset.setupAABB);
+								//flareAsset.width = size[0];
+								//flareAsset.height = size[1];
+								dynamic loop = assetMap["loop"];
+								flareAsset.loop = loop is bool ? loop : true;
+								dynamic offset = assetMap["offset"];
+								flareAsset.offset = offset == null ? 0.0 : offset is int ? offset.toDouble() : offset;
+								dynamic gap = assetMap["gap"];
+								flareAsset.gap = gap == null ? 0.0 : gap is int ? gap.toDouble() : gap;
+							}
+							break;
 						case "nma":
 							TimelineNima nimaAsset = new TimelineNima();
 							asset = nimaAsset;
@@ -327,8 +383,16 @@ class Timeline
 
 		_entries = new List<TimelineEntry>();
 		// build up hierarchy (eras are grouped into spanning eras and events are placed into the eras they belong to)
+		TimelineEntry previous;
 		for(TimelineEntry entry in allEntries)
 		{
+			if(previous != null)
+			{
+				previous.next = entry;
+			}
+			previous = entry;
+			entry.previous = previous;
+
 			TimelineEntry parent;
 			double minDistance = double.maxFinite;
 			for(TimelineEntry checkEntry in allEntries)
@@ -366,15 +430,33 @@ class Timeline
 		return true;	
 	}
 
-	void setViewport({double start = double.maxFinite, double end = double.maxFinite, double height = double.maxFinite, double velocity = double.maxFinite, bool animate = false})
+	void setViewport({double start = double.maxFinite, bool pad = false, double end = double.maxFinite, double height = double.maxFinite, double velocity = double.maxFinite, bool animate = false})
 	{
-		if(start != double.maxFinite)
+		if(start != double.maxFinite && end != double.maxFinite)
 		{
 			_start = start;
-		}
-		if(end != double.maxFinite)
-		{
 			_end = end;
+			if(pad)
+			{
+				double scale = _height/(_end-_start);
+				print("START WAS $_start");
+				_start = _start - (BubbleHeight+TravelViewportPaddingTop)/scale;
+				_end = _end + (BubbleHeight+InitialViewportPadding)/scale;
+				print("START IS $_start");
+			}
+		}
+		else
+		{
+			if(start != double.maxFinite)
+			{
+				double scale = height/(_end-_start);
+				_start = pad ? start - (BubbleHeight+InitialViewportPadding)/scale : start;
+			}
+			if(end != double.maxFinite)
+			{
+				double scale = height/(_end-_start);
+				_end = pad ? end + (BubbleHeight+InitialViewportPadding)/scale : end;
+			}
 		}
 		if(height != double.maxFinite)
 		{
@@ -468,7 +550,7 @@ class Timeline
 		scale = _height/(_renderEnd-_renderStart);
 
 		_lastEntryY = -double.maxFinite;
-		_lastOnScreenEntryY = -double.maxFinite;
+		_lastOnScreenEntryY = 0.0;
 		_lastAssetY = -double.maxFinite;
 		_labelX = 0.0;
 		_offsetDepth = 0.0;
@@ -491,7 +573,8 @@ class Timeline
 		{
 			_renderNextEntry = _nextEntry;
 		}
-		double targetNextEntryOpacity = _lastOnScreenEntryY > _height/2.0 || !_isSteady || _distanceToNextEntry < 0.01 || _nextEntry != _renderNextEntry  ? 0.0 : 1.0;
+
+		double targetNextEntryOpacity = _lastOnScreenEntryY > _height/1.7 || !_isSteady || _distanceToNextEntry < 0.01 || _nextEntry != _renderNextEntry  ? 0.0 : 1.0;
 		double dt = targetNextEntryOpacity - _nextEntryOpacity;
 
 		if(!animate || dt.abs() < 0.01)
@@ -625,7 +708,7 @@ class Timeline
 			}
 			
 			_lastEntryY = y;
-			if(_lastEntryY < _height)
+			if(_lastEntryY < _height && _lastEntryY > 0)
 			{
 				_lastOnScreenEntryY = _lastEntryY;
 			}
@@ -746,6 +829,10 @@ class Timeline
 					{
 						_lastAssetY += asset.gap;
 					}
+					else if(asset is TimelineFlare)
+					{
+						_lastAssetY += asset.gap;
+					}
 					if(asset.y > _height || asset.y + asset.height * AssetScreenScale < 0.0)
 					{
 						// Cull it, it's not in view. Make sure we don't advance animations.
@@ -755,6 +842,14 @@ class Timeline
 							if(!nimaAsset.loop)
 							{
 								nimaAsset.animationTime = -1.0;
+							}
+						}
+						else if(asset is TimelineFlare)
+						{
+							TimelineFlare flareAsset = asset;
+							if(!flareAsset.loop)
+							{
+								flareAsset.animationTime = -1.0;
 							}
 						}
 					}
@@ -770,8 +865,17 @@ class Timeline
 							asset.animation.apply(asset.animationTime, asset.actor, 1.0);
 							asset.actor.advance(elapsed);
 							stillAnimating = true;
-							//item.asset.animation
-							//item.asset.
+						}
+						else if(asset is TimelineFlare && isActive)
+						{
+							asset.animationTime += elapsed;
+							if(asset.loop)
+							{
+								asset.animationTime %= asset.animation.duration;
+							}
+							asset.animation.apply(asset.animationTime, asset.actor, 1.0);
+							asset.actor.advance(elapsed);
+							stillAnimating = true;
 						}
 
 						renderAssets.add(item.asset);

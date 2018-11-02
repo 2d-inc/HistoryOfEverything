@@ -1,0 +1,7 @@
+When most people think of __Isaac Newton__, they think of him sitting under an apple tree watching an apple fall. Some people even believe the apple fell onto his head. __Newton__ understood that what makes things like apples fall to the ground is a specific kind of force — the force we call gravity. __Newton__ thought that gravity was the force of attraction between two objects, such as an apple and the earth. He also thought that an object with more matter exerted the same force on smaller objects as they exerted on it. That meant that the large mass of the earth pulled objects toward it. That is why the apple fell down instead of up, and why people do not float in the air.
+
+__Isaac Newton__ went on thinking about gravity. Before __Newton__, people thought that only objects near to the earth would fall down. But __Newton__ thought that gravity should not just be limited to the earth and the objects on it. What if gravity went to the moon and beyond?
+
+__Newton__ invented a formula for calculating the force of attraction between two bodies. He used it to calculate the force needed to keep the moon moving around the earth. Then he compared it with the force that made the apple fall downward. After allowing for the fact that the moon is much farther from the earth, and has a much greater mass, he discovered that the forces were the same. The moon is held in an orbit around the earth by the pull of earth’s gravity.
+
+The formula invented by __Newton__ is called the Law of gravitation.

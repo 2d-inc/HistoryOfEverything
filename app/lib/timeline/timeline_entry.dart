@@ -47,6 +47,10 @@ class TimelineEntry
 
     String formatYearsAgo()
     {
+		if(start > 0)
+		{
+			return start.round().toString();
+		}
         return TimelineEntry.formatYears(start) + " Ago";
     }
 

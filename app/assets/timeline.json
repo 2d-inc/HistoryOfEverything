@@ -33,6 +33,7 @@
 			"source": "Sun.flr",
 			"width": 800,
 			"height": 800,
+			"offset": -100,
 			"intro":"Sun_in",
 			"idle":"Sun_idle"
 		}
@@ -40,11 +41,12 @@
 	{
 		"date": -4505000000,
 		"label": "Earth is Born",
+		"article":"earth.txt",
 		"asset": 
 		{
-			"source": "Robot.nma",
-			"width": 800,
-			"height": 800
+			"source": "EarthBorn.flr",
+			"width": 500,
+			"height": 500
 		}
 	},
 	{
@@ -52,9 +54,10 @@
 		"label": "Heavy Bombardment",
 		"asset": 
 		{
-			"source": "Robot.nma",
+			"source": "HeavyBombardment.flr",
 			"width": 800,
-			"height": 800
+			"height": 800,
+			"idle":"Bombardmnet"
 		}
 	},
 	{
@@ -64,9 +67,12 @@
 
 		"asset": 
 		{
-			"source": "Robot.nma",
+			"source": "HeavyBombardment.flr",
 			"width": 800,
-			"height": 589
+			"height": 800,
+			"intro":"Transformation",
+			"idle":"Life on Earth",
+			"offset":750
 		}
 	},
 	{
@@ -81,13 +87,7 @@
 	},
 	{
 		"start": -600000000,
-		"label": "Animals",
-		"asset": 
-		{
-			"source": "Robot.nma",
-			"width": 800,
-			"height": 528
-		}
+		"label": "Animals"
 	},
 	{
 		"date": -550000000,
@@ -160,7 +160,38 @@
 	},
 	{
 		"date": -4000000,
-		"label": "Last Common Ancestor with Apes"
+		"label": "Last Common Ancestor with Apes",
+		"article":"last_common_ancestor_apes.txt",
+		"asset": 
+		{
+			"source": "Apes/Apes.nma",
+			"width": 528,
+			"height": 528,
+			"offset": -40
+		}
+	},
+	{
+		"date": -3300000,
+		"label": "Constructed Tools",
+		"article":"tools.txt",
+		"asset": 
+		{
+			"source": "Constructive_Tools/Constructive_Tools.nma",
+			"width": 528,
+			"height": 528,
+			"offset": -40
+		}
+	},
+	{
+		"date": -1500000,
+		"label": "Control Fire",
+		"asset": 
+		{
+			"source": "Fire/Fire.nma",
+			"width": 528,
+			"height": 528,
+			"offset": -40
+		}
 	},
 	{
 		"start": -300000,
@@ -174,6 +205,78 @@
 		}
 	},
 	{
+		"date": -12000,
+		"label": "Built First Temple",
+		"article":"first_temple.txt",
+		"asset": 
+		{
+			"source": "First_Temple/First_Temple.nma",
+			"width": 528,
+			"height": 528,
+			"offset": -40
+		}
+	},
+	{
+		"date": -10000,
+		"label": "Agricultural Revolution",
+		"article":"agricultural_revolution.txt",
+		"asset": 
+		{
+			"source": "Agricultural_evolution/Agricultural_evolution.nma",
+			"width": 528,
+			"height": 528,
+			"offset": -40
+		}
+	},
+	{
+		"date": -5000,
+		"label": "Writing",
+		"article":"writing.txt",
+		"asset": 
+		{
+			"source": "Writing/Writing.nma",
+			"width": 528,
+			"height": 528,
+			"offset": -40
+		}
+	},
+	{
+		"date": -2630,
+		"label": "First Pyramid Built",
+		"article":"pyramids.txt",
+		"asset": 
+		{
+			"source": "Pyramid/Pyramid.nma",
+			"width": 528,
+			"height": 528,
+			"offset": -40
+		}
+	},
+	{
+		"date": -27,
+		"label": "Roman Empire",
+		"article":"roman_empire.txt",
+		"asset": 
+		{
+			"source": "Roma/Roma.nma",
+			"width": 528,
+			"height": 528,
+			"offset": -40
+		}
+	},
+	{
+		"start": -3500,
+		"label": "Recorded History",
+		"article":"history.txt",
+		"asset": 
+		{
+			"source": "Recorded_history/Recorded_history.nma",
+			"width": 528,
+			"height": 528,
+			"offset": -40
+		}
+	},
+	{
 		"start": 0,
 		"label": "Common Era"
 	},
@@ -181,6 +284,7 @@
 		"start": 1095,
 		"end": 1091,
 		"label": "Crusades",
+		"article":"crusades.txt",
 		"asset": 
 		{
 			"source": "Crusades/Crusades.nma",
@@ -193,6 +297,7 @@
 	{
 		"date": 1687,
 		"label": "Newton's Theory of Gravity",
+		"article":"newton.txt",
 		"asset": 
 		{
 			"source": "Newton/Newton.nma",
@@ -201,9 +306,44 @@
 		}
 	},
 	{
+		"date": 1760,
+		"label": "Industrialization",
+		"article":"industrialization.txt",
+		"asset": 
+		{
+			"source": "Industrialization/Industrialization.nma",
+			"width": 800,
+			"height": 800
+		}
+	},
+	{
+		"date": 1453,
+		"label": "Constantinople",
+		"article":"constantinople.txt",
+		"asset": 
+		{
+			"source": "Constantinople/Constantinople.nma",
+			"width": 800,
+			"height": 800
+		}
+	},
+	{
+		"start": 1347,
+		"end": 1351,
+		"label": "Black Plague",
+		"article":"black_plague.txt",
+		"asset": 
+		{
+			"source": "BlackPlague/BlackPlague.nma",
+			"width": 800,
+			"height": 800
+		}
+	},
+	{
 		"start": 1914,
 		"end": 1918,
 		"label": "World War I",
+		"article":"world_war_i.txt",
 		"asset": 
 		{
 			"source": "World_War_I/World_War_I.nma",
@@ -215,6 +355,7 @@
 		"start": 1947,
 		"end": 1991,
 		"label": "Cold War",
+		"article":"cold_war.txt",
 		"asset": 
 		{
 			"source": "Cold_war/Cold_war.nma",
@@ -226,12 +367,122 @@
 	{
 		"date": 1969,
 		"label": "Moon Landing",
+		"article":"moon_landing.txt",
 		"asset": 
 		{
 			"source": "Moon/Moon.nma",
 			"width": 528,
 			"height": 528,
 			"offset": -40
+		}
+	},
+	{
+		"date": 1859,
+		"label": "Darwin's Theory of Evolution",
+		"article":"darwin.txt",
+		"asset": 
+		{
+			"source": "Darwin 2/Darwin 2.nma",
+			"width": 528,
+			"height": 528,
+			"offset": -140
+		}
+	},
+	{
+		"date": 1918,
+		"label": "Nelson Mandela",
+		"article":"nelson_mandela.txt",
+		"asset": 
+		{
+			"source": "Nelson Mandela_v2/Nelson Mandela_v2.nma",
+			"width": 528,
+			"height": 528,
+			"offset": -40
+		}
+	},
+	{
+		"date": 1897,
+		"label": "Amelia Earhart",
+		"article":"amelia_earhart.txt",
+		"asset": 
+		{
+			"source": "Amelia_Earhart/Amelia_Earhart.nma",
+			"width": 528,
+			"height": 528,
+			"offset": -140
+		}
+	},
+	{
+		"date": 1912,
+		"label": "Alan Turing",
+		"article":"alan_turing.txt",
+		"asset": 
+		{
+			"source": "Alan_Turing/Alan_Turing.nma",
+			"width": 528,
+			"height": 528,
+			"offset": -140
+		}
+	},
+	{
+		"date": 1867,
+		"label": "Marie Curie",
+		"article":"marie_curie.txt",
+		"asset": 
+		{
+			"source": "Marie_Curie/Marie_Curie.nma",
+			"width": 528,
+			"height": 528,
+			"offset": -140
+		}
+	},
+	{
+		"date": 1903,
+		"label": "Suffragettes",
+		"article":"suffragette.txt",
+		"asset": 
+		{
+			"source": "Sufraggette_movement/Sufraggette_movement.nma",
+			"width": 528,
+			"height": 528,
+			"offset": -40
+		}
+	},
+	{
+		"date": 1929,
+		"label": "Martin Luther King, Jr.",
+		"article":"martin_luther_king.txt",
+		"asset": 
+		{
+			"source": "Martin Luther king/Martin Luther king.nma",
+			"width": 528,
+			"height": 528,
+			"offset": -140
+		}
+	},
+	{
+		"start": 1939,
+		"end": 1945,
+		"label": "World War II",
+		"article":"world_war_ii.txt",
+		"asset": 
+		{
+			"source": "World_War_II/World_War_II.nma",
+			"width": 528,
+			"height": 528,
+			"offset": -140
+		}
+	},
+	{
+		"start": 1960,
+		"label": "Internet",
+		"article":"internet.txt",
+		"asset": 
+		{
+			"source": "Internet/Internet.nma",
+			"width": 528,
+			"height": 528,
+			"offset": -140
 		}
 	}
 ]

@@ -270,8 +270,8 @@ class VignetteRenderObject extends RenderBox
 					if(asset.intro != null)
 					{
 						asset.animation = asset.intro;
+						asset.animationTime = -1.0;
 					}
-					asset.animationTime = -1.0;
 					_firstUpdate = false;
 				}
 				asset.animationTime += elapsed;

@@ -293,6 +293,10 @@ class Timeline
 									_flareResources[filename] = actor;
 								}
 							}
+							else
+							{
+								actor = actor.makeInstance();
+							}
 							if(actor != null)
 							{
 								flareAsset.actor = actor.makeInstance();
@@ -304,7 +308,7 @@ class Timeline
 								{
 									if((flareAsset.idle = flareAsset.actor.getAnimation(name)) != null)
 									{
-										flareAsset.animation = flareAsset.intro;
+										flareAsset.animation = flareAsset.idle;
 									}
 								}
 

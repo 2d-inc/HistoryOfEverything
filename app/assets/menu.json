@@ -11,18 +11,18 @@
                 "label": "Big Bang"
             },
             {
-                "start": -16200000000,
-                "end": -4600000000,
+                "start": -4630000000,
+                "end": -4550000000,
                 "label": "Birth of the Sun"
             },
             {
-                "start": -13800000000,
-                "end": -13800000000,
+                "start": -4510000000,
+                "end": -4490000000,
                 "label": "Earth is Born"
             },
             {
-                "start": -13800000000,
-                "end": -13800000000,
+                "start": -4110000000,
+                "end": -4080000000,
                 "label": "Heavy Bombardment"
             }
         ]
@@ -77,9 +77,24 @@
                 "label": "Newton's Theory of Gravity"
             },
             {
+                "start": 1896,
+                "end": 1899,
+                "label": "Amelia Earhart"
+            },
+            {
                 "start": 1900,
                 "end": 1990,
                 "label": "World War I"
+            },
+            {
+                "start": 1902,
+                "end": 1905,
+                "label": "Suffragettes"
+            },
+            {
+                "start": 1928,
+                "end": 1934,
+                "label": "Martin Luther King, Jr."
             }
         ]
     }

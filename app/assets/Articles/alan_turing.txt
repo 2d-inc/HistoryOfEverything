@@ -1,0 +1,7 @@
+__Turing__ was one of the people who worked on the first computers. He was the first person to think of using a computer to do things that were too hard for a person to do. He created the Turing machine in 1936. The machine was imaginary, but it included the idea of a computer program.
+
+__Turing__ was interested in artificial intelligence. He proposed the __Turing__ test, to say when a machine could be called "intelligent". A computer could be said to "think" if a human talking with it could not tell it was a machine.
+
+During World War II, __Turing__ worked to break German ciphers (secret messages). Using cryptanalysis, he helped to break the codes of the Enigma machine. After that, he solved other German codes.
+
+From 1945 to 1947, __Turing__ worked on the design of the ACE (Automatic Computing Engine) at the National Physical Laboratory. He presented a paper on 19 February 1946. That paper was "the first detailed design of a stored-program computer". Although it was possible to build ACE, there were delays in starting the project. In late 1947 he returned to Cambridge for a sabbatical year. While he was at Cambridge, the Pilot ACE was built without him. It ran its first program on 10 May 1950.

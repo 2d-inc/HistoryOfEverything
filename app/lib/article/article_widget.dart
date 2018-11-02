@@ -100,7 +100,7 @@ class _ArticleWidgetState extends State<ArticleWidget> with SingleTickerProvider
 
 	void loadMarkdown(String filename) async
 	{
-		rootBundle.loadString("assets/" + filename).then((String data)
+		rootBundle.loadString("assets/Articles/" + filename).then((String data)
 		{
 			setState(() 
 			{

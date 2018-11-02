@@ -7,6 +7,8 @@ import 'package:flutter/rendering.dart';
 import "package:flutter/scheduler.dart";
 import 'package:nima/nima/actor_image.dart' as nima;
 import 'package:nima/nima/math/aabb.dart' as nima;
+import 'package:flare/flare/actor_image.dart' as flare;
+import 'package:flare/flare/math/aabb.dart' as flare;
 import '../timeline/timeline.dart';
 import '../timeline/timeline_entry.dart';
 
@@ -38,6 +40,7 @@ class VignetteRenderObject extends RenderBox
 {
 	TimelineEntry _timelineEntry;
 	bool _isActive = false;
+	bool _firstUpdate = true;
 	
 	TimelineEntry get timelineEntry => _timelineEntry;
 	set timelineEntry(TimelineEntry value)
@@ -47,6 +50,7 @@ class VignetteRenderObject extends RenderBox
 			return;
 		}
 		_timelineEntry = value;
+		_firstUpdate = true;
 		updateRendering();
 	}
 
@@ -169,6 +173,63 @@ class VignetteRenderObject extends RenderBox
 
 			canvas.restore();
 		}
+		else if(asset is TimelineFlare && asset.actor != null)
+		{
+			Alignment alignment = Alignment.center;
+			BoxFit fit = BoxFit.contain;
+
+			flare.AABB bounds = asset.setupAABB;
+			double contentWidth = bounds[2] - bounds[0];
+			double contentHeight = bounds[3] - bounds[1];
+			double x = -bounds[0] - contentWidth/2.0 - (alignment.x * contentWidth/2.0);
+			double y =  -bounds[1] - contentHeight/2.0 + (alignment.y * contentHeight/2.0);
+
+			Offset renderOffset = offset;
+			Size renderSize = size;//new Size(w*rs, h*rs);
+
+			double scaleX = 1.0, scaleY = 1.0;
+
+			canvas.save();		
+			//canvas.clipRect(renderOffset & renderSize);
+
+			switch(fit)
+			{
+				case BoxFit.fill:
+					scaleX = renderSize.width/contentWidth;
+					scaleY = renderSize.height/contentHeight;
+					break;
+				case BoxFit.contain:
+					double minScale = min(renderSize.width/contentWidth, renderSize.height/contentHeight);
+					scaleX = scaleY = minScale;
+					break;
+				case BoxFit.cover:
+					double maxScale = max(renderSize.width/contentWidth, renderSize.height/contentHeight);
+					scaleX = scaleY = maxScale;
+					break;
+				case BoxFit.fitHeight:
+					double minScale = renderSize.height/contentHeight;
+					scaleX = scaleY = minScale;
+					break;
+				case BoxFit.fitWidth:
+					double minScale = renderSize.width/contentWidth;
+					scaleX = scaleY = minScale;
+					break;
+				case BoxFit.none:
+					scaleX = scaleY = 1.0;
+					break;
+				case BoxFit.scaleDown:
+					double minScale = min(renderSize.width/contentWidth, renderSize.height/contentHeight);
+					scaleX = scaleY = minScale < 1.0 ? minScale : 1.0;
+					break;
+			}
+			
+			canvas.translate(renderOffset.dx + renderSize.width/2.0 + (alignment.x * renderSize.width/2.0), renderOffset.dy + renderSize.height/2.0 + (alignment.y * renderSize.height/2.0));
+			canvas.scale(scaleX, scaleY);
+			canvas.translate(x, y);
+
+			asset.actor.draw(canvas, opacity:asset.opacity);
+			canvas.restore();
+		}
 		canvas.restore();
 	}
 
@@ -196,6 +257,30 @@ class VignetteRenderObject extends RenderBox
 			{
 				asset.animationTime += elapsed;
 				if(asset.loop)
+				{
+					asset.animationTime %= asset.animation.duration;
+				}
+				asset.animation.apply(asset.animationTime, asset.actor, 1.0);
+				asset.actor.advance(elapsed);
+			}
+			else if(asset is TimelineFlare && asset.actor != null)
+			{
+				if(_firstUpdate)
+				{
+					if(asset.intro != null)
+					{
+						asset.animation = asset.intro;
+					}
+					asset.animationTime = -1.0;
+					_firstUpdate = false;
+				}
+				asset.animationTime += elapsed;
+				if(asset.intro == asset.animation && asset.animationTime >= asset.animation.duration)
+				{
+					asset.animationTime -= asset.animation.duration;
+					asset.animation = asset.idle;
+				}
+				if(asset.loop && asset.animationTime >= 0)
 				{
 					asset.animationTime %= asset.animation.duration;
 				}

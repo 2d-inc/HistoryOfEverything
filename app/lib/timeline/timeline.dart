@@ -24,26 +24,30 @@ class TimelineImage extends TimelineAsset
 	ui.Image image;
 }
 
-class TimelineNima extends TimelineAsset
+class TimelineAnimatedAsset extends TimelineAsset
 {
-	nima.FlutterActor actor;
-	nima.ActorAnimation animation;
 	double animationTime = 0.0;
-	nima.AABB setupAABB;
 	bool loop;
 	double offset = 0.0;
 	double gap = 0.0;
 }
 
-class TimelineFlare extends TimelineAsset
+class TimelineNima extends TimelineAnimatedAsset
+{
+	nima.FlutterActor actor;
+	nima.ActorAnimation animation;
+	nima.AABB setupAABB;
+}
+
+class TimelineFlare extends TimelineAnimatedAsset
 {
 	flare.FlutterActor actor;
 	flare.ActorAnimation animation;
-	double animationTime = 0.0;
+
+	flare.ActorAnimation intro;
+	flare.ActorAnimation idle;
+
 	flare.AABB setupAABB;
-	bool loop;
-	double offset = 0.0;
-	double gap = 0.0;
 }
 
 String getExtension(String filename)
@@ -293,7 +297,26 @@ class Timeline
 							{
 								flareAsset.actor = actor.makeInstance();
 								flareAsset.animation = actor.animations[0];
-								print("ANIMATION ${flareAsset.animation.name}");
+								
+
+								dynamic name = assetMap["idle"];
+								if(name is String)
+								{
+									if((flareAsset.idle = flareAsset.actor.getAnimation(name)) != null)
+									{
+										flareAsset.animation = flareAsset.intro;
+									}
+								}
+
+								name = assetMap["intro"];
+								if(name is String)
+								{
+									if((flareAsset.intro = flareAsset.actor.getAnimation(name)) != null)
+									{
+										flareAsset.animation = flareAsset.intro;
+									}
+								}
+
 								flareAsset.animationTime = 0.0;
 								flareAsset.actor.advance(0.0);
 
@@ -851,6 +874,11 @@ class Timeline
 							{
 								flareAsset.animationTime = -1.0;
 							}
+							else if(flareAsset.intro != null)
+							{
+								flareAsset.animationTime = -1.0;
+								flareAsset.animation = flareAsset.intro;
+							}
 						}
 					}
 					else
@@ -869,7 +897,12 @@ class Timeline
 						else if(asset is TimelineFlare && isActive)
 						{
 							asset.animationTime += elapsed;
-							if(asset.loop)
+							if(asset.intro == asset.animation && asset.animationTime >= asset.animation.duration)
+							{
+								asset.animationTime -= asset.animation.duration;
+								asset.animation = asset.idle;
+							}
+							if(asset.loop && asset.animationTime > 0)
 							{
 								asset.animationTime %= asset.animation.duration;
 							}

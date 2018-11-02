@@ -27,11 +27,14 @@
 	{
 		"date": -4600000000,
 		"label": "Sun is Born",
+		"article":"sun.txt",
 		"asset": 
 		{
-			"source": "Sun is Born.flr",
+			"source": "Sun.flr",
 			"width": 800,
-			"height": 800
+			"height": 800,
+			"intro":"Sun_in",
+			"idle":"Sun_idle"
 		}
 	},
 	{

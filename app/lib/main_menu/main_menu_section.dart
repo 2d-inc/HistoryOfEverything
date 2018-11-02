@@ -94,8 +94,8 @@ class _SectionState extends State<MenuSection> with SingleTickerProviderStateMix
 												children:
 												[
 													Container(
-														height: 20.0,
-														width: 20.0,
+														height: 21.0,
+														width: 21.0,
 														margin: EdgeInsets.all(18.0),
 														child: new FlareActor("assets/ExpandCollapse.flr", color:widget.accentColor, animation: _isExpanded ? "Collapse" : "Expand")
 													),

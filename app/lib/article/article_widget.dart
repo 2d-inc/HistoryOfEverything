@@ -1,3 +1,4 @@
+import 'package:flare/flare_actor.dart';
 import 'package:flutter/material.dart';
 import "package:flutter/services.dart" show rootBundle;
 import 'package:flutter/widgets.dart';
@@ -252,22 +253,26 @@ class _ArticleWidgetState extends State<ArticleWidget> with SingleTickerProvider
                                                         ]
                                                     ),
                                                     Expanded(child: Container()), // Fill the Row with empty space
-                                                    IconButton(
-                                                        icon: Image.asset(
-                                                            _isFavorite ? "assets/heart_icon.png" : "assets/heart_outline_icon.png", 
-                                                            height: 18.0
-                                                            ),
-                                                        onPressed: (){
-                                                            setState(() { _isFavorite = !_isFavorite; });
-                                                            if(_isFavorite)
+                                                    Container(
+                                                        height: 18.0,
+                                                        width: 18.0,
+                                                        child: GestureDetector(
+                                                            child: FlareActor("assets/Favorite.flr", animation: _isFavorite ? "Favorite" : "Unfavorite", shouldClip: false),
+                                                            onTap:()
                                                             {
-                                                                BlocProvider.of(context).addFavorite(widget.article);
+                                                                setState(() {
+                                                                        _isFavorite = !_isFavorite;
+                                                                    });
+                                                                    if(_isFavorite)
+                                                                    {
+                                                                        BlocProvider.of(context).addFavorite(widget.article);
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        BlocProvider.of(context).removeFavorite(widget.article);
+                                                                    }
                                                             }
-                                                            else
-                                                            {
-                                                                BlocProvider.of(context).removeFavorite(widget.article);
-                                                            }
-                                                        },
+                                                        ),
                                                     )
                                                     
                                                 ]

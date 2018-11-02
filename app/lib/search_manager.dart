@@ -1,6 +1,6 @@
 import "dart:collection";
 
-import "timeline/timeline_entry.dart";
+import "package:timeline/timeline/timeline_entry.dart";
 
 class SearchManager
 {

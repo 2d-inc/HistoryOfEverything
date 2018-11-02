@@ -16,39 +16,8 @@ import "package:flare/flare/animation/actor_animation.dart" as flare;
 import "package:flare/flare/math/aabb.dart" as flare;
 import "package:flare/flare/math/vec2d.dart" as flare;
 import "timeline_entry.dart";
-import "../search_manager.dart";
+import "package:timeline/search_manager.dart";
 typedef PaintCallback();
-
-class TimelineImage extends TimelineAsset
-{
-	ui.Image image;
-}
-
-class TimelineAnimatedAsset extends TimelineAsset
-{
-	double animationTime = 0.0;
-	bool loop;
-	double offset = 0.0;
-	double gap = 0.0;
-}
-
-class TimelineNima extends TimelineAnimatedAsset
-{
-	nima.FlutterActor actor;
-	nima.ActorAnimation animation;
-	nima.AABB setupAABB;
-}
-
-class TimelineFlare extends TimelineAnimatedAsset
-{
-	flare.FlutterActor actor;
-	flare.ActorAnimation animation;
-
-	flare.ActorAnimation intro;
-	flare.ActorAnimation idle;
-
-	flare.AABB setupAABB;
-}
 
 String getExtension(String filename)
 {

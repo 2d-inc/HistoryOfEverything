@@ -1,3 +1,44 @@
+import "dart:ui" as ui;
+import "package:nima/nima.dart" as nima;
+import "package:nima/nima/animation/actor_animation.dart" as nima;
+import "package:nima/nima/math/aabb.dart" as nima;
+import "package:flare/flare.dart" as flare;
+import "package:flare/flare/animation/actor_animation.dart" as flare;
+import "package:flare/flare/math/aabb.dart" as flare;
+import "package:flare/flare/math/vec2d.dart" as flare;
+
+class TimelineImage extends TimelineAsset
+{
+	ui.Image image;
+}
+
+class TimelineAnimatedAsset extends TimelineAsset
+{
+	double animationTime = 0.0;
+	bool loop;
+	double offset = 0.0;
+	double gap = 0.0;
+}
+
+class TimelineNima extends TimelineAnimatedAsset
+{
+	nima.FlutterActor actor;
+	nima.ActorAnimation animation;
+	nima.AABB setupAABB;
+}
+
+
+class TimelineFlare extends TimelineAnimatedAsset
+{
+	flare.FlutterActor actor;
+	flare.ActorAnimation animation;
+
+	flare.ActorAnimation intro;
+	flare.ActorAnimation idle;
+
+	flare.AABB setupAABB;
+}
+
 class TimelineAsset
 {
 	double width;

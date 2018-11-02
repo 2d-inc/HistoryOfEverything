@@ -1,12 +1,13 @@
 import 'package:flutter/gestures.dart';
 import "package:flutter/material.dart";
-import "../colors.dart";
+import "package:timeline/colors.dart";
 
 class AboutPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
+            centerTitle: false,
             backgroundColor: lightGrey,
             iconTheme: IconThemeData(
                 color: Colors.black.withOpacity(0.54)

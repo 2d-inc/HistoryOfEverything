@@ -8,10 +8,10 @@ import 'package:nima/nima/actor_image.dart' as nima;
 import 'package:nima/nima/math/aabb.dart' as nima;
 import 'package:flare/flare/actor_image.dart' as flare;
 import 'package:flare/flare/math/aabb.dart' as flare;
-import '../main_menu/menu_data.dart';
-import '../timeline/ticks.dart';
-import '../timeline/timeline.dart';
-import '../timeline/timeline_entry.dart';
+import 'package:timeline/main_menu/menu_data.dart';
+import 'package:timeline/timeline/ticks.dart';
+import 'package:timeline/timeline/timeline.dart';
+import 'package:timeline/timeline/timeline_entry.dart';
 
 typedef TouchBubbleCallback(Bubble bubble);
 typedef TouchEntryCallback(TimelineEntry entry);

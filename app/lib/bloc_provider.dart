@@ -1,5 +1,5 @@
 import "package:flutter/widgets.dart";
-import "blocs/favorites_bloc.dart";
+import "package:timeline/blocs/favorites_bloc.dart";
 
 class BlocProvider extends InheritedWidget
 {

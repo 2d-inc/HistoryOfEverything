@@ -1,8 +1,8 @@
 import "package:flutter/material.dart";
 
 import "thumbnail.dart";
-import "../colors.dart";
-import "../timeline/timeline_entry.dart";
+import "package:timeline/colors.dart";
+import "package:timeline/timeline/timeline_entry.dart";
 
 abstract class ThumbnailDetailWidget extends StatelessWidget
 {

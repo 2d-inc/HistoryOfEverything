@@ -2,47 +2,33 @@ import "package:flutter/material.dart";
 
 import "menu_data.dart";
 import "main_menu_section.dart";
-import "search_result_widget.dart";
 import "thumbnail_detail_widget.dart";
-import "../colors.dart";
-import "../blocs/favorites_bloc.dart";
-import "../timeline/timeline_entry.dart";
+import "package:timeline/colors.dart";
+import "package:timeline/bloc_provider.dart";
+import "package:timeline/timeline/timeline_entry.dart";
 
-
-class FavoritesPage extends StatefulWidget
+class FavoriteDetailWidget extends ThumbnailDetailWidget
 {
-    final SelectItemCallback onSelected;
+    final VoidCallback _onTap;
 
-    FavoritesPage(this.onSelected);
+    FavoriteDetailWidget(TimelineEntry timelineEntry, this._onTap, {Key key}) : super(timelineEntry, key:key);
 
     @override
-    State<StatefulWidget> createState() => _FavoritesState();
+    onTap()
+    {
+        this._onTap();
+    }
 }
 
-class _FavoritesState extends State<FavoritesPage>
+class FavoritesPage extends StatelessWidget
 {    
-    List<TimelineEntry> _favorites = [];
+    final SelectItemCallback _onItemSelected;
 
-    @override
-    initState()
-    {
-        super.initState();
-    }
+    FavoritesPage(this._onItemSelected, {Key key}) : super(key:key);
 
     @override
     Widget build(BuildContext context) 
-    {
-        FavoritesBloc bloc = FavoritesBloc();
-        bloc.fetchFavorites().then((List<TimelineEntry> favs)
-        {
-            _favorites.clear();
-            setState(
-                () {
-                    _favorites = favs;
-                }
-            );
-        });
-        
+    {        
         return Scaffold(
             appBar: AppBar(
                 backgroundColor: lightGrey,
@@ -63,7 +49,7 @@ class _FavoritesState extends State<FavoritesPage>
             body: Padding(
                 padding: const EdgeInsets.symmetric(horizontal:20.0),
                 child: ListView(
-                    children: _favorites.map(
+                    children: BlocProvider.of(context).favorites.map(
                         (TimelineEntry te) {
                             return FavoriteDetailWidget(te, ()
                             {
@@ -77,24 +63,11 @@ class _FavoritesState extends State<FavoritesPage>
                                     start += distance;
                                     end -= distance;
                                 }
-                                widget.onSelected(MenuItemData.fromData(te.label, start, end));
+                                _onItemSelected(MenuItemData.fromData(te.label, start, end));
                             });
                         }).toList()
                 ),
             )
         );
-  }
-}
-
-class FavoriteDetailWidget extends ThumbnailDetailWidget
-{
-    final VoidCallback _onTap;
-
-    FavoriteDetailWidget(TimelineEntry timelineEntry, this._onTap, {Key key}) : super(timelineEntry, key:key);
-
-    @override
-    onTap()
-    {
-        this._onTap();
     }
 }

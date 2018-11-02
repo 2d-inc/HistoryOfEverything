@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import "package:flutter/services.dart" show rootBundle;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
-import 'package:timeline/article/timeline_entry_widget.dart';
 
 import "../bloc_provider.dart";
 import "../colors.dart";
+import '../article/timeline_entry_widget.dart';
 import "../blocs/favorites_bloc.dart";
 import '../timeline/timeline_entry.dart';
 

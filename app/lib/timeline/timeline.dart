@@ -16,7 +16,7 @@ import "package:flare/flare/animation/actor_animation.dart" as flare;
 import "package:flare/flare/math/aabb.dart" as flare;
 import "package:flare/flare/math/vec2d.dart" as flare;
 import "timeline_entry.dart";
-import "../search_manager.dart";
+import "package:timeline/search_manager.dart";
 typedef PaintCallback();
 
 String getExtension(String filename)

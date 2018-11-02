@@ -9,8 +9,7 @@ import 'package:nima/nima/actor_image.dart' as nima;
 import 'package:nima/nima/math/aabb.dart' as nima;
 import 'package:flare/flare/actor_image.dart' as flare;
 import 'package:flare/flare/math/aabb.dart' as flare;
-import '../timeline/timeline.dart';
-import '../timeline/timeline_entry.dart';
+import "package:timeline/timeline/timeline_entry.dart";
 
 
 class TimelineEntryWidget extends LeafRenderObjectWidget

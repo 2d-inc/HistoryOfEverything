@@ -1,7 +1,7 @@
 import "package:shared_preferences/shared_preferences.dart";
 
-import "../timeline/timeline_entry.dart";
-import "../search_manager.dart";
+import "package:timeline/timeline/timeline_entry.dart";
+import "package:timeline/search_manager.dart";
 
 class FavoritesBloc
 {

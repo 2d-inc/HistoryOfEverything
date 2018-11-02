@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import "../colors.dart";
+import "package:timeline/colors.dart";
 
 class SearchWidget extends StatefulWidget
 {

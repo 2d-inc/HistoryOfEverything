@@ -1,7 +1,7 @@
 import "package:flutter/material.dart";
 
-import "../timeline/timeline_entry.dart";
-import "../article/timeline_entry_widget.dart";
+import "package:timeline/timeline/timeline_entry.dart";
+import "package:timeline/article/timeline_entry_widget.dart";
 
 class ThumbnailWidget extends StatelessWidget
 {

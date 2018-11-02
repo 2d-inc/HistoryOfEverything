@@ -1,6 +1,6 @@
 import 'package:flutter/gestures.dart';
 import "package:flutter/material.dart";
-import "../colors.dart";
+import "package:timeline/colors.dart";
 
 class AboutPage extends StatelessWidget {
   @override

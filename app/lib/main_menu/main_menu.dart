@@ -4,15 +4,15 @@ import "package:flutter/material.dart";
 import "package:flutter/widgets.dart";
 import "package:share/share.dart";
 
-import "menu_data.dart";
-import "search_widget.dart";
-import "main_menu_section.dart";
-import "search_result_widget.dart";
-import "about_page.dart";
-import "favorites_page.dart";
-import "../search_manager.dart";
-import "../colors.dart";
-import "../timeline/timeline_entry.dart";
+import "package:timeline/main_menu/menu_data.dart";
+import "package:timeline/main_menu/search_widget.dart";
+import "package:timeline/main_menu/main_menu_section.dart";
+import "package:timeline/main_menu/search_result_widget.dart";
+import "package:timeline/main_menu/about_page.dart";
+import "package:timeline/main_menu/favorites_page.dart";
+import "package:timeline/search_manager.dart";
+import "package:timeline/colors.dart";
+import "package:timeline/timeline/timeline_entry.dart";
 
 typedef VisibilityChanged(bool isVisible);
 

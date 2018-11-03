@@ -20,14 +20,30 @@ class Ticks
 		double textTickDistance = TextTickDistance.toDouble();
 
 		double scaledTickDistance = tickDistance * scale;
-		while(scaledTickDistance < TickDistance)
+
+		if(scaledTickDistance > 2*TickDistance)
 		{
-			scaledTickDistance *= 2;
-			tickDistance *= 2;
-			textTickDistance *= 2;
+			while(scaledTickDistance > 2*TickDistance && tickDistance >= 2.0)
+			{
+				scaledTickDistance /= 2.0;
+				tickDistance /= 2.0;
+				textTickDistance /= 2.0;
+			}
+		}
+		else
+		{
+			while(scaledTickDistance < TickDistance)
+			{
+				scaledTickDistance *= 2.0;
+				tickDistance *= 2.0;
+				textTickDistance *= 2.0;
+			}
 		}
 		int numTicks = (height / scaledTickDistance).ceil()+2;
-
+		if(scaledTickDistance > TextTickDistance)
+		{
+			textTickDistance = tickDistance;
+		}
 		// Figure out the position of the top left corner of the screen
 		double tickOffset = 0.0;
 		double startingTickMarkValue = 0.0;

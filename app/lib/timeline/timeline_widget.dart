@@ -87,7 +87,6 @@ class _TimelineWidgetState extends State<TimelineWidget>
 			}
 			if(next != null)
 			{
-				print("SETTING RANGE TO START ${_touchedEntry.start}, ${next.start}");
 				_timeline.setViewport(start:_touchedEntry.start, end:next.start, animate: true, pad: true);
 			}
 			else
@@ -99,7 +98,6 @@ class _TimelineWidgetState extends State<TimelineWidget>
 				}
 				if(prev != null)
 				{
-					print("SETTING RANGE TO PREV ${prev.start}, ${_touchedEntry.start}");
 					_timeline.setViewport(start:prev.start, end:_touchedEntry.start, animate: true, pad: true);
 				}
 				else

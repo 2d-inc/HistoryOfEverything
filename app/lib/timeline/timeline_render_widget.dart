@@ -126,9 +126,9 @@ class TimelineRenderObject extends RenderBox
 		{
 			return;
 		}
-		double padding = timeline.screenPaddingInTime(value.start, value.end);
-        padding = max(padding, 60);
-		timeline.setViewport(start: value.start-padding, end:value.end+padding, animate:true);
+		//double padding = timeline.screenPaddingInTime(value.start, value.end);
+        //padding = max(padding, 60);
+		timeline.setViewport(start: value.start, end:value.end, animate:true);
 	}
 
 	@override
@@ -177,7 +177,7 @@ class TimelineRenderObject extends RenderBox
 	void paint(PaintingContext context, Offset offset)
 	{
 		final Canvas canvas = context.canvas;
-		if(_timeline == null)
+		if(_timeline == null || !_isActive)
 		{
 			return;
 		}

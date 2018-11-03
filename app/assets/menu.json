@@ -44,18 +44,18 @@
                 "label": "Animals"
             },
             {
-                "start": -270000000,
-                "end": -65000000,
+                "start": -238612227.2686652,
+                "end": -215710341.03659436,
                 "label": "Dinosaur Age"
             },
             {
-                "start": -250000000,
-                "end": -66000000,
+                "start": -215550384.05521244,
+                "end": -167149739.29848185,
                 "label": "Mammals"
             },
             {
-                "start": -400000,
-                "end": 1587,
+                "start": -334555.54727230733,
+                "end": -219665.8468262614,
                 "label": "Homo Sapiens Sapiens"
             }
         ]
@@ -72,8 +72,8 @@
                 "label": "Crusades"
             },
             {
-                "start": 1587,
-                "end": 1914,
+                "start": 1662.2,
+                "end": 1734,
                 "label": "Newton's Theory of Gravity"
             },
             {
@@ -82,18 +82,18 @@
                 "label": "Amelia Earhart"
             },
             {
-                "start": 1900,
-                "end": 1990,
+                "start": 1912,
+                "end": 1917,
                 "label": "World War I"
             },
             {
-                "start": 1902,
-                "end": 1905,
+                "start": 1899,
+                "end": 1909,
                 "label": "Suffragettes"
             },
             {
-                "start": 1928,
-                "end": 1934,
+                "start": 1926,
+                "end": 1935,
                 "label": "Martin Luther King, Jr."
             }
         ]

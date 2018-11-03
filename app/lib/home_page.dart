@@ -63,7 +63,13 @@ class _MyHomePageState extends State<MyHomePage> {
 	{
 		setState(() 
 		{
+			// Start showing the timeline as soon as we select a menu item.
+			_isTimelineActive = true;
+
+			// Mark the next focus item so the timeline will go to it.
 			_nextFocusItem = menuItem;
+
+			// Update visibility state for menu and article.
 			_isMenuVisible = false;
 			_isArticleVisible = false;
 		});

@@ -428,6 +428,7 @@ class Timeline
 
 	void setViewport({double start = double.maxFinite, bool pad = false, double end = double.maxFinite, double height = double.maxFinite, double velocity = double.maxFinite, bool animate = false})
 	{
+		//print("SETVIEW $start $end");
 		if(start != double.maxFinite && end != double.maxFinite)
 		{
 			_start = start;
@@ -435,10 +436,8 @@ class Timeline
 			if(pad)
 			{
 				double scale = _height/(_end-_start);
-				print("START WAS $_start");
 				_start = _start - (BubbleHeight+TravelViewportPaddingTop)/scale;
 				_end = _end + (BubbleHeight+InitialViewportPadding)/scale;
-				print("START IS $_start");
 			}
 		}
 		else
@@ -472,6 +471,7 @@ class Timeline
 		{
 			_renderStart = start;
 			_renderEnd = end;
+			advance(0.0, false);
 			if(onNeedPaint != null)
 			{
 				onNeedPaint();
@@ -489,9 +489,10 @@ class Timeline
 	{
 		_isFrameScheduled = false;
 		final double t = timeStamp.inMicroseconds / Duration.microsecondsPerMillisecond / 1000.0;
-		if(_lastFrameTime == 0)
+		if(_lastFrameTime == 0.0)
 		{
 			_lastFrameTime = t;
+			_isFrameScheduled = true;
 			SchedulerBinding.instance.scheduleFrameCallback(beginFrame);
 			return;
 		}

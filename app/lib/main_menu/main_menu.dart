@@ -39,8 +39,6 @@ class _MainMenuWidgetState extends State<MainMenuWidget> with SingleTickerProvid
 		curve: Curves.fastOutSlowIn,
 	));
 	Animation<Offset> _menuOffset;
-
-    ScrollController _scrollController;
     bool _isSearching = false;
     List<TimelineEntry> _searchResults = new List<TimelineEntry>();
     
@@ -86,7 +84,6 @@ class _MainMenuWidgetState extends State<MainMenuWidget> with SingleTickerProvid
 	{
 		super.initState();
 
-        _scrollController = new ScrollController();
         _searchTextController.addListener(() {
 			updateSearch();
         });

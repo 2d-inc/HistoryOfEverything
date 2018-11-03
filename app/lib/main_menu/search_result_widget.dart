@@ -16,15 +16,6 @@ class SearchResultWidget extends ThumbnailDetailWidget
     onTap()
     {
         SystemChannels.textInput.invokeMethod('TextInput.hide');
-        double start = timelineEntry.start;
-        double end = (timelineEntry.type == TimelineEntryType.Era) ? timelineEntry.start : timelineEntry.end;
-        if(start == end)
-        {
-            // Use 2.5% of the current timeline entry date to estimate start/end.
-            double distance = start * 0.025;
-            start += distance;
-            end -= distance;
-        }
-        this._onSelected(MenuItemData.fromData(timelineEntry.label, start, end));
+        this._onSelected(MenuItemData.fromEntry(timelineEntry));
     }
 }

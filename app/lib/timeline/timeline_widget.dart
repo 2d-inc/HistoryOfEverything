@@ -27,6 +27,7 @@ class _TimelineWidgetState extends State<TimelineWidget>
 	Offset _lastFocalPoint;
 	double _scaleStartYearStart = -100.0;
 	double _scaleStartYearEnd = 100.0;
+	static const double TopOverlap = 56.0;
 	Bubble _touchedBubble;
 	TimelineEntry _touchedEntry;
 
@@ -74,41 +75,20 @@ class _TimelineWidgetState extends State<TimelineWidget>
 
 	void _tapUp(TapUpDetails details)
 	{
+		EdgeInsets devicePadding = MediaQuery.of(context).padding;
 		if(_touchedBubble != null)
 		{
 			widget.selectItem(_touchedBubble.entry);
 		}
 		else if(_touchedEntry != null)
 		{	
-			TimelineEntry next = _touchedEntry.next;
-			while(next != null && next.start == _touchedEntry.start)
-			{
-				next = next.next;
-			}
-			if(next != null)
-			{
-				timeline.setViewport(start:_touchedEntry.start, end:next.start, animate: true, pad: true);
-			}
-			else
-			{
-				TimelineEntry prev = _touchedEntry.previous;
-				while(prev != null && prev.start == _touchedEntry.start)
-				{
-					prev = prev.previous;
-				}
-				if(prev != null)
-				{
-					timeline.setViewport(start:prev.start, end:_touchedEntry.start, animate: true, pad: true);
-				}
-				else
-				{
-					print("Couldn't find a range.");
-				}
-			}
+			MenuItemData target = MenuItemData.fromEntry(_touchedEntry);
 			
+			double topPadding = timeline.screenPaddingInTime(TopOverlap+devicePadding.top+target.padTop, target.start, target.end);
+			double bottomPadding = timeline.screenPaddingInTime(target.padBottom, target.start, target.end);
+
+			timeline.setViewport(start:target.start-topPadding, end:target.end+bottomPadding, animate: true);
 		}
-		//double scale = (_scaleStartYearEnd-_scaleStartYearStart)/context.size.height;
-		//_timeline.onTap(details.globalPosition);
 	}
 
 
@@ -124,7 +104,7 @@ class _TimelineWidgetState extends State<TimelineWidget>
 			child: new Stack(
 				children:<Widget>
 				[
-					new TimelineRenderWidget(timeline: timeline, topOverlap:56.0+devicePadding.top, isActive:widget.isActive, focusItem:widget.focusItem, touchBubble:onTouchBubble, touchEntry:onTouchEntry),
+					new TimelineRenderWidget(timeline: timeline, topOverlap:TopOverlap+devicePadding.top, isActive:widget.isActive, focusItem:widget.focusItem, touchBubble:onTouchBubble, touchEntry:onTouchEntry),
 					new Column(
 						children: <Widget>[
 							Container(

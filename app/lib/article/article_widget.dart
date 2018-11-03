@@ -135,7 +135,6 @@ class _ArticleWidgetState extends State<ArticleWidget> with SingleTickerProvider
 		{
 			setState(() 
 			{
-				print("ARTICLE ${widget.article}");
 				if(widget.article == null)
 				{
 					_title = "N/A";

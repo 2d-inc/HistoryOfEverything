@@ -126,9 +126,18 @@ class TimelineRenderObject extends RenderBox
 		{
 			return;
 		}
-		//double padding = timeline.screenPaddingInTime(value.start, value.end);
-        //padding = max(padding, 60);
-		timeline.setViewport(start: value.start, end:value.end, animate:true);
+		
+		if(value.pad)
+		{
+			double topPadding = timeline.screenPaddingInTime(topOverlap+value.padTop, value.start, value.end);
+			double bottomPadding = timeline.screenPaddingInTime(value.padBottom, value.start, value.end);
+			timeline.setViewport(start: value.start-topPadding, end:value.end+bottomPadding, animate:true);
+		}
+		else
+		{
+			timeline.setViewport(start: value.start, end:value.end, animate:true);
+		}
+		
 	}
 
 	@override

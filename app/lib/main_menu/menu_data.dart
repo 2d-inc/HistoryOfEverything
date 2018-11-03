@@ -1,6 +1,9 @@
 import 'dart:convert';
+import 'dart:math';
 import 'dart:ui';
 import "package:flutter/services.dart" show rootBundle;
+import 'package:timeline/timeline/timeline.dart';
+import 'package:timeline/timeline/timeline_entry.dart';
 
 class MenuSectionData
 {
@@ -16,9 +19,55 @@ class MenuItemData
 	String label;
 	double start;
 	double end;
+	bool pad = false;
+	double padTop = 0.0;
+	double padBottom = 0.0;
 
     MenuItemData();
-    MenuItemData.fromData(this.label,  this.start, this.end);
+	MenuItemData.fromEntry(TimelineEntry entry)
+	{
+		label = entry.label;
+
+		// Pad the edges of the screen.
+		pad = true;
+		// Extra padding for the top base don the asset size.
+		padTop = entry.asset == null ? 0.0 : entry.asset.height * Timeline.AssetScreenScale;
+
+        if(entry.type == TimelineEntryType.Era)
+        {
+			start = entry.start;
+			end = entry.end;
+        }
+		else
+		{
+			// No need to pad here as we are centering on a single item.
+			double rangeBefore = double.maxFinite;
+			for(TimelineEntry prev = entry.previous; prev != null; prev = prev.previous)
+			{
+				double diff = entry.start - prev.start;
+				if(diff > 0.0)
+				{
+					rangeBefore = diff;
+					break;
+				}
+			}
+
+			double rangeAfter = double.maxFinite;
+			for(TimelineEntry next = entry.next; next != null; next = next.next)
+			{
+				double diff = next.start - entry.start;
+				if(diff > 0.0)
+				{
+					rangeAfter = diff;
+					break;
+				}
+			}
+			double range = min(rangeBefore, rangeAfter)/2.0;
+//			print("RANGE? $range $padTop");
+			start = entry.start;
+			end = entry.end+range;
+		}
+	}
 }
 
 class MenuData

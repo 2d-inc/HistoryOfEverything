@@ -174,9 +174,9 @@ class Timeline
 		});
 	}
 
-	double screenPaddingInTime(double start, double end)
+	double screenPaddingInTime(double extra, double start, double end)
 	{
-		return (BubbleHeight+InitialViewportPadding)/computeScale(start, end);
+		return (extra+BubbleHeight+InitialViewportPadding)/computeScale(start, end);
 	}
 
 	double computeScale(double start, double end)
@@ -392,8 +392,8 @@ class Timeline
 			{
 				previous.next = entry;
 			}
-			previous = entry;
 			entry.previous = previous;
+			previous = entry;
 
 			TimelineEntry parent;
 			double minDistance = double.maxFinite;
@@ -439,7 +439,7 @@ class Timeline
 
 	void setViewport({double start = double.maxFinite, bool pad = false, double end = double.maxFinite, double height = double.maxFinite, double velocity = double.maxFinite, bool animate = false})
 	{
-		//print("SETVIEW $start $end");
+//		print("SETVIEW $start $end");
 		if(start != double.maxFinite && end != double.maxFinite)
 		{
 			_start = start;

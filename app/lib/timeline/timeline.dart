@@ -143,7 +143,6 @@ class Timeline
 	static const double DepthOffset = LineSpacing+LineWidth;
 
 	static const double EdgePadding = 8.0;
-	static const double FadeAnimationStart = 55.0;
 	static const double MoveSpeed = 20.0;
 	static const double Deceleration = 9.0;
 	static const double GutterLeft = 45.0;
@@ -159,6 +158,7 @@ class Timeline
 	static const double AssetScreenScale = 0.3;
 	static const double InitialViewportPadding = 100.0;
 	static const double TravelViewportPaddingTop = 400.0;
+	static const double FadeAnimationStart = BubbleHeight + BubblePadding;///2.0 + BubblePadding;
 
 	Timeline()
 	{
@@ -648,8 +648,31 @@ class Timeline
 			lastEnd = endY;
 
 			item.length = endY - y;
+			double targetLabelY = y;
 
-			double targetLabelOpacity = y - _lastEntryY < FadeAnimationStart ? 0.0 : 1.0;
+			if(targetLabelY - _lastEntryY < FadeAnimationStart 
+				// The best location for our label is occluded, lets see if we can bump it forward...
+				&& item.type == TimelineEntryType.Era
+				&& _lastEntryY + FadeAnimationStart < end)
+			{
+				
+				targetLabelY = _lastEntryY + FadeAnimationStart + 0.5;
+			}
+
+			double targetLabelOpacity = targetLabelY - _lastEntryY < FadeAnimationStart ? 0.0 : 1.0;
+
+			// Debounce labels becoming visible.
+			if(targetLabelOpacity > 0.0 && item.targetLabelOpacity != 1.0)
+			{
+				item.delayLabel = 0.5;
+			}
+			item.targetLabelOpacity = targetLabelOpacity;
+			if(item.delayLabel > 0.0)
+			{
+				targetLabelOpacity = 0.0;
+				item.delayLabel -= elapsed;
+			}
+
 			double dt = targetLabelOpacity - item.labelOpacity;
 			if(!animate || dt.abs() < 0.01)
 			{
@@ -694,7 +717,7 @@ class Timeline
 			// 	item.labelY = y;
 			// }
 			
-			double targetLabelVelocity = y - item.labelY;
+			double targetLabelVelocity = targetLabelY - item.labelY;
 			// if(item.velocity === undefined)
 			// {
 			// 	item.velocity = 0.0;
@@ -702,7 +725,7 @@ class Timeline
 			double dvy = targetLabelVelocity - item.labelVelocity;
 			if(dvy.abs() > _height)
 			{
-				item.labelY = y;
+				item.labelY = targetLabelY;
 				item.labelVelocity = 0.0;
 			}
 			else
@@ -715,10 +738,13 @@ class Timeline
 				stillAnimating = true;
 			}
 			
-			_lastEntryY = y;
-			if(_lastEntryY < _height && _lastEntryY > 0)
+			if(item.targetLabelOpacity > 0.0)
 			{
-				_lastOnScreenEntryY = _lastEntryY;
+				_lastEntryY = targetLabelY;
+				if(_lastEntryY < _height && _lastEntryY > 0)
+				{
+					_lastOnScreenEntryY = _lastEntryY;
+				}
 			}
 
 			
@@ -766,7 +792,7 @@ class Timeline
 		{
 			if(item.asset != null)
 			{
-				double y = item.y;
+				double y = item.labelY;
 				double halfHeight = _height/2.0;
 				double thresholdAssetY = y+((y-halfHeight)/halfHeight)*Parallax;//item.asset.height*AssetScreenScale/2.0;
 				double targetAssetY = thresholdAssetY-item.asset.height*AssetScreenScale/2.0; 

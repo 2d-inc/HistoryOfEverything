@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:timeline/main_menu/menu_data.dart';
 import "package:flare/flare_actor.dart" as flare;
-import "package:nima/nima_actor.dart" as nima;
 import 'package:timeline/main_menu/menu_vignette.dart';
-import 'package:timeline/timeline/timeline.dart';
+import 'package:timeline/timeline/timeline_widget.dart';
 typedef SelectItemCallback(MenuItemData item);
 
 class MenuSection extends StatefulWidget
@@ -11,19 +10,19 @@ class MenuSection extends StatefulWidget
     final String title;
     final Color backgroundColor;
     final Color accentColor;
-	final SelectItemCallback selectItem;
     final List<MenuItemData> menuOptions;
 	final String assetId;
-	final Timeline timeline;
-	final bool isActive;
+	// final SelectItemCallback selectItem;
+	// final Timeline timeline;
+	// final bool isActive;
 
-    MenuSection(this.title, this.backgroundColor, this.accentColor, this.menuOptions, this.selectItem, {this.timeline, this.assetId, this.isActive, Key key}) : super(key: key);
+    MenuSection(this.title, this.backgroundColor, this.accentColor, this.menuOptions, {this.assetId, Key key}) : super(key: key);
+
+  get isActive => null;
 
     @override
     State<StatefulWidget> createState() => _SectionState();
 }
-
-
 
 class _SectionState extends State<MenuSection> with SingleTickerProviderStateMixin
 {
@@ -47,8 +46,8 @@ class _SectionState extends State<MenuSection> with SingleTickerProviderStateMix
         final CurvedAnimation curve = CurvedAnimation(parent: _controller, curve: Curves.fastOutSlowIn);
 		_sizeAnimation = _sizeTween.animate(curve);
         _controller.addListener((){
-            // print("VALUE: ${_sizeAnimation.value}");
-            setState(() { /* Update so PlusDecoration can rebuild. */});
+            // print("VALUE: ${_sizeAnimation.status}");
+            setState(() { });
         });
     }
 
@@ -80,6 +79,8 @@ class _SectionState extends State<MenuSection> with SingleTickerProviderStateMix
 
     @override
     Widget build(BuildContext context) {
+        bool isMenuSectionActive = _sizeAnimation.status == AnimationStatus.forward || _sizeAnimation.status == AnimationStatus.completed;
+
         return GestureDetector(
             onTap: _toggleExpand,
             child: 
@@ -91,18 +92,7 @@ class _SectionState extends State<MenuSection> with SingleTickerProviderStateMix
 					child:  new ClipRRect(borderRadius: BorderRadius.circular(10.0), child:
 						new Stack(children: <Widget>
 						[
-							new Positioned.fill(left:0, top:0, child:new MenuVignette(gradientColor:widget.backgroundColor, isActive:widget.isActive, timeline:widget.timeline, assetId:widget.assetId)),
-							//new Positioned.fill(child:new Container(color:widget.backgroundColor.withOpacity(0.5))),
-							// new Positioned.fill(child:new Container(decoration:
-							// 	BoxDecoration(
-							// 		gradient: LinearGradient(
-							// 		begin: Alignment(0.5, 0.0),
-							// 		end: Alignment(0.5, 100), // 10% of the width, so there are ten blinds.
-							// 		colors: [widget.backgroundColor.withOpacity(0.2), widget.backgroundColor.withOpacity(0.9)], // whitish to gray
-							// 		tileMode: TileMode.clamp, // repeats the gradient over the canvas
-							// 		)
-							// 	)
-							// )),
+							new Positioned.fill(left:0, top:0, child:new MenuVignette(gradientColor:widget.backgroundColor, isActive: isMenuSectionActive, assetId:widget.assetId)),
 							Column(children: <Widget>
 							[
 								Container
@@ -131,12 +121,12 @@ class _SectionState extends State<MenuSection> with SingleTickerProviderStateMix
 											)
 										
 								),
-								new SizeTransition(
+								SizeTransition(
 									axisAlignment: 0.0,
 									axis: Axis.vertical,
 									sizeFactor: _sizeAnimation,
 									child:Container(
-										child: new Padding(
+										child: Padding(
 											padding: EdgeInsets.only(left: 56.0, right: 20.0, top: 10.0),
 											child: Column
 											(
@@ -145,9 +135,28 @@ class _SectionState extends State<MenuSection> with SingleTickerProviderStateMix
 													(item) 
 													{
 														return GestureDetector(
-															onTap: () => 
-																this.widget.selectItem(item),
-
+                                                            onTap: () {
+                                                                Navigator.of(context).push(
+                                                                    PageRouteBuilder(
+                                                                        opaque: true,
+                                                                        transitionDuration: const Duration(milliseconds: 300),
+                                                                        pageBuilder: (context, _, __) => TimelineWidget(item),
+                                                                        transitionsBuilder: (_, Animation<double> animation, __, Widget child)
+                                                                        {
+                                                                            return SlideTransition(
+                                                                                child: child,
+                                                                                position: Tween<Offset>(
+                                                                                    begin: const Offset(1.0, 0.0),
+                                                                                    end: Offset.zero
+                                                                                ).animate(CurvedAnimation(
+                                                                                    parent: animation,
+                                                                                    curve: Curves.fastOutSlowIn
+                                                                                ))
+                                                                            );
+                                                                        }
+                                                                    )
+                                                                );
+                                                            },
 															child: Row(
 																	crossAxisAlignment: CrossAxisAlignment.start,
 																	children:
@@ -197,7 +206,7 @@ class NimaDecoration extends Decoration
     @override
     BoxPainter createBoxPainter([VoidCallback onChanged])
     {
-        return new NimaPainter(color, expandValue);
+        return NimaPainter(color, expandValue);
     }
 }
 

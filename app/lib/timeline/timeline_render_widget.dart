@@ -18,23 +18,25 @@ typedef TouchEntryCallback(TimelineEntry entry);
 
 class TimelineRenderWidget extends LeafRenderObjectWidget
 {
-	final Timeline timeline;
-	final bool isActive;
+	// final Timeline timeline;
+	// final bool isActive;
 	final MenuItemData focusItem;
 	final TouchBubbleCallback touchBubble;
 	final TouchEntryCallback touchEntry;
 	final double topOverlap;
-	TimelineRenderWidget({Key key, this.timeline, this.isActive, this.focusItem, this.touchBubble, this.touchEntry, this.topOverlap}): super(key: key);
+    final Timeline timeline; 
+
+	TimelineRenderWidget({Key key, this.focusItem, this.touchBubble, this.touchEntry, this.topOverlap, this.timeline}): super(key: key);
 
 	@override
 	RenderObject createRenderObject(BuildContext context) 
 	{
 		return new TimelineRenderObject()
-							..timeline = timeline
-							..isActive = isActive
-							..focusItem = focusItem
+							// ..isActive = isActive
+                            ..timeline = timeline
 							..touchBubble = touchBubble
 							..touchEntry = touchEntry
+							..focusItem = focusItem
 							..topOverlap = topOverlap;
 	}
 
@@ -43,7 +45,7 @@ class TimelineRenderWidget extends LeafRenderObjectWidget
 	{
 		renderObject
 					..timeline = timeline
-					..isActive = isActive
+					// ..isActive = isActive
 					..focusItem = focusItem
 					..touchBubble = touchBubble
 					..touchEntry = touchEntry
@@ -72,7 +74,7 @@ class TimelineRenderObject extends RenderBox
 	List<Bubble> _bubbles = new List<Bubble>();
 	Ticks _ticks = new Ticks();
 	Timeline _timeline;
-	bool _isActive = false;
+	// bool _isActive = false;
 	MenuItemData _focusItem;
 	Rect _nextEntryRect;
 
@@ -88,31 +90,33 @@ class TimelineRenderObject extends RenderBox
 			return;
 		}
 		_timeline = value;
-		_timeline.onNeedPaint = ()
-		{
-			if(_isActive)
-			{
-				markNeedsPaint();
-			}
-		};
+        _timeline.onNeedPaint = markNeedsPaint;
+		// _timeline.onNeedPaint = ()
+		// {
+		// 	if(_isActive)
+		// 	{
+		// 		markNeedsPaint();
+		// 	}
+		// };
+        markNeedsPaint();
 		markNeedsLayout();
 	}
 
-	bool get isActive => _isActive;
-	set isActive(bool value)
-	{
-		if(_isActive == value)
-		{
-			return;
-		}
-		_timeline.isActive = value;
-		_isActive = value;
-		if(_isActive)
-		{
-			markNeedsPaint();
-			markNeedsLayout();
-		}
-	}
+	// bool get isActive => _isActive;
+	// set isActive(bool value)
+	// {
+	// 	if(_isActive == value)
+	// 	{
+	// 		return;
+	// 	}
+	// 	_timeline.isActive = value;
+	// 	_isActive = value;
+	// 	if(_isActive)
+	// 	{
+	// 		markNeedsPaint();
+	// 		markNeedsLayout();
+	// 	}
+	// }
 
 	MenuItemData get focusItem => _focusItem;
 	set focusItem(MenuItemData value)
@@ -177,7 +181,7 @@ class TimelineRenderObject extends RenderBox
 	void paint(PaintingContext context, Offset offset)
 	{
 		final Canvas canvas = context.canvas;
-		if(_timeline == null || !_isActive)
+		if(_timeline == null)
 		{
 			return;
 		}

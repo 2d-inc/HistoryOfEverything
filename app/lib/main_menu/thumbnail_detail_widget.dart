@@ -1,16 +1,16 @@
 import "package:flutter/material.dart";
+import 'package:timeline/main_menu/menu_data.dart';
+import 'package:timeline/timeline/timeline_widget.dart';
 
 import "thumbnail.dart";
 import "package:timeline/colors.dart";
 import "package:timeline/timeline/timeline_entry.dart";
 
-abstract class ThumbnailDetailWidget extends StatelessWidget
+class ThumbnailDetailWidget extends StatelessWidget
 {
     final TimelineEntry timelineEntry;
 
     ThumbnailDetailWidget(this.timelineEntry, {Key key}) : super(key:key);
-
-    void onTap();
 
     @override
     Widget build(BuildContext context)
@@ -19,7 +19,39 @@ abstract class ThumbnailDetailWidget extends StatelessWidget
         return Material(
             color: Colors.transparent,
             child: InkWell(
-                onTap: onTap,
+                onTap: ()
+                {
+                    double start = timelineEntry.start;
+                    double end = (timelineEntry.type == TimelineEntryType.Era) ? timelineEntry.start : timelineEntry.end;
+                    if(start == end)
+                    {
+                        // Use 2.5% of the current timeline entry date to estimate start/end.
+                        double distance = start * 0.025;
+                        start += distance;
+                        end -= distance;
+                    }
+                    
+                    Navigator.of(context).push(
+                        PageRouteBuilder(
+                                opaque: true,
+                                transitionDuration: const Duration(milliseconds: 300),
+                                pageBuilder: (context, _, __) => TimelineWidget(MenuItemData.fromData(timelineEntry.label, start, end)),
+                                transitionsBuilder: (_, Animation<double> animation, __, Widget child)
+                                {
+                                    return new SlideTransition(
+                                        child: child,
+                                        position: new Tween<Offset>(
+                                            begin: const Offset(1.0, 0.0),
+                                            end: Offset.zero
+                                        ).animate(CurvedAnimation(
+                                            parent: animation,
+                                            curve: Curves.fastOutSlowIn
+                                        ))
+                                    );
+                                }
+                            )
+                    );
+                },
                 child: Padding(
                         padding: const EdgeInsets.symmetric(vertical: 14.0),
                         child: Row(

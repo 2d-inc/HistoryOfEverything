@@ -8,24 +8,23 @@ import 'package:timeline/main_menu/collapsible.dart';
 import "package:timeline/main_menu/menu_data.dart";
 import "package:timeline/main_menu/search_widget.dart";
 import "package:timeline/main_menu/main_menu_section.dart";
-import "package:timeline/main_menu/search_result_widget.dart";
 import "package:timeline/main_menu/about_page.dart";
 import "package:timeline/main_menu/favorites_page.dart";
+import 'package:timeline/main_menu/thumbnail_detail_widget.dart';
 import "package:timeline/search_manager.dart";
 import "package:timeline/colors.dart";
-import 'package:timeline/timeline/timeline.dart';
 import "package:timeline/timeline/timeline_entry.dart";
 
 typedef VisibilityChanged(bool isVisible);
 
 class MainMenuWidget extends StatefulWidget  
 {
-	final SelectItemCallback selectItem;
-	final MenuData data;
-	final bool show;
-	final VisibilityChanged visibilityChanged;
-	final Timeline timeline;
-	MainMenuWidget({this.selectItem, this.data, this.show, this.visibilityChanged, this.timeline, Key key}) : super(key: key);
+	// final SelectItemCallback selectItem;
+	// final MenuData data;
+	// final bool show;
+	// final VisibilityChanged visibilityChanged;
+	// final Timeline timeline;
+	MainMenuWidget({Key key}) : super(key: key);
 
 	@override
 	 _MainMenuWidgetState createState() => new _MainMenuWidgetState();
@@ -43,6 +42,7 @@ class _MainMenuWidgetState extends State<MainMenuWidget> with SingleTickerProvid
 	Animation<Offset> _menuOffset;
     bool _isSearching = false;
     List<TimelineEntry> _searchResults = new List<TimelineEntry>();
+    final MenuData _menu = new MenuData();
     
     // This is passed to the SearchWidget so we can handle text edits and display the search results on the main menu.
     final TextEditingController _searchTextController = TextEditingController();
@@ -86,6 +86,10 @@ class _MainMenuWidgetState extends State<MainMenuWidget> with SingleTickerProvid
 	{
 		super.initState();
 
+        _menu.loadFromBundle("assets/menu.json").then((bool success){
+            if(success) setState(() {}); // Load the menu.
+        });
+
         _searchTextController.addListener(() {
 			updateSearch();
         });
@@ -103,43 +107,43 @@ class _MainMenuWidgetState extends State<MainMenuWidget> with SingleTickerProvid
 			duration: const Duration(milliseconds: 200),
 		);
 		_menuOffset = _controller.drive(_slideTween);		
-		if(widget.show)
-		{
-			_controller.reverse();
-		}
-		else
-		{
-			_controller.forward();
-		}									
+		// if(widget.show)
+		// {
+		// 	_controller.reverse();
+		// }
+		// else
+		// {
+		// 	_controller.forward();
+		// }									
 	}
 
-	void didUpdateWidget(covariant MainMenuWidget oldWidget) 
-	{ 
-		super.didUpdateWidget(oldWidget);
-		if(oldWidget.show != widget.show)
-		{
-			if(widget.show)
-			{
-				_controller.reverse().whenComplete(()
-				{
-					setState(() 
-					{
-						widget.visibilityChanged(true);
-					});
-				});
-			}
-			else
-			{
-				_controller.forward().whenComplete(()
-				{
-					setState(() 
-					{
-						widget.visibilityChanged(false);
-					});
-				});
-			}
-		}
-	}
+	// void didUpdateWidget(covariant MainMenuWidget oldWidget) 
+	// { 
+	// 	super.didUpdateWidget(oldWidget);
+	// 	if(oldWidget.show != widget.show)
+	// 	{
+	// 		if(widget.show)
+	// 		{
+	// 			_controller.reverse().whenComplete(()
+	// 			{
+	// 				setState(() 
+	// 				{
+	// 					widget.visibilityChanged(true);
+	// 				});
+	// 			});
+	// 		}
+	// 		else
+	// 		{
+	// 			_controller.forward().whenComplete(()
+	// 			{
+	// 				setState(() 
+	// 				{
+	// 					widget.visibilityChanged(false);
+	// 				});
+	// 			});
+	// 		}
+	// 	}
+	// }
 
     @override
     Widget build(BuildContext context) 
@@ -207,11 +211,11 @@ class _MainMenuWidgetState extends State<MainMenuWidget> with SingleTickerProvid
 				  			_isSearching ? 
 				  			_searchResults.map<Widget>((TimelineEntry sr)
 				  				{
-				  					return SearchResultWidget(widget.selectItem, sr);
+				  					return ThumbnailDetailWidget(sr);
 				  				}
 				  			).toList(growable:false)
 				  			:
-				  			widget.data.sections.map<Widget>((MenuSectionData section)
+				  			_menu.sections.map<Widget>((MenuSectionData section)
 				  				=> Container(
 				  					margin: EdgeInsets.only(top:20.0),
 				  					child: MenuSection(
@@ -219,10 +223,10 @@ class _MainMenuWidgetState extends State<MainMenuWidget> with SingleTickerProvid
 				  						section.backgroundColor, 
 				  						section.textColor, 
 				  						section.items,
-				  						widget.selectItem,
+				  						// widget.selectItem,
 										assetId: section.assetId,
-										timeline: widget.timeline,
-										isActive: widget.show
+										// timeline: widget.timeline,
+										// isActive: widget.show
 				  						)
 				  					)
 				  				).toList(growable:false)
@@ -239,13 +243,13 @@ class _MainMenuWidgetState extends State<MainMenuWidget> with SingleTickerProvid
 				  						PageRouteBuilder(
 				  							opaque: true,
 				  							transitionDuration: const Duration(milliseconds: 300),
-				  							pageBuilder: (context, _, __) => FavoritesPage(widget.selectItem),
+				  							pageBuilder: (context, _, __) => FavoritesPage(),
 				  							transitionsBuilder: (_, Animation<double> animation, __, Widget child)
 				  							{
 				  								return new SlideTransition(
 				  									child: child,
 				  									position: new Tween<Offset>(
-				  										begin: const Offset(-1.0, 0.0),
+				  										begin: const Offset(1.0, 0.0),
 				  										end: Offset.zero
 				  									).animate(CurvedAnimation(
 				  										parent: animation,
@@ -324,7 +328,7 @@ class _MainMenuWidgetState extends State<MainMenuWidget> with SingleTickerProvid
 				  									return new SlideTransition(
 				  										child: child,
 				  										position: new Tween<Offset>(
-				  											begin: const Offset(-1.0, 0.0),
+				  											begin: const Offset(1.0, 0.0),
 				  											end: Offset.zero
 				  										).animate(CurvedAnimation(
 				  											parent: animation,

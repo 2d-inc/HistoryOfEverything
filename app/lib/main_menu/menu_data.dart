@@ -23,7 +23,7 @@ class MenuItemData
 
 class MenuData
 {
-	List<MenuSectionData> sections;
+	List<MenuSectionData> sections = [];
 	Future<bool> loadFromBundle(String filename) async
 	{
 		List<MenuSectionData> menu = new List<MenuSectionData>();

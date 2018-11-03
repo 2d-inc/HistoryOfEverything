@@ -9,22 +9,24 @@ import 'package:nima/nima/actor_image.dart' as nima;
 import 'package:nima/nima/math/aabb.dart' as nima;
 import 'package:flare/flare/actor_image.dart' as flare;
 import 'package:flare/flare/math/aabb.dart' as flare;
+import 'package:timeline/bloc_provider.dart';
 import 'package:timeline/timeline/timeline.dart';
 import "package:timeline/timeline/timeline_entry.dart";
 
 class MenuVignette extends LeafRenderObjectWidget
 {
 	final bool isActive;
-	final Timeline timeline;
+	// final Timeline timeline;
 	final String assetId;
 	final Color gradientColor;
-	MenuVignette({Key key, this.gradientColor, this.isActive, this.timeline, this.assetId}): super(key: key);
+	MenuVignette({Key key, this.gradientColor, this.isActive, this.assetId}): super(key: key);
 
 	@override
 	RenderObject createRenderObject(BuildContext context) 
 	{
+        Timeline t = BlocProvider.getTimeline(context);
 		return new MenuVignetteRenderObject()
-							..timeline = timeline
+							..timeline = t
 							..assetId = assetId
 							..gradientColor = gradientColor
 							..isActive = isActive;
@@ -33,10 +35,11 @@ class MenuVignette extends LeafRenderObjectWidget
 	@override
 	void updateRenderObject(BuildContext context, covariant MenuVignetteRenderObject renderObject)
 	{
+        Timeline t = BlocProvider.getTimeline(context);
 		renderObject
-					..timeline = timeline
+					..timeline = t
 					..assetId = assetId
-						..gradientColor = gradientColor
+                    ..gradientColor = gradientColor
 					..isActive = isActive;
 	}
 }
@@ -44,7 +47,7 @@ class MenuVignette extends LeafRenderObjectWidget
 class MenuVignetteRenderObject extends RenderBox
 {
 	Timeline _timeline;
-	String assetId;
+	String _assetId;
 	bool _isActive = false;
 	bool _firstUpdate = true;
 	Color gradientColor;
@@ -60,6 +63,15 @@ class MenuVignetteRenderObject extends RenderBox
 		_firstUpdate = true;
 		updateRendering();
 	}
+
+    set assetId(String id)
+    {
+        if(_assetId != id)
+        {
+            _assetId = id;
+            updateRendering();
+        }
+    }
 
 	void updateRendering()
 	{
@@ -104,7 +116,7 @@ class MenuVignetteRenderObject extends RenderBox
 		{
 			return null;
 		}
-		return _timeline.getById(assetId);
+		return _timeline.getById(_assetId);
 	}
 
 	@override
@@ -118,7 +130,6 @@ class MenuVignetteRenderObject extends RenderBox
 			return;
 		}
 
-		
 		canvas.save();	
 
 		double w = asset.width;// * Timeline.AssetScreenScale;

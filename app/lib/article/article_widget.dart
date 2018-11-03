@@ -15,11 +15,11 @@ typedef ArticleVisibilityChanged(bool isVisible);
 
 class ArticleWidget extends StatefulWidget  
 {
-	final GoBackCallback goBack;
-	final bool show;
-	final ArticleVisibilityChanged visibilityChanged;
+	// final GoBackCallback goBack;
+	// final bool show;
+	// final ArticleVisibilityChanged visibilityChanged;
 	final TimelineEntry article;
-	ArticleWidget({this.goBack, this.show, this.visibilityChanged, this.article, Key key}) : super(key: key);
+	ArticleWidget({/* this.goBack, this.show, this.visibilityChanged, */ this.article, Key key}) : super(key: key);
 
 	@override
 	 _ArticleWidgetState createState() => new _ArticleWidgetState();
@@ -51,14 +51,14 @@ class _ArticleWidgetState extends State<ArticleWidget> with SingleTickerProvider
 			duration: const Duration(milliseconds: 200),
 		);
 		_articleOffset = _controller.drive(_slideTween);
-		if(widget.show)
-		{
-			_controller.reverse(from:0.0);
-		}
-		else
-		{
-			_controller.forward(from:1.0);
-		}					
+		// if(widget.show)
+		// {
+		// 	_controller.reverse(from:0.0);
+		// }
+		// else
+		// {
+		// 	_controller.forward(from:1.0);
+		// }					
 
 		TextStyle style = new TextStyle(
 			color: darkText,
@@ -115,6 +115,15 @@ class _ArticleWidgetState extends State<ArticleWidget> with SingleTickerProvider
 			//codeblockDecoration: codeblockDecoration ?? this.codeblockDecoration,
 			//horizontalRuleDecoration: horizontalRuleDecoration ?? this.horizontalRuleDecoration,
 			);
+        setState((){
+            _title = widget.article.label;
+            _subTitle = widget.article.formatYearsAgo();
+            _articleMarkdown = "";
+            if(widget.article.articleFilename != null)
+            {
+                loadMarkdown(widget.article.articleFilename);
+            }
+        });
 	}
 
 	void loadMarkdown(String filename) async
@@ -152,29 +161,29 @@ class _ArticleWidgetState extends State<ArticleWidget> with SingleTickerProvider
 				loadMarkdown(widget.article.articleFilename);
 			}
 		}
-		if(oldWidget.show != widget.show)
-		{
-			if(widget.show)
-			{
-				_controller.reverse().whenComplete(()
-				{
-					setState(() 
-					{
-						widget.visibilityChanged(true);
-					});
-				});
-			}
-			else
-			{
-				_controller.forward().whenComplete(()
-				{
-					setState(() 
-					{
-						widget.visibilityChanged(false);
-					});
-				});
-			}
-		}
+		// if(oldWidget.show != widget.show)
+		// {
+		// 	if(widget.show)
+		// 	{
+		// 		_controller.reverse().whenComplete(()
+		// 		{
+		// 			setState(() 
+		// 			{
+		// 				widget.visibilityChanged(true);
+		// 			});
+		// 		});
+		// 	}
+		// 	else
+		// 	{
+		// 		_controller.forward().whenComplete(()
+		// 		{
+		// 			setState(() 
+		// 			{
+		// 				widget.visibilityChanged(false);
+		// 			});
+		// 		});
+		// 	}
+		// }
         FavoritesBloc bloc = FavoritesBloc();
         bloc.fetchFavorites().then((List<TimelineEntry> favs)
         {
@@ -191,9 +200,10 @@ class _ArticleWidgetState extends State<ArticleWidget> with SingleTickerProvider
     Widget build(BuildContext context) 
 	{
 		EdgeInsets devicePadding = MediaQuery.of(context).padding;
-		return SlideTransition(
-			position: _articleOffset, 
-			child:Container(
+        List<TimelineEntry> favs = BlocProvider.favorites(context).favorites;
+        bool isFav = favs.any((TimelineEntry te) => te.label.toLowerCase() == _title.toLowerCase());
+		return Scaffold(
+			body:Container(
 				color: background,
 				child: new Stack(
 					children:<Widget>
@@ -210,7 +220,7 @@ class _ArticleWidgetState extends State<ArticleWidget> with SingleTickerProvider
 								child: new IconButton(
 									alignment: Alignment.centerLeft,
 									icon: new Icon(Icons.arrow_back),
-									onPressed: () { this.widget.goBack(); },
+									onPressed: () { Navigator.of(context).pop(); },
 								)
 							),
 							Expanded(
@@ -222,7 +232,7 @@ class _ArticleWidgetState extends State<ArticleWidget> with SingleTickerProvider
 										crossAxisAlignment: CrossAxisAlignment.start,
 										children: <Widget>
 										[
-											new Container(height:280, child: TimelineEntryWidget(isActive: widget.show, timelineEntry: widget.article)),
+											new Container(height:280, child: TimelineEntryWidget(isActive: true /* widget.show */, timelineEntry: widget.article)),
                                             Row(
                                                 children:
                                                 [
@@ -257,7 +267,7 @@ class _ArticleWidgetState extends State<ArticleWidget> with SingleTickerProvider
                                                         height: 18.0,
                                                         width: 18.0,
                                                         child: GestureDetector(
-                                                            child: FlareActor("assets/Favorite.flr", animation: _isFavorite ? "Favorite" : "Unfavorite", shouldClip: false),
+                                                            child: FlareActor("assets/Favorite.flr", animation: isFav ? "Favorite" : "Unfavorite", shouldClip: false),
                                                             onTap:()
                                                             {
                                                                 setState(() {
@@ -265,11 +275,11 @@ class _ArticleWidgetState extends State<ArticleWidget> with SingleTickerProvider
                                                                     });
                                                                     if(_isFavorite)
                                                                     {
-                                                                        BlocProvider.of(context).addFavorite(widget.article);
+                                                                        BlocProvider.favorites(context).addFavorite(widget.article);
                                                                     }
                                                                     else
                                                                     {
-                                                                        BlocProvider.of(context).removeFavorite(widget.article);
+                                                                        BlocProvider.favorites(context).removeFavorite(widget.article);
                                                                     }
                                                             }
                                                         ),

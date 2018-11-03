@@ -94,19 +94,17 @@ class VignetteRenderObject extends RenderBox
 	void paint(PaintingContext context, Offset offset)
 	{
 		final Canvas canvas = context.canvas;
-		if(_timelineEntry == null)
+		TimelineAsset asset = _timelineEntry?.asset;
+		
+        if(_timelineEntry == null || asset == null)
 		{
 			return;
 		}
 
-		//canvas.drawRect(new Offset(0.0, 0.0) & new Size(100.0, 100.0), new Paint()..color = Colors.red);
-
-		TimelineAsset asset = _timelineEntry.asset;
-		
 		canvas.save();	
 
-		double w = asset.width;// * Timeline.AssetScreenScale;
-		double h = asset.height;// * Timeline.AssetScreenScale;
+		double w = asset.width;
+		double h = asset.height;
 
 		if(asset is TimelineImage)
 		{
@@ -125,14 +123,12 @@ class VignetteRenderObject extends RenderBox
 			double x = -bounds[0] - contentWidth/2.0 - (alignment.x * contentWidth/2.0);
 			double y =  -bounds[1] - contentHeight/2.0 + (alignment.y * contentHeight/2.0);
 
-			Offset renderOffset = offset;//new Offset(offset.dx + size.width - w, asset.y);
-			Size renderSize = size;//new Size(w, h);
+			Offset renderOffset = offset;
+			Size renderSize = size;
 
 			double scaleX = 1.0, scaleY = 1.0;
 
 			canvas.save();		
-			
-			//canvas.clipRect(renderOffset & renderSize);
 
 			switch(fit)
 			{
@@ -184,12 +180,11 @@ class VignetteRenderObject extends RenderBox
 			double y =  -bounds[1] - contentHeight/2.0 + (alignment.y * contentHeight/2.0);
 
 			Offset renderOffset = offset;
-			Size renderSize = size;//new Size(w*rs, h*rs);
+			Size renderSize = size;
 
 			double scaleX = 1.0, scaleY = 1.0;
 
-			canvas.save();		
-			//canvas.clipRect(renderOffset & renderSize);
+			canvas.save();
 
 			switch(fit)
 			{

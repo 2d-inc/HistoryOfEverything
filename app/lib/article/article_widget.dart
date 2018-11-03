@@ -252,26 +252,28 @@ class _ArticleWidgetState extends State<ArticleWidget> with SingleTickerProvider
                                                         ]
                                                     ),
                                                     Expanded(child: Container()), // Fill the Row with empty space
-                                                    Container(
-                                                        height: 18.0,
-                                                        width: 18.0,
-                                                        child: GestureDetector(
-                                                            child: FlareActor("assets/Favorite.flr", animation: _isFavorite ? "Favorite" : "Unfavorite", shouldClip: false),
-                                                            onTap:()
-                                                            {
-                                                                setState(() {
-                                                                        _isFavorite = !_isFavorite;
-                                                                    });
-                                                                    if(_isFavorite)
-                                                                    {
-                                                                        BlocProvider.of(context).addFavorite(widget.article);
-                                                                    }
-                                                                    else
-                                                                    {
-                                                                        BlocProvider.of(context).removeFavorite(widget.article);
-                                                                    }
-                                                            }
-                                                        ),
+                                                    GestureDetector(
+														child: Transform.translate(offset: const Offset(15.0, 0.0), child:Container(
+															height: 48.0,
+															width: 48.0,
+															padding: EdgeInsets.all(15.0),
+															color: background,
+															child: FlareActor("assets/Favorite.flr", animation: _isFavorite ? "Favorite" : "Unfavorite", shouldClip: false),
+                                                        )),
+														onTap:()
+														{
+															setState(() {
+																	_isFavorite = !_isFavorite;
+																});
+																if(_isFavorite)
+																{
+																	BlocProvider.of(context).addFavorite(widget.article);
+																}
+																else
+																{
+																	BlocProvider.of(context).removeFavorite(widget.article);
+																}
+														}
                                                     )
                                                     
                                                 ]

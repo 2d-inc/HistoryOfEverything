@@ -150,9 +150,13 @@ class TimelineRenderObject extends RenderBox
 		}
 		touchBubble(null);
 
-		if(timeline.nextEntry != null && _nextEntryRect != null && _nextEntryRect.contains(screenOffset))
+		if(_timeline.nextEntryOpacity > 0.1 && timeline.nextEntry != null && _nextEntryRect != null && _nextEntryRect.contains(screenOffset))
 		{
 			touchEntry(timeline.nextEntry);
+		}
+		else
+		{
+			touchEntry(null);
 		}
 
 		return true;

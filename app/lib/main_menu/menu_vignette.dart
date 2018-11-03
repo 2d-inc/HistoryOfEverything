@@ -111,9 +111,8 @@ class MenuVignetteRenderObject extends RenderBox
 	void paint(PaintingContext context, Offset offset)
 	{
 		final Canvas canvas = context.canvas;
-		TimelineEntry entry = timelineEntry;
-		TimelineAsset asset = entry?.asset;
-		if(entry == null || asset == null)
+		TimelineAsset asset = timelineEntry?.asset;
+		if(asset == null)
 		{
 			return;
 		}

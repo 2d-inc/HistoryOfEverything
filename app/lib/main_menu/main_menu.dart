@@ -151,8 +151,9 @@ class _MainMenuWidgetState extends State<MainMenuWidget> with SingleTickerProvid
 			child: new Container(
 				color: background,
 				child: Padding(
-				  padding: EdgeInsets.only(top:devicePadding.top, left:20.0, right:20.0),
+				  padding: EdgeInsets.only(top:devicePadding.top+20.0),
 				  child: SingleChildScrollView(
+					padding: EdgeInsets.only(left: 20, right:20, bottom: 20),
 				  	child: Column(
 						crossAxisAlignment: CrossAxisAlignment.start,
 				  		children: <Widget>[

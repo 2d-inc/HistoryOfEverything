@@ -143,8 +143,8 @@ class Timeline
 	static const double DepthOffset = LineSpacing+LineWidth;
 
 	static const double EdgePadding = 8.0;
-	static const double MoveSpeed = 20.0;
-	static const double Deceleration = 9.0;
+	static const double MoveSpeed = 40.0;
+	static const double Deceleration = 3.0;
 	static const double GutterLeft = 45.0;
 	
 	static const double EdgeRadius = 4.0;

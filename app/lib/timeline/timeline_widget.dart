@@ -91,12 +91,18 @@ class _TimelineWidgetState extends State<TimelineWidget>
 		}
 	}
 
+	void _tapDown(TapDownDetails details)
+	{
+		timeline.setViewport(velocity: 0.0, animate: true);
+	}
+
 
 	@override
 	Widget build(BuildContext context) 
 	{
 		EdgeInsets devicePadding = MediaQuery.of(context).padding;
 		return new GestureDetector(
+			onTapDown: _tapDown,
 			onScaleStart: _scaleStart,
 			onScaleUpdate: _scaleUpdate,
 			onScaleEnd: _scaleEnd,

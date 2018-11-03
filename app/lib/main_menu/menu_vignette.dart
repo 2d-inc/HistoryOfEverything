@@ -112,12 +112,12 @@ class MenuVignetteRenderObject extends RenderBox
 	{
 		final Canvas canvas = context.canvas;
 		TimelineEntry entry = timelineEntry;
-		if(entry == null)
+		TimelineAsset asset = entry?.asset;
+		if(entry == null || asset == null)
 		{
 			return;
 		}
 
-		TimelineAsset asset = entry.asset;
 		
 		canvas.save();	
 

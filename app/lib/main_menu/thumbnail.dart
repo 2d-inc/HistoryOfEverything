@@ -19,7 +19,7 @@ class ThumbnailWidget extends StatelessWidget
         {
             thumbnail = RawImage(image: asset.image);
         }
-        else if(asset is TimelineNima)
+        else if(asset is TimelineNima || asset is TimelineFlare)
         {
             thumbnail = TimelineEntryWidget(
                 isActive: false,

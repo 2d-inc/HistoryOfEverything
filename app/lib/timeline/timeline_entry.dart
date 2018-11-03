@@ -63,6 +63,7 @@ class TimelineEntry
 	double end;
 	String label;
 	String articleFilename;
+	String id;
 
 	TimelineEntry parent;
 	List<TimelineEntry> children;

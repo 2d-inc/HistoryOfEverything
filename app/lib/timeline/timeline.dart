@@ -49,6 +49,7 @@ class Timeline
 	double _lastFrameTime = 0.0;
 	double _height = 0.0;
 	List<TimelineEntry> _entries;
+	Map<String, TimelineEntry> _entriesById = new Map<String, TimelineEntry>();
 	List<TimelineAsset> _renderAssets;
 	double _lastEntryY = 0.0;
 	double _lastOnScreenEntryY = 0.0;
@@ -233,6 +234,11 @@ class Timeline
 				if(map.containsKey("label"))
 				{
 					timelineEntry.label = map["label"] as String;
+				}
+				if(map.containsKey("id"))
+				{
+					timelineEntry.id = map["id"] as String;
+					_entriesById[timelineEntry.id] = timelineEntry;
 				}
 				if(map.containsKey("article"))
 				{
@@ -424,6 +430,11 @@ class Timeline
         SearchManager.init(allEntries);
 
 		return true;	
+	}
+
+	TimelineEntry getById(String id)
+	{
+		return _entriesById[id];
 	}
 
 	void setViewport({double start = double.maxFinite, bool pad = false, double end = double.maxFinite, double height = double.maxFinite, double velocity = double.maxFinite, bool animate = false})

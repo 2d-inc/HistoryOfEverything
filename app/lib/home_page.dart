@@ -4,6 +4,7 @@ import "package:timeline/bloc_provider.dart";
 import "package:timeline/blocs/favorites_bloc.dart";
 import "package:timeline/main_menu/menu_data.dart";
 import "package:timeline/article/article_widget.dart";
+import 'package:timeline/timeline/timeline.dart';
 import "package:timeline/timeline/timeline_widget.dart";
 import "package:timeline/timeline/timeline_entry.dart";
 import "package:timeline/main_menu/main_menu.dart";
@@ -42,6 +43,7 @@ class _MyHomePageState extends State<MyHomePage> {
 	bool _isMenuVisible = true;
 	bool _isArticleVisible = false;
 	TimelineEntry _article = null;
+	Timeline _timeline = new Timeline();
 
 	initState()
 	{
@@ -151,8 +153,8 @@ class _MyHomePageState extends State<MyHomePage> {
             appBar: null,
             body: new Stack(
                 children: <Widget> [
-                    Positioned.fill( child: TimelineWidget( showMenu: _onShowMenu, isActive:_isTimelineActive, focusItem:_focusItem, selectItem: _selectTimelineEntry )),
-                    Positioned.fill( child: MainMenuWidget( show:_isMenuVisible, selectItem: _selectMenuItem, data:_menu, visibilityChanged:_onMainMenuVisibilityChanged) ),
+                    Positioned.fill( child: TimelineWidget( showMenu: _onShowMenu, isActive:_isTimelineActive, focusItem:_focusItem, selectItem: _selectTimelineEntry, timeline:_timeline)),
+                    Positioned.fill( child: MainMenuWidget( show:_isMenuVisible, selectItem: _selectMenuItem, data:_menu, visibilityChanged:_onMainMenuVisibilityChanged, timeline:_timeline) ),
                     Positioned.fill( child: ArticleWidget( show:_isArticleVisible, article:_article, goBack: _returnToTimeline, visibilityChanged: _onArticleVisibilityChanged) )
                 ]
             )

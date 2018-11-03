@@ -15,7 +15,8 @@ class TimelineWidget extends StatefulWidget
 	final bool isActive;
 	final MenuItemData focusItem;
 	final SelectItemCallback selectItem;
-	TimelineWidget({this.showMenu, this.isActive, this.focusItem, this.selectItem, Key key}) : super(key: key);
+	final Timeline timeline;
+	TimelineWidget({this.showMenu, this.isActive, this.focusItem, this.selectItem, this.timeline, Key key}) : super(key: key);
 
 	@override
 	_TimelineWidgetState createState() => new _TimelineWidgetState();
@@ -23,21 +24,20 @@ class TimelineWidget extends StatefulWidget
 
 class _TimelineWidgetState extends State<TimelineWidget> 
 {
-	Timeline _timeline = new Timeline();
-
 	Offset _lastFocalPoint;
 	double _scaleStartYearStart = -100.0;
 	double _scaleStartYearEnd = 100.0;
 	Bubble _touchedBubble;
 	TimelineEntry _touchedEntry;
 
+	Timeline get timeline => widget.timeline;
 	void _scaleStart(ScaleStartDetails details)
 	{
 		_lastFocalPoint = details.focalPoint;
-		_scaleStartYearStart = _timeline.start;
-		_scaleStartYearEnd = _timeline.end;
-		_timeline.isInteracting = true;
-		_timeline.setViewport(velocity: 0.0, animate: true);
+		_scaleStartYearStart = timeline.start;
+		_scaleStartYearEnd = timeline.end;
+		timeline.isInteracting = true;
+		timeline.setViewport(velocity: 0.0, animate: true);
 	}
 
 	void _scaleUpdate(ScaleUpdateDetails details)
@@ -48,7 +48,7 @@ class _TimelineWidgetState extends State<TimelineWidget>
 		double focus = _scaleStartYearStart + details.focalPoint.dy * scale;
 		double focalDiff = (_scaleStartYearStart + _lastFocalPoint.dy * scale) - focus;
 		
-		_timeline.setViewport(
+		timeline.setViewport(
 			start: focus + (_scaleStartYearStart-focus)/changeScale + focalDiff,
 			end: focus + (_scaleStartYearEnd-focus)/changeScale + focalDiff,
 			height: context.size.height,
@@ -57,9 +57,9 @@ class _TimelineWidgetState extends State<TimelineWidget>
 
 	void _scaleEnd(ScaleEndDetails details)
 	{
-		double scale = (_timeline.end-_timeline.start)/context.size.height;
-		_timeline.isInteracting = false;
-		_timeline.setViewport(velocity: details.velocity.pixelsPerSecond.dy * scale, animate: true);
+		double scale = (timeline.end-timeline.start)/context.size.height;
+		timeline.isInteracting = false;
+		timeline.setViewport(velocity: details.velocity.pixelsPerSecond.dy * scale, animate: true);
 	}
 	
 	onTouchBubble(Bubble bubble)
@@ -87,7 +87,7 @@ class _TimelineWidgetState extends State<TimelineWidget>
 			}
 			if(next != null)
 			{
-				_timeline.setViewport(start:_touchedEntry.start, end:next.start, animate: true, pad: true);
+				timeline.setViewport(start:_touchedEntry.start, end:next.start, animate: true, pad: true);
 			}
 			else
 			{
@@ -98,7 +98,7 @@ class _TimelineWidgetState extends State<TimelineWidget>
 				}
 				if(prev != null)
 				{
-					_timeline.setViewport(start:prev.start, end:_touchedEntry.start, animate: true, pad: true);
+					timeline.setViewport(start:prev.start, end:_touchedEntry.start, animate: true, pad: true);
 				}
 				else
 				{
@@ -124,7 +124,7 @@ class _TimelineWidgetState extends State<TimelineWidget>
 			child: new Stack(
 				children:<Widget>
 				[
-					new TimelineRenderWidget(timeline: _timeline, topOverlap:56.0+devicePadding.top, isActive:widget.isActive, focusItem:widget.focusItem, touchBubble:onTouchBubble, touchEntry:onTouchEntry),
+					new TimelineRenderWidget(timeline: timeline, topOverlap:56.0+devicePadding.top, isActive:widget.isActive, focusItem:widget.focusItem, touchBubble:onTouchBubble, touchEntry:onTouchEntry),
 					new Column(
 						children: <Widget>[
 							Container(

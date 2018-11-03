@@ -7,6 +7,7 @@ class MenuSectionData
 	String label;
 	Color textColor;
 	Color backgroundColor;
+	String assetId;
 	List<MenuItemData> items = new List<MenuItemData>();
 }
 
@@ -47,6 +48,10 @@ class MenuData
 				if(map.containsKey("color"))
 				{
 					menuSection.textColor = new Color(int.parse((map["color"] as String).substring(1, 7), radix: 16) + 0xFF000000);
+				}
+				if(map.containsKey("asset"))
+				{
+					menuSection.assetId = map["asset"] as String;
 				}
 				if(map.containsKey("items"))
 				{

@@ -17,6 +17,7 @@
 	{
 		"date": -13000000000,
 		"label": "Birth of the Milky Way",
+		"id":"milky",
 		"article": "milky_way.txt",
 		"asset": 
 		{
@@ -125,6 +126,7 @@
 		"end": -65000000,
 		"label": "Dinosaur Age",
 		"article": "dinosaurs.txt",
+		"id":"dinosaur",
 		"asset": 
 		{
 			"source": "Dinosaurs/Dinosaurs.nma",
@@ -404,6 +406,7 @@
 	{
 		"date": 1897,
 		"label": "Amelia Earhart",
+		"id":"amelia",
 		"article":"amelia_earhart.txt",
 		"asset": 
 		{
@@ -453,6 +456,7 @@
 		"date": 1929,
 		"label": "Martin Luther King, Jr.",
 		"article":"martin_luther_king.txt",
+		"id":"mlk",
 		"asset": 
 		{
 			"source": "Martin Luther king/Martin Luther king.nma",

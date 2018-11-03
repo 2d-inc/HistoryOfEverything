@@ -13,6 +13,7 @@ import "package:timeline/main_menu/about_page.dart";
 import "package:timeline/main_menu/favorites_page.dart";
 import "package:timeline/search_manager.dart";
 import "package:timeline/colors.dart";
+import 'package:timeline/timeline/timeline.dart';
 import "package:timeline/timeline/timeline_entry.dart";
 
 typedef VisibilityChanged(bool isVisible);
@@ -23,7 +24,8 @@ class MainMenuWidget extends StatefulWidget
 	final MenuData data;
 	final bool show;
 	final VisibilityChanged visibilityChanged;
-	MainMenuWidget({this.selectItem, this.data, this.show, this.visibilityChanged, Key key}) : super(key: key);
+	final Timeline timeline;
+	MainMenuWidget({this.selectItem, this.data, this.show, this.visibilityChanged, this.timeline, Key key}) : super(key: key);
 
 	@override
 	 _MainMenuWidgetState createState() => new _MainMenuWidgetState();
@@ -217,7 +219,10 @@ class _MainMenuWidgetState extends State<MainMenuWidget> with SingleTickerProvid
 				  						section.backgroundColor, 
 				  						section.textColor, 
 				  						section.items,
-				  						widget.selectItem
+				  						widget.selectItem,
+										assetId: section.assetId,
+										timeline: widget.timeline,
+										isActive: widget.show
 				  						)
 				  					)
 				  				).toList(growable:false)

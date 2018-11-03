@@ -3,6 +3,7 @@
         "label": "Birth of the Universe",
         "background": "#083158",
         "color": "#ffffff",
+        "asset":"milky",
         "items":
         [
             {
@@ -31,6 +32,7 @@
         "label": "Life on Earth",
         "background": "#fdfdfd",
         "color": "#000000",
+        "asset":"dinosaur",
         "items":
         [
             {
@@ -64,6 +66,7 @@
         "label": "Common Era",
         "background": "#001d22",
         "color": "#ffffff",
+        "asset":"mlk",
         "items":
         [
             {

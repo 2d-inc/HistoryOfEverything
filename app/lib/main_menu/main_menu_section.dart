@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:timeline/main_menu/menu_data.dart';
-import "package:flare/flare_actor.dart";
+import "package:flare/flare_actor.dart" as flare;
+import "package:nima/nima_actor.dart" as nima;
+import 'package:timeline/main_menu/menu_vignette.dart';
+import 'package:timeline/timeline/timeline.dart';
 typedef SelectItemCallback(MenuItemData item);
 
 class MenuSection extends StatefulWidget
@@ -10,12 +13,17 @@ class MenuSection extends StatefulWidget
     final Color accentColor;
 	final SelectItemCallback selectItem;
     final List<MenuItemData> menuOptions;
+	final String assetId;
+	final Timeline timeline;
+	final bool isActive;
 
-    MenuSection(this.title, this.backgroundColor, this.accentColor, this.menuOptions, this.selectItem, {Key key}) : super(key: key);
+    MenuSection(this.title, this.backgroundColor, this.accentColor, this.menuOptions, this.selectItem, {this.timeline, this.assetId, this.isActive, Key key}) : super(key: key);
 
     @override
     State<StatefulWidget> createState() => _SectionState();
 }
+
+
 
 class _SectionState extends State<MenuSection> with SingleTickerProviderStateMixin
 {
@@ -80,24 +88,36 @@ class _SectionState extends State<MenuSection> with SingleTickerProviderStateMix
 						borderRadius: BorderRadius.circular(10.0),
 						color: widget.backgroundColor
 					),
-					child:  Column(
-						children: 
+					child:  new ClipRRect(borderRadius: BorderRadius.circular(10.0), child:
+						new Stack(children: <Widget>
 						[
-							Container(
-								height: 150.0,
-								child: Row(
-									crossAxisAlignment: CrossAxisAlignment.end,
-									children: 
-									[
-										Expanded(
-											child: Row(
+							new Positioned.fill(left:0, top:0, child:new MenuVignette(gradientColor:widget.backgroundColor, isActive:widget.isActive, timeline:widget.timeline, assetId:widget.assetId)),
+							//new Positioned.fill(child:new Container(color:widget.backgroundColor.withOpacity(0.5))),
+							// new Positioned.fill(child:new Container(decoration:
+							// 	BoxDecoration(
+							// 		gradient: LinearGradient(
+							// 		begin: Alignment(0.5, 0.0),
+							// 		end: Alignment(0.5, 100), // 10% of the width, so there are ten blinds.
+							// 		colors: [widget.backgroundColor.withOpacity(0.2), widget.backgroundColor.withOpacity(0.9)], // whitish to gray
+							// 		tileMode: TileMode.clamp, // repeats the gradient over the canvas
+							// 		)
+							// 	)
+							// )),
+							Column(children: <Widget>
+							[
+								Container
+								(
+									height: 150.0,
+									alignment: Alignment.bottomCenter,
+									child: Row(
+										crossAxisAlignment: CrossAxisAlignment.center,
 												children:
 												[
 													Container(
 														height: 21.0,
 														width: 21.0,
 														margin: EdgeInsets.all(18.0),
-														child: new FlareActor("assets/ExpandCollapse.flr", color:widget.accentColor, animation: _isExpanded ? "Collapse" : "Expand")
+														child: new flare.FlareActor("assets/ExpandCollapse.flr", color:widget.accentColor, animation: _isExpanded ? "Collapse" : "Expand")
 													),
 													Text(
 														widget.title,
@@ -109,60 +129,90 @@ class _SectionState extends State<MenuSection> with SingleTickerProviderStateMix
 													)
 												],
 											)
-										)
-									]
-								)
-							),
-							new SizeTransition(
-								axisAlignment: 0.0,
-								axis: Axis.vertical,
-								sizeFactor: _sizeAnimation,
-								child:Container(
-									child: new Padding(
-										padding: EdgeInsets.only(left: 56.0, right: 20.0, top: 10.0),
-										child: Column
-										(
-											children: widget.menuOptions.map
+										
+								),
+								new SizeTransition(
+									axisAlignment: 0.0,
+									axis: Axis.vertical,
+									sizeFactor: _sizeAnimation,
+									child:Container(
+										child: new Padding(
+											padding: EdgeInsets.only(left: 56.0, right: 20.0, top: 10.0),
+											child: Column
 											(
-												(item) 
-												{
-													return GestureDetector(
-														onTap: () => 
-															this.widget.selectItem(item),
+												children: widget.menuOptions.map
+												(
+													(item) 
+													{
+														return GestureDetector(
+															onTap: () => 
+																this.widget.selectItem(item),
 
-														child: Row(
-																crossAxisAlignment: CrossAxisAlignment.start,
-																children:
-																[
-																	Expanded(
-																		child: Container(
-																			margin: EdgeInsets.only(bottom: 20.0),
-																			child:Text(
-																				item.label, 
-																				style: TextStyle(color: widget.accentColor, fontSize: 20.0, fontFamily: "RobotoMedium"),
+															child: Row(
+																	crossAxisAlignment: CrossAxisAlignment.start,
+																	children:
+																	[
+																		Expanded(
+																			child: Container(
+																				margin: EdgeInsets.only(bottom: 20.0),
+																				child:Text(
+																					item.label, 
+																					style: TextStyle(color: widget.accentColor, fontSize: 20.0, fontFamily: "RobotoMedium"),
+																				)
+																			)
+																		),
+																		Container(alignment: Alignment.center,
+																			child: Image.asset(
+																				"assets/right_arrow.png",
+																				color: widget.accentColor,
+																				height: 22.0,
+																				width: 22.0
 																			)
 																		)
-																	),
-																	Container(alignment: Alignment.center,
-																		child: Image.asset(
-																			"assets/right_arrow.png",
-																			color: widget.accentColor,
-																			height: 22.0,
-																			width: 22.0
-																		)
-																	)
-																]
-															)
-													);
-												}
-											).toList()
+																	]
+																)
+														);
+													}
+												).toList()
+											)
 										)
 									)
 								)
-							)
-						]
-					)
-				)
-			);
+							]
+						),
+				],
+			)
+		)
+	));
+    }
+}
+
+class NimaDecoration extends Decoration
+{
+    final Color color;
+    final double expandValue;
+
+    NimaDecoration(this.color, this.expandValue);
+
+    @override
+    BoxPainter createBoxPainter([VoidCallback onChanged])
+    {
+        return new NimaPainter(color, expandValue);
+    }
+}
+
+class NimaPainter extends BoxPainter
+{
+    final Color color;
+    final double expandValue;
+
+    NimaPainter(this.color, this.expandValue);
+
+    @override
+    void paint(Canvas canvas, Offset offset, ImageConfiguration config)
+    {
+        canvas.save();
+
+        canvas.restore();
     }
 }

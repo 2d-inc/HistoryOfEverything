@@ -13,7 +13,7 @@ import 'package:timeline/timeline/ticks.dart';
 import 'package:timeline/timeline/timeline.dart';
 import 'package:timeline/timeline/timeline_entry.dart';
 
-typedef TouchBubbleCallback(Bubble bubble);
+typedef TouchBubbleCallback(TapTarget bubble);
 typedef TouchEntryCallback(TimelineEntry entry);
 
 class TimelineRenderWidget extends LeafRenderObjectWidget
@@ -52,7 +52,7 @@ class TimelineRenderWidget extends LeafRenderObjectWidget
 }
 
 
-class Bubble
+class TapTarget
 {
 	TimelineEntry entry;
 	Rect rect;
@@ -69,7 +69,7 @@ class TimelineRenderObject extends RenderBox
 		const Color.fromARGB(255, 128, 28, 15)
 	];
 
-	List<Bubble> _bubbles = new List<Bubble>();
+	List<TapTarget> _tapTargets = new List<TapTarget>();
 	Ticks _ticks = new Ticks();
 	Timeline _timeline;
 	bool _isActive = false;
@@ -146,7 +146,7 @@ class TimelineRenderObject extends RenderBox
 	@override
 	bool hitTestSelf(Offset screenOffset)
 	{
-		for(Bubble bubble in _bubbles)
+		for(TapTarget bubble in _tapTargets)
 		{
 			if(bubble.rect.contains(screenOffset))
 			{
@@ -195,7 +195,7 @@ class TimelineRenderObject extends RenderBox
 			return;
 		}
 
-		_bubbles.clear();
+		_tapTargets.clear();
 		double renderStart = _timeline.renderStart;
 		double renderEnd = _timeline.renderEnd;
 		double scale = size.height/(renderEnd-renderStart);
@@ -276,6 +276,7 @@ class TimelineRenderObject extends RenderBox
 						
 						asset.actor.draw(canvas, asset.opacity);
 						canvas.restore();
+						_tapTargets.add(new TapTarget()..entry=asset.entry..rect=renderOffset & renderSize);
 					}
 					else if(asset is TimelineFlare && asset.actor != null)
 					{
@@ -333,6 +334,7 @@ class TimelineRenderObject extends RenderBox
 
 						asset.actor.draw(canvas, opacity:asset.opacity);
 						canvas.restore();
+						_tapTargets.add(new TapTarget()..entry=asset.entry..rect=renderOffset & renderSize);
 					}
 				}
 			}
@@ -460,9 +462,9 @@ class TimelineRenderObject extends RenderBox
 			canvas.save();
 			canvas.translate(bubbleX, bubbleY);
 			Path bubble = makeBubblePath(textWidth + BubblePadding*2.0, BubbleHeight);
-			canvas.drawPath(bubble, new Paint()..color = LineColors[depth%LineColors.length].withOpacity(item.opacity*item.labelOpacity*0.95));
+			canvas.drawPath(bubble, new Paint()..color = LineColors[depth%LineColors.length].withOpacity(item.opacity*item.labelOpacity));
 			canvas.clipRect(new Rect.fromLTWH(BubblePadding, 0.0, textWidth, BubbleHeight));
-			_bubbles.add(new Bubble()..entry=item..rect=Rect.fromLTWH(bubbleX, bubbleY, textWidth + BubblePadding*2.0, BubbleHeight));
+			_tapTargets.add(new TapTarget()..entry=item..rect=Rect.fromLTWH(bubbleX, bubbleY, textWidth + BubblePadding*2.0, BubbleHeight));
 
 			
 			canvas.drawParagraph(labelParagraph, new Offset(BubblePadding, BubbleHeight/2.0-labelParagraph.height/2.0));

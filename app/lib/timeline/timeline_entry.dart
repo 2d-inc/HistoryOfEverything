@@ -48,6 +48,7 @@ class TimelineAsset
 	double scaleVelocity = 0.0;
 	double y = 0.0;
 	double velocity = 0.0;
+	TimelineEntry entry;
 }
 
 enum TimelineEntryType

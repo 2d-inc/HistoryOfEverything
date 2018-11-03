@@ -82,7 +82,22 @@ class VignetteRenderObject extends RenderBox
 	bool get sizedByParent => true;
 	
 	@override
-	bool hitTestSelf(Offset screenOffset) => true;
+	bool hitTestSelf(Offset screenOffset)
+	{
+		if(_timelineEntry != null)
+		{
+			TimelineAsset asset = _timelineEntry.asset;
+			if(asset is TimelineNima && asset.actor != null)
+			{
+				asset.animationTime = 0.0;
+			}
+			else if(asset is TimelineFlare && asset.actor != null)
+			{
+				asset.animationTime = 0.0;
+			}
+		} 
+		return true;
+	}
 
 	@override
 	void performResize() 

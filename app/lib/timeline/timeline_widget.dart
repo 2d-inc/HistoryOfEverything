@@ -28,7 +28,7 @@ class _TimelineWidgetState extends State<TimelineWidget>
 	double _scaleStartYearStart = -100.0;
 	double _scaleStartYearEnd = 100.0;
 	static const double TopOverlap = 56.0;
-	Bubble _touchedBubble;
+	TapTarget _touchedBubble;
 	TimelineEntry _touchedEntry;
 
 	Timeline get timeline => widget.timeline;
@@ -63,7 +63,7 @@ class _TimelineWidgetState extends State<TimelineWidget>
 		timeline.setViewport(velocity: details.velocity.pixelsPerSecond.dy * scale, animate: true);
 	}
 	
-	onTouchBubble(Bubble bubble)
+	onTouchBubble(TapTarget bubble)
 	{
 		_touchedBubble = bubble;
 	}

@@ -369,6 +369,7 @@ class Timeline
 					asset.width = width is int ? width.toDouble() : width;
 					dynamic height = assetMap["height"];
 					asset.height = height is int ? height.toDouble() : height;
+					asset.entry = timelineEntry;
 					//print("ENTRY ${timelineEntry.label} $asset");
 					timelineEntry.asset = asset;
 					

@@ -18,6 +18,7 @@ import "package:flare/flare/math/vec2d.dart" as flare;
 import "timeline_entry.dart";
 import "package:timeline/search_manager.dart";
 typedef PaintCallback();
+typedef ChangeEraCallback(TimelineEntry era);
 
 String getExtension(String filename)
 {
@@ -63,8 +64,12 @@ class Timeline
 	bool isActive = false;
 	TimelineEntry _nextEntry;
 	TimelineEntry _renderNextEntry;
+	TimelineEntry _currentEra;
+	TimelineEntry _lastEra;
 	double _nextEntryOpacity = 0.0;
 	double _distanceToNextEntry = 0.0;
+
+	TimelineEntry get currentEra => _currentEra;
 
 	List<TimelineEntry> get entries => _entries;
 	double get renderOffsetDepth => _renderOffsetDepth;
@@ -74,6 +79,7 @@ class Timeline
 	Map<String, flare.FlutterActor> _flareResources = new Map<String, flare.FlutterActor>();
 
 	PaintCallback onNeedPaint;
+	ChangeEraCallback onEraChanged;
 	Timer _steadyTimer;
 	double get start => _start;
 	double get end => _end;
@@ -563,6 +569,7 @@ class Timeline
 		_lastAssetY = -double.maxFinite;
 		_labelX = 0.0;
 		_offsetDepth = 0.0;
+		_currentEra = null;
 		_nextEntry = null;
 		if(_entries != null)
 		{
@@ -605,6 +612,15 @@ class Timeline
 		{
 			doneRendering = false;
 			_renderLabelX += dl*min(1.0, elapsed*6.0);
+		}
+
+		if(_currentEra != _lastEra)
+		{
+			_lastEra = _currentEra;
+			if(onEraChanged != null)
+			{
+				onEraChanged(_currentEra);
+			}
 		}
 
 		if(_isSteady)
@@ -752,6 +768,10 @@ class Timeline
 			if(item.type == TimelineEntryType.Era && y < 0 && endY > _height && depth > _offsetDepth)
 			{
 				_offsetDepth = depth.toDouble();
+			}
+			if(item.type == TimelineEntryType.Era && y < 0 && endY > _height/2.0)
+			{
+				_currentEra = item;
 			}
 
 			if(y > _height + BubbleHeight)

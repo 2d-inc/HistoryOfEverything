@@ -5,6 +5,7 @@ import 'package:timeline/main_menu/menu_data.dart';
 import 'package:timeline/timeline/timeline.dart';
 import 'package:timeline/timeline/timeline_entry.dart';
 import 'package:timeline/timeline/timeline_render_widget.dart';
+import "package:timeline/colors.dart";
 
 typedef ShowMenuCallback();
 typedef SelectItemCallback(TimelineEntry item);
@@ -24,13 +25,15 @@ class TimelineWidget extends StatefulWidget
 
 class _TimelineWidgetState extends State<TimelineWidget> 
 {
+	static const String DefaultEraName = "Birth of the Universe";
+
 	Offset _lastFocalPoint;
 	double _scaleStartYearStart = -100.0;
 	double _scaleStartYearEnd = 100.0;
 	static const double TopOverlap = 56.0;
 	TapTarget _touchedBubble;
 	TimelineEntry _touchedEntry;
-
+	String _eraName;
 	Timeline get timeline => widget.timeline;
 	void _scaleStart(ScaleStartDetails details)
 	{
@@ -54,6 +57,41 @@ class _TimelineWidgetState extends State<TimelineWidget>
 			end: focus + (_scaleStartYearEnd-focus)/changeScale + focalDiff,
 			height: context.size.height,
 			animate: true);
+	}
+
+    initState()
+    {
+        super.initState();
+		if(timeline != null)
+		{
+			_eraName = timeline.currentEra != null ? timeline.currentEra : DefaultEraName;
+			timeline.onEraChanged = (TimelineEntry entry)
+			{
+				setState(() 
+				{
+					_eraName = entry != null ? entry.label : DefaultEraName;
+				});
+			};
+		}
+	}
+
+	void didUpdateWidget(covariant TimelineWidget oldWidget)
+	{
+		super.didUpdateWidget(oldWidget);
+		if(timeline != oldWidget.timeline && timeline != null)
+		{
+			timeline.onEraChanged = (TimelineEntry entry)
+			{
+				setState(() 
+				{
+					_eraName = entry != null ? entry.label : DefaultEraName;
+				});
+			};
+			setState(() 
+			{
+				_eraName = timeline.currentEra != null ? timeline.currentEra : DefaultEraName;
+			});
+		}
 	}
 
 	void _scaleEnd(ScaleEndDetails details)
@@ -96,7 +134,6 @@ class _TimelineWidgetState extends State<TimelineWidget>
 		timeline.setViewport(velocity: 0.0, animate: true);
 	}
 
-
 	@override
 	Widget build(BuildContext context) 
 	{
@@ -111,23 +148,41 @@ class _TimelineWidgetState extends State<TimelineWidget>
 				children:<Widget>
 				[
 					new TimelineRenderWidget(timeline: timeline, topOverlap:TopOverlap+devicePadding.top, isActive:widget.isActive, focusItem:widget.focusItem, touchBubble:onTouchBubble, touchEntry:onTouchEntry),
-					new Column(
-						children: <Widget>[
-							Container(
-								height:devicePadding.top,
-								color:Color.fromRGBO(238, 240, 242, 0.81)
-							),
-							Container(
-								color:Color.fromRGBO(238, 240, 242, 0.81), 
-								height: 56.0,
-								width: double.infinity,
-								child: new IconButton(
-									alignment: Alignment.centerLeft,
-									icon: new Icon(Icons.menu),
-									onPressed: () { this.widget.showMenu(); },
+					new BackdropFilter(
+                		filter: new ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+						child:new Column(
+							crossAxisAlignment: CrossAxisAlignment.start,
+							children: <Widget>[
+								Container(
+									height:devicePadding.top,
+									color:Color.fromRGBO(238, 240, 242, 0.81)
+								),
+								Container(
+									color:Color.fromRGBO(238, 240, 242, 0.81), 
+									height: 56.0,
+									width: double.infinity,
+									child: new Row(
+										crossAxisAlignment: CrossAxisAlignment.center,
+										children: <Widget>[
+										new IconButton(
+											padding: EdgeInsets.only(left:20.0, right:20.0),
+											color: Colors.black.withOpacity(0.5),
+											alignment: Alignment.centerLeft,
+											icon: new Icon(Icons.menu),
+											onPressed: () { this.widget.showMenu(); },
+										),
+										new Text(_eraName,
+											textAlign: TextAlign.left,
+											style: TextStyle(
+												fontFamily: "RobotoMedium",
+												fontSize: 20.0,
+												color: darkText.withOpacity(darkText.opacity * 0.75)
+											),
+										)
+									])
 								)
-							)
-						]
+							]
+						)
 					)
 				]
 			)

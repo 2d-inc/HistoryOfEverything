@@ -49,6 +49,12 @@ class TimelineRenderWidget extends LeafRenderObjectWidget
 					..touchEntry = touchEntry
 					..topOverlap = topOverlap;
 	}
+
+	@override
+	didUnmountRenderObject(covariant TimelineRenderObject renderObject)
+	{
+		renderObject.isActive = false;
+	}
 }
 
 

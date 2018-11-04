@@ -654,7 +654,7 @@ class Timeline
 			if(targetLabelY - _lastEntryY < FadeAnimationStart 
 				// The best location for our label is occluded, lets see if we can bump it forward...
 				&& item.type == TimelineEntryType.Era
-				&& _lastEntryY + FadeAnimationStart < end)
+				&& _lastEntryY + FadeAnimationStart < endY)
 			{
 				
 				targetLabelY = _lastEntryY + FadeAnimationStart + 0.5;

@@ -36,8 +36,14 @@ class MenuVignette extends LeafRenderObjectWidget
 		renderObject
 					..timeline = timeline
 					..assetId = assetId
-						..gradientColor = gradientColor
+					..gradientColor = gradientColor
 					..isActive = isActive;
+	}
+
+	@override
+	didUnmountRenderObject(covariant MenuVignetteRenderObject renderObject)
+	{
+		renderObject.isActive = false;
 	}
 }
 
@@ -268,6 +274,7 @@ class MenuVignetteRenderObject extends RenderBox
 		final double t = timeStamp.inMicroseconds / Duration.microsecondsPerMillisecond / 1000.0;
 		if(_lastFrameTime == 0)
 		{
+			_isFrameScheduled = true;
 			_lastFrameTime = t;
 			SchedulerBinding.instance.scheduleFrameCallback(beginFrame);
 			return;

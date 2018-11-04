@@ -6,6 +6,7 @@ import 'package:timeline/main_menu/menu_data.dart';
 import 'package:timeline/timeline/timeline.dart';
 import 'package:timeline/timeline/timeline_entry.dart';
 import 'package:timeline/timeline/timeline_render_widget.dart';
+import "package:timeline/colors.dart";
 
 typedef ShowMenuCallback();
 typedef SelectItemCallback(TimelineEntry item);
@@ -22,19 +23,18 @@ class TimelineWidget extends StatefulWidget
 
 class _TimelineWidgetState extends State<TimelineWidget> 
 {
+	static const String DefaultEraName = "Birth of the Universe";
+
 	Offset _lastFocalPoint;
 	double _scaleStartYearStart = -100.0;
 	double _scaleStartYearEnd = 100.0;
+	static const double TopOverlap = 56.0;
+	TapTarget _touchedBubble;
 	TimelineEntry _touchedEntry;
+	String _eraName;
+	Timeline get timeline => widget.timeline;
 
-    @override
-    void initState() 
-    {
-        super.initState();
-        widget.timeline.isActive = true;
-    }
-
-	void _scaleStart(ScaleStartDetails details, Timeline timeline)
+	void _scaleStart(ScaleStartDetails details)
 	{
 		_lastFocalPoint = details.focalPoint;
 		_scaleStartYearStart = timeline.start;
@@ -43,7 +43,7 @@ class _TimelineWidgetState extends State<TimelineWidget>
 		timeline.setViewport(velocity: 0.0, animate: true);
 	}
 
-	void _scaleUpdate(ScaleUpdateDetails details, Timeline timeline)
+	void _scaleUpdate(ScaleUpdateDetails details)
 	{
 		double changeScale = details.scale;
 		double scale = (_scaleStartYearEnd-_scaleStartYearStart)/context.size.height;
@@ -58,14 +58,50 @@ class _TimelineWidgetState extends State<TimelineWidget>
 			animate: true);
 	}
 
-	void _scaleEnd(ScaleEndDetails details, Timeline timeline)
+    initState()
+    {
+        super.initState();
+		if(timeline != null)
+		{
+            widget.timeline.isActive = true;
+			_eraName = timeline.currentEra != null ? timeline.currentEra.label : DefaultEraName;
+			timeline.onEraChanged = (TimelineEntry entry)
+			{
+				setState(() 
+				{
+					_eraName = entry != null ? entry.label : DefaultEraName;
+				});
+			};
+		}
+	}
+
+	void didUpdateWidget(covariant TimelineWidget oldWidget)
+	{
+		super.didUpdateWidget(oldWidget);
+		if(timeline != oldWidget.timeline && timeline != null)
+		{
+			timeline.onEraChanged = (TimelineEntry entry)
+			{
+				setState(() 
+				{
+					_eraName = entry != null ? entry.label : DefaultEraName;
+				});
+			};
+			setState(() 
+			{
+				_eraName = timeline.currentEra != null ? timeline.currentEra : DefaultEraName;
+			});
+		}
+	}
+
+	void _scaleEnd(ScaleEndDetails details)
 	{
 		double scale = (timeline.end-timeline.start)/context.size.height;
 		timeline.isInteracting = false;
 		timeline.setViewport(velocity: details.velocity.pixelsPerSecond.dy * scale, animate: true);
 	}
 	
-	onTouchBubble(Bubble bubble, BuildContext context)
+	onTouchBubble(TapTarget bubble)
 	{
         if(bubble != null)
         {
@@ -99,37 +135,28 @@ class _TimelineWidgetState extends State<TimelineWidget>
 		_touchedEntry = entry;
 	}
 
-	void _tapUp(TapUpDetails details, Timeline timeline)
+	void _tapUp(TapUpDetails details)
 	{
-		if(_touchedEntry != null)
+		EdgeInsets devicePadding = MediaQuery.of(context).padding;
+		// if(_touchedBubble != null)
+		// {
+		// 	widget.selectItem(_touchedBubble.entry);
+		// }
+		// else 
+        if(_touchedEntry != null)
 		{	
-			TimelineEntry next = _touchedEntry.next;
-			while(next != null && next.start == _touchedEntry.start)
-			{
-				next = next.next;
-			}
-			if(next != null)
-			{
-				timeline.setViewport(start:_touchedEntry.start, end:next.start, animate: true, pad: true);
-			}
-			else
-			{
-				TimelineEntry prev = _touchedEntry.previous;
-				while(prev != null && prev.start == _touchedEntry.start)
-				{
-					prev = prev.previous;
-				}
-				if(prev != null)
-				{
-					timeline.setViewport(start:prev.start, end:_touchedEntry.start, animate: true, pad: true);
-				}
-				else
-				{
-					print("Couldn't find a range.");
-				}
-			}
+			MenuItemData target = MenuItemData.fromEntry(_touchedEntry);
 			
+			double topPadding = timeline.screenPaddingInTime(TopOverlap+devicePadding.top+target.padTop, target.start, target.end);
+			double bottomPadding = timeline.screenPaddingInTime(target.padBottom, target.start, target.end);
+
+			timeline.setViewport(start:target.start-topPadding, end:target.end+bottomPadding, animate: true);
 		}
+	}
+
+	void _tapDown(TapDownDetails details)
+	{
+		timeline.setViewport(velocity: 0.0, animate: true);
 	}
 
 	@override
@@ -137,39 +164,55 @@ class _TimelineWidgetState extends State<TimelineWidget>
 	{
 		EdgeInsets devicePadding = MediaQuery.of(context).padding;
 		return Scaffold(
-            body: GestureDetector(
-                onScaleStart: (ScaleStartDetails d)=>_scaleStart(d, widget.timeline),
-                onScaleUpdate: (ScaleUpdateDetails d)=>_scaleUpdate(d, widget.timeline),
-                onScaleEnd: (ScaleEndDetails d)=>_scaleEnd(d, widget.timeline),
-                onTapUp: (TapUpDetails d)=>_tapUp(d, widget.timeline),
-                child: new Stack(
+                body: GestureDetector(
+                onTapDown: _tapDown,
+                onScaleStart: _scaleStart,
+                onScaleUpdate: _scaleUpdate,
+                onScaleEnd: _scaleEnd,
+                onTapUp: _tapUp,
+                child: Stack(
                     children:<Widget>
                     [
-                        new TimelineRenderWidget(timeline: widget.timeline, topOverlap:56.0+devicePadding.top,focusItem:widget.focusItem,
-                        touchBubble: (Bubble b) => onTouchBubble(b, context),
-                        touchEntry:onTouchEntry),
-                        new Column(
-                            children: <Widget>[
-                                Container(
-                                    height:devicePadding.top,
-                                    color:Color.fromRGBO(238, 240, 242, 0.81)
-                                ),
-                                Container(
-                                    color:Color.fromRGBO(238, 240, 242, 0.81), 
-                                    height: 56.0,
-                                    width: double.infinity,
-                                    child: new IconButton(
-                                        alignment: Alignment.centerLeft,
-                                        icon: new Icon(Icons.menu),
-                                        onPressed: (){
-                                            // Go back to the menu.
-                                            widget.timeline.isActive = false;
-                                            Navigator.of(context).pop();
-                                            return true;
-                                        },
+                        TimelineRenderWidget(timeline: timeline, topOverlap:TopOverlap+devicePadding.top, focusItem:widget.focusItem, touchBubble:onTouchBubble, touchEntry:onTouchEntry),
+                        BackdropFilter(
+                            filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+                            child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                    Container(
+                                        height:devicePadding.top,
+                                        color:Color.fromRGBO(238, 240, 242, 0.81)
+                                    ),
+                                    Container(
+                                        color:Color.fromRGBO(238, 240, 242, 0.81), 
+                                        height: 56.0,
+                                        width: double.infinity,
+                                        child: Row(
+                                            crossAxisAlignment: CrossAxisAlignment.center,
+                                            children: <Widget>[
+                                            IconButton(
+                                                padding: EdgeInsets.only(left:20.0, right:20.0),
+                                                color: Colors.black.withOpacity(0.5),
+                                                alignment: Alignment.centerLeft,
+                                                icon: Icon(Icons.menu),
+                                                onPressed: () {
+                                                    widget.timeline.isActive = false;
+                                                    Navigator.of(context).pop();
+                                                    return true;
+                                                },
+                                            ),
+                                            Text(_eraName,
+                                                textAlign: TextAlign.left,
+                                                style: TextStyle(
+                                                    fontFamily: "RobotoMedium",
+                                                    fontSize: 20.0,
+                                                    color: darkText.withOpacity(darkText.opacity * 0.75)
+                                                ),
+                                            )
+                                        ])
                                     )
-                                )
-                            ]
+                                ]
+                            )
                         )
                     ]
                 )

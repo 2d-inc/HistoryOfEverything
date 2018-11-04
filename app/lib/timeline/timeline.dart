@@ -18,6 +18,7 @@ import "package:flare/flare/math/vec2d.dart" as flare;
 import "timeline_entry.dart";
 import "package:timeline/search_manager.dart";
 typedef PaintCallback();
+typedef ChangeEraCallback(TimelineEntry era);
 
 String getExtension(String filename)
 {
@@ -63,8 +64,12 @@ class Timeline
 	bool _isActive = false;
 	TimelineEntry _nextEntry;
 	TimelineEntry _renderNextEntry;
+	TimelineEntry _currentEra;
+	TimelineEntry _lastEra;
 	double _nextEntryOpacity = 0.0;
 	double _distanceToNextEntry = 0.0;
+
+	TimelineEntry get currentEra => _currentEra;
 
 	List<TimelineEntry> get entries => _entries;
 	double get renderOffsetDepth => _renderOffsetDepth;
@@ -74,6 +79,7 @@ class Timeline
 	Map<String, flare.FlutterActor> _flareResources = new Map<String, flare.FlutterActor>();
 
 	PaintCallback onNeedPaint;
+	ChangeEraCallback onEraChanged;
 	Timer _steadyTimer;
 	double get start => _start;
 	double get end => _end;
@@ -156,9 +162,8 @@ class Timeline
 	static const double DepthOffset = LineSpacing+LineWidth;
 
 	static const double EdgePadding = 8.0;
-	static const double FadeAnimationStart = 55.0;
-	static const double MoveSpeed = 20.0;
-	static const double Deceleration = 9.0;
+	static const double MoveSpeed = 40.0;
+	static const double Deceleration = 3.0;
 	static const double GutterLeft = 45.0;
 	
 	static const double EdgeRadius = 4.0;
@@ -172,15 +177,16 @@ class Timeline
 	static const double AssetScreenScale = 0.3;
 	static const double InitialViewportPadding = 100.0;
 	static const double TravelViewportPaddingTop = 400.0;
+	static const double FadeAnimationStart = BubbleHeight + BubblePadding;///2.0 + BubblePadding;
 
 	Timeline()
 	{
 		setViewport(start: 1536.0, end: 3072.0);
 	}
 
-	double screenPaddingInTime(double start, double end)
+	double screenPaddingInTime(double extra, double start, double end)
 	{
-		return (BubbleHeight+InitialViewportPadding)/computeScale(start, end);
+		return (extra+BubbleHeight+InitialViewportPadding)/computeScale(start, end);
 	}
 
 	double computeScale(double start, double end)
@@ -373,6 +379,7 @@ class Timeline
 					asset.width = width is int ? width.toDouble() : width;
 					dynamic height = assetMap["height"];
 					asset.height = height is int ? height.toDouble() : height;
+					asset.entry = timelineEntry;
 					//print("ENTRY ${timelineEntry.label} $asset");
 					timelineEntry.asset = asset;
 					
@@ -396,8 +403,8 @@ class Timeline
 			{
 				previous.next = entry;
 			}
-			previous = entry;
 			entry.previous = previous;
+			previous = entry;
 
 			TimelineEntry parent;
 			double minDistance = double.maxFinite;
@@ -443,7 +450,7 @@ class Timeline
 
 	void setViewport({double start = double.maxFinite, bool pad = false, double end = double.maxFinite, double height = double.maxFinite, double velocity = double.maxFinite, bool animate = false})
 	{
-		//print("SETVIEW $start $end");
+//		print("SETVIEW $start $end");
 		if(start != double.maxFinite && end != double.maxFinite)
 		{
 			_start = start;
@@ -566,6 +573,7 @@ class Timeline
 		_lastAssetY = -double.maxFinite;
 		_labelX = 0.0;
 		_offsetDepth = 0.0;
+		_currentEra = null;
 		_nextEntry = null;
 		if(_entries != null)
 		{
@@ -610,6 +618,15 @@ class Timeline
 			_renderLabelX += dl*min(1.0, elapsed*6.0);
 		}
 
+		if(_currentEra != _lastEra)
+		{
+			_lastEra = _currentEra;
+			if(onEraChanged != null)
+			{
+				onEraChanged(_currentEra);
+			}
+		}
+
 		if(_isSteady)
 		{
 			double dd = _offsetDepth - renderOffsetDepth;
@@ -652,8 +669,31 @@ class Timeline
 			lastEnd = endY;
 
 			item.length = endY - y;
+			double targetLabelY = y;
 
-			double targetLabelOpacity = y - _lastEntryY < FadeAnimationStart ? 0.0 : 1.0;
+			if(targetLabelY - _lastEntryY < FadeAnimationStart 
+				// The best location for our label is occluded, lets see if we can bump it forward...
+				&& item.type == TimelineEntryType.Era
+				&& _lastEntryY + FadeAnimationStart < endY)
+			{
+				
+				targetLabelY = _lastEntryY + FadeAnimationStart + 0.5;
+			}
+
+			double targetLabelOpacity = targetLabelY - _lastEntryY < FadeAnimationStart ? 0.0 : 1.0;
+
+			// Debounce labels becoming visible.
+			if(targetLabelOpacity > 0.0 && item.targetLabelOpacity != 1.0)
+			{
+				item.delayLabel = 0.5;
+			}
+			item.targetLabelOpacity = targetLabelOpacity;
+			if(item.delayLabel > 0.0)
+			{
+				targetLabelOpacity = 0.0;
+				item.delayLabel -= elapsed;
+			}
+
 			double dt = targetLabelOpacity - item.labelOpacity;
 			if(!animate || dt.abs() < 0.01)
 			{
@@ -698,7 +738,7 @@ class Timeline
 			// 	item.labelY = y;
 			// }
 			
-			double targetLabelVelocity = y - item.labelY;
+			double targetLabelVelocity = targetLabelY - item.labelY;
 			// if(item.velocity === undefined)
 			// {
 			// 	item.velocity = 0.0;
@@ -706,7 +746,7 @@ class Timeline
 			double dvy = targetLabelVelocity - item.labelVelocity;
 			if(dvy.abs() > _height)
 			{
-				item.labelY = y;
+				item.labelY = targetLabelY;
 				item.labelVelocity = 0.0;
 			}
 			else
@@ -719,16 +759,23 @@ class Timeline
 				stillAnimating = true;
 			}
 			
-			_lastEntryY = y;
-			if(_lastEntryY < _height && _lastEntryY > 0)
+			if(item.targetLabelOpacity > 0.0)
 			{
-				_lastOnScreenEntryY = _lastEntryY;
+				_lastEntryY = targetLabelY;
+				if(_lastEntryY < _height && _lastEntryY > 0)
+				{
+					_lastOnScreenEntryY = _lastEntryY;
+				}
 			}
 
 			
 			if(item.type == TimelineEntryType.Era && y < 0 && endY > _height && depth > _offsetDepth)
 			{
 				_offsetDepth = depth.toDouble();
+			}
+			if(item.type == TimelineEntryType.Era && y < 0 && endY > _height/2.0)
+			{
+				_currentEra = item;
 			}
 
 			if(y > _height + BubbleHeight)
@@ -770,7 +817,7 @@ class Timeline
 		{
 			if(item.asset != null)
 			{
-				double y = item.y;
+				double y = item.labelY;
 				double halfHeight = _height/2.0;
 				double thresholdAssetY = y+((y-halfHeight)/halfHeight)*Parallax;//item.asset.height*AssetScreenScale/2.0;
 				double targetAssetY = thresholdAssetY-item.asset.height*AssetScreenScale/2.0; 

@@ -42,6 +42,12 @@ class MenuVignette extends LeafRenderObjectWidget
                     ..gradientColor = gradientColor
 					..isActive = isActive;
 	}
+
+	@override
+	didUnmountRenderObject(covariant MenuVignetteRenderObject renderObject)
+	{
+		renderObject.isActive = false;
+	}
 }
 
 class MenuVignetteRenderObject extends RenderBox
@@ -51,7 +57,7 @@ class MenuVignetteRenderObject extends RenderBox
 	bool _isActive = false;
 	bool _firstUpdate = true;
 	Color gradientColor;
-	
+	double opacity = 0.0;
 	Timeline get timeline => _timeline;
 	set timeline(Timeline value)
 	{
@@ -123,10 +129,10 @@ class MenuVignetteRenderObject extends RenderBox
 	void paint(PaintingContext context, Offset offset)
 	{
 		final Canvas canvas = context.canvas;
-		TimelineEntry entry = timelineEntry;
-		TimelineAsset asset = entry?.asset;
-		if(entry == null || asset == null)
+		TimelineAsset asset = timelineEntry?.asset;
+		if(asset == null)
 		{
+			opacity = 0.0;
 			return;
 		}
 
@@ -200,7 +206,8 @@ class MenuVignetteRenderObject extends RenderBox
 
 			canvas.restore();
 
-			List<ui.Color> colors = <ui.Color>[gradientColor.withOpacity(0.0), gradientColor.withOpacity(0.9)];
+			double gradientFade = 1.0-opacity;
+			List<ui.Color> colors = <ui.Color>[gradientColor.withOpacity(gradientFade), gradientColor.withOpacity(min(1.0, gradientFade+0.9))];
 			List<double> stops = <double>[0.0, 1.0];
 			
 			ui.Paint paint = new ui.Paint()
@@ -278,6 +285,7 @@ class MenuVignetteRenderObject extends RenderBox
 		final double t = timeStamp.inMicroseconds / Duration.microsecondsPerMillisecond / 1000.0;
 		if(_lastFrameTime == 0)
 		{
+			_isFrameScheduled = true;
 			_lastFrameTime = t;
 			SchedulerBinding.instance.scheduleFrameCallback(beginFrame);
 			return;
@@ -291,6 +299,10 @@ class MenuVignetteRenderObject extends RenderBox
 			TimelineAsset asset = entry.asset;
 			if(asset is TimelineNima && asset.actor != null)
 			{
+				if(opacity < 1.0)
+				{
+					opacity = min(opacity+elapsed, 1.0);
+				}
 				asset.animationTime += elapsed;
 				if(asset.loop)
 				{
@@ -301,6 +313,10 @@ class MenuVignetteRenderObject extends RenderBox
 			}
 			else if(asset is TimelineFlare && asset.actor != null)
 			{
+				if(opacity < 1.0)
+				{
+					opacity = min(opacity+elapsed, 1.0);
+				}
 				if(_firstUpdate)
 				{
 					if(asset.intro != null)

@@ -2,6 +2,8 @@ import 'dart:math';
 import 'dart:ui';
 import "dart:ui" as ui;
 
+import 'package:flare/flare.dart' as flare;
+import 'package:nima/nima.dart' as nima;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import "package:flutter/scheduler.dart";
@@ -33,6 +35,14 @@ class TimelineEntryWidget extends LeafRenderObjectWidget
 					..timelineEntry = timelineEntry
 					..isActive = isActive;
 	}
+
+	@override
+	didUnmountRenderObject(covariant VignetteRenderObject renderObject)
+	{
+		renderObject
+			..isActive = false
+			..timelineEntry = null;
+	}
 }
 
 class VignetteRenderObject extends RenderBox
@@ -40,6 +50,8 @@ class VignetteRenderObject extends RenderBox
 	TimelineEntry _timelineEntry;
 	bool _isActive = false;
 	bool _firstUpdate = true;
+	nima.FlutterActor _nimaActor;
+	flare.FlutterActor _flareActor;
 	
 	TimelineEntry get timelineEntry => _timelineEntry;
 	set timelineEntry(TimelineEntry value)
@@ -50,7 +62,35 @@ class VignetteRenderObject extends RenderBox
 		}
 		_timelineEntry = value;
 		_firstUpdate = true;
+		updateActor();
 		updateRendering();
+	}
+
+	updateActor()
+	{
+		if(_timelineEntry == null)
+		{
+			_nimaActor?.dispose();
+			_flareActor?.dispose();
+			_nimaActor = null;
+			_flareActor = null;
+		}
+		else
+		{
+			TimelineAsset asset = _timelineEntry.asset;
+			if(asset is TimelineNima && asset.actor != null)
+			{
+				_nimaActor = asset.actor.makeInstance();
+				asset.animation.apply(asset.animation.duration, _nimaActor, 1.0);
+				_nimaActor.advance(0.0);
+			}
+			else if(asset is TimelineFlare && asset.actor != null)
+			{
+				_flareActor = asset.actor.makeInstance();
+				asset.animation.apply(asset.animation.duration, _flareActor, 1.0);
+				_flareActor.advance(0.0);
+			}
+		}
 	}
 
 	void updateRendering()
@@ -82,7 +122,22 @@ class VignetteRenderObject extends RenderBox
 	bool get sizedByParent => true;
 	
 	@override
-	bool hitTestSelf(Offset screenOffset) => true;
+	bool hitTestSelf(Offset screenOffset)
+	{
+		if(_timelineEntry != null)
+		{
+			TimelineAsset asset = _timelineEntry.asset;
+			if(asset is TimelineNima && asset.actor != null)
+			{
+				asset.animationTime = 0.0;
+			}
+			else if(asset is TimelineFlare && asset.actor != null)
+			{
+				asset.animationTime = 0.0;
+			}
+		} 
+		return true;
+	}
 
 	@override
 	void performResize() 
@@ -110,7 +165,7 @@ class VignetteRenderObject extends RenderBox
 		{
 			canvas.drawImageRect(asset.image, Rect.fromLTWH(0.0, 0.0, asset.width, asset.height), Rect.fromLTWH(offset.dx + size.width - w, asset.y, w, h), new Paint()..isAntiAlias=true..filterQuality=ui.FilterQuality.low..color = Colors.white.withOpacity(asset.opacity));
 		}
-		else if(asset is TimelineNima && asset.actor != null)
+		else if(asset is TimelineNima && _nimaActor != null)
 		{
 			Alignment alignment = Alignment.center;
 			BoxFit fit = BoxFit.contain;
@@ -164,11 +219,11 @@ class VignetteRenderObject extends RenderBox
 			canvas.translate(renderOffset.dx + renderSize.width/2.0 + (alignment.x * renderSize.width/2.0), renderOffset.dy + renderSize.height/2.0 + (alignment.y * renderSize.height/2.0));
 			canvas.scale(scaleX, -scaleY);
 			canvas.translate(x, y);
-			asset.actor.draw(canvas, 1.0);
+			_nimaActor.draw(canvas, 1.0);
 
 			canvas.restore();
 		}
-		else if(asset is TimelineFlare && asset.actor != null)
+		else if(asset is TimelineFlare && _flareActor != null)
 		{
 			Alignment alignment = Alignment.center;
 			BoxFit fit = BoxFit.contain;
@@ -221,7 +276,7 @@ class VignetteRenderObject extends RenderBox
 			canvas.scale(scaleX, scaleY);
 			canvas.translate(x, y);
 
-			asset.actor.draw(canvas, opacity:asset.opacity);
+			_flareActor.draw(canvas, opacity:asset.opacity);
 			canvas.restore();
 		}
 		canvas.restore();
@@ -238,6 +293,7 @@ class VignetteRenderObject extends RenderBox
 		if(_lastFrameTime == 0)
 		{
 			_lastFrameTime = t;
+			_isFrameScheduled = true;
 			SchedulerBinding.instance.scheduleFrameCallback(beginFrame);
 			return;
 		}
@@ -247,17 +303,17 @@ class VignetteRenderObject extends RenderBox
 		if(_timelineEntry != null)
 		{
 			TimelineAsset asset = _timelineEntry.asset;
-			if(asset is TimelineNima && asset.actor != null)
+			if(asset is TimelineNima && _nimaActor != null)
 			{
 				asset.animationTime += elapsed;
 				if(asset.loop)
 				{
 					asset.animationTime %= asset.animation.duration;
 				}
-				asset.animation.apply(asset.animationTime, asset.actor, 1.0);
-				asset.actor.advance(elapsed);
+				asset.animation.apply(asset.animationTime, _nimaActor, 1.0);
+				_nimaActor.advance(elapsed);
 			}
-			else if(asset is TimelineFlare && asset.actor != null)
+			else if(asset is TimelineFlare && _flareActor != null)
 			{
 				if(_firstUpdate)
 				{
@@ -278,8 +334,8 @@ class VignetteRenderObject extends RenderBox
 				{
 					asset.animationTime %= asset.animation.duration;
 				}
-				asset.animation.apply(asset.animationTime, asset.actor, 1.0);
-				asset.actor.advance(elapsed);
+				asset.animation.apply(asset.animationTime, _flareActor, 1.0);
+				_flareActor.advance(elapsed);
 			}
 		} 
 

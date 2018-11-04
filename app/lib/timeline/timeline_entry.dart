@@ -48,6 +48,7 @@ class TimelineAsset
 	double scaleVelocity = 0.0;
 	double y = 0.0;
 	double velocity = 0.0;
+	TimelineEntry entry;
 }
 
 enum TimelineEntryType
@@ -75,6 +76,8 @@ class TimelineEntry
 	double length = 0.0;
 	double opacity = 0.0;
 	double labelOpacity = 0.0;
+	double targetLabelOpacity = 0.0;
+	double delayLabel = 0.0;
 	double legOpacity = 0.0;
 	double labelY = 0.0;
 	double labelVelocity = 0.0;

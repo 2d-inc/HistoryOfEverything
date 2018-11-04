@@ -21,30 +21,29 @@ class ArticleWidget extends StatefulWidget
 	final TimelineEntry article;
 	ArticleWidget({/* this.goBack, this.show, this.visibilityChanged, */ this.article, Key key}) : super(key: key);
 
-	@override
-	 _ArticleWidgetState createState() => new _ArticleWidgetState();
+  @override
+  _ArticleWidgetState createState() => new _ArticleWidgetState();
 }
 
-class _ArticleWidgetState extends State<ArticleWidget> with SingleTickerProviderStateMixin
-{
-	String _articleMarkdown = "";
-	String _title = "";
-	String _subTitle = "";
-	MarkdownStyleSheet _markdownStyleSheet;
-	AnimationController _controller;
-    bool _isFavorite = false;
+class _ArticleWidgetState extends State<ArticleWidget>
+    with SingleTickerProviderStateMixin {
+  String _articleMarkdown = "";
+  String _title = "";
+  String _subTitle = "";
+  MarkdownStyleSheet _markdownStyleSheet;
+  AnimationController _controller;
+  bool _isFavorite = false;
 
-	static final Animatable<Offset> _slideTween = Tween<Offset>(
-		begin: const Offset(0.0, 0.0),
-		end: const Offset(1.0, 0.0),
-	).chain(CurveTween(
-		curve: Curves.fastOutSlowIn,
-	));
-	Animation<Offset> _articleOffset;
+  static final Animatable<Offset> _slideTween = Tween<Offset>(
+    begin: const Offset(0.0, 0.0),
+    end: const Offset(1.0, 0.0),
+  ).chain(CurveTween(
+    curve: Curves.fastOutSlowIn,
+  ));
+  Animation<Offset> _articleOffset;
 
-	initState()
-	{
-		super.initState();
+  initState() {
+    super.initState();
 
 		_controller = AnimationController(
 			vsync: this,
@@ -234,37 +233,41 @@ class _ArticleWidgetState extends State<ArticleWidget> with SingleTickerProvider
 										crossAxisAlignment: CrossAxisAlignment.start,
 										children: <Widget>
 										[
-											new Container(height:280, child: TimelineEntryWidget(isActive: true /* widget.show */, timelineEntry: widget.article)),
+											new Container(
+                                                height:280, 
+                                                child: TimelineEntryWidget(isActive: true, timelineEntry: widget.article)
+                                            ),
                                             Row(
                                                 children:
                                                 [
-                                                    Column(
-                                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                                        children:
-                                                        [
-                                                            Text(
-                                                                _title,
-                                                                textAlign: TextAlign.left,
-                                                                style: TextStyle(
-                                                                        color: darkText,
-                                                                        fontSize: 24.0,
-                                                                        height: 1.3333333,
-                                                                        fontFamily: "Roboto"
+                                                    Expanded(
+                                                        child: Column(
+                                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                                            children:
+                                                            [
+                                                                Text(
+                                                                    _title,
+                                                                    textAlign: TextAlign.left,
+                                                                    style: TextStyle(
+                                                                            color: darkText,
+                                                                            fontSize: 24.0,
+                                                                            height: 1.3333333,
+                                                                            fontFamily: "Roboto"
+                                                                        )
+                                                                    ),
+                                                                Text(
+                                                                    _subTitle,
+                                                                    textAlign: TextAlign.left,
+                                                                    style: TextStyle(
+                                                                            color: darkText.withOpacity(darkText.opacity*0.5),
+                                                                            fontSize: 16.0,
+                                                                            height: 1.5,
+                                                                            fontFamily: "Roboto"
+                                                                        )
                                                                     )
-                                                                ),
-                                                            Text(
-                                                                _subTitle,
-                                                                textAlign: TextAlign.left,
-                                                                style: TextStyle(
-                                                                        color: darkText.withOpacity(darkText.opacity*0.5),
-                                                                        fontSize: 16.0,
-                                                                        height: 1.5,
-                                                                        fontFamily: "Roboto"
-                                                                    )
-                                                                )
-                                                        ]
+                                                            ]
+                                                        ),
                                                     ),
-                                                    Expanded(child: Container()), // Fill the Row with empty space
                                                     Container(
                                                         height: 18.0,
                                                         width: 18.0,

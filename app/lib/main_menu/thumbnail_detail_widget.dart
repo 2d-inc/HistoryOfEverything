@@ -22,21 +22,12 @@ class ThumbnailDetailWidget extends StatelessWidget
             child: InkWell(
                 onTap: ()
                 {
-                    double start = timelineEntry.start;
-                    double end = (timelineEntry.type == TimelineEntryType.Era) ? timelineEntry.start : timelineEntry.end;
-                    if(start == end)
-                    {
-                        // Use 2.5% of the current timeline entry date to estimate start/end.
-                        double distance = start * 0.025;
-                        start += distance;
-                        end -= distance;
-                    }
-                    
+                    MenuItemData item = MenuItemData.fromEntry(timelineEntry);
                     Navigator.of(context).push(
                         PageRouteBuilder(
                                 opaque: true,
                                 transitionDuration: const Duration(milliseconds: 300),
-                                pageBuilder: (context, _, __) => TimelineWidget(MenuItemData.fromData(timelineEntry.label, start, end), BlocProvider.getTimeline(context)),
+                                pageBuilder: (context, _, __) => TimelineWidget(item, BlocProvider.getTimeline(context)),
                                 transitionsBuilder: (_, Animation<double> animation, __, Widget child)
                                 {
                                     return new SlideTransition(

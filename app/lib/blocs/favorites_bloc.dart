@@ -8,12 +8,7 @@ class FavoritesBloc
     static const String FAVORITES_KEY = "Favorites";
     final List<TimelineEntry> _favorites = [];
 
-    FavoritesBloc()
-    {
-        _init();
-    }
-
-    _init() async
+    init() async
     {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         List<String> favs = prefs.getStringList(FavoritesBloc.FAVORITES_KEY);
@@ -39,7 +34,6 @@ class FavoritesBloc
                 List<TimelineEntry> res = [];
                 List<String> favs = prefs.getStringList(FAVORITES_KEY) ?? [];
                 SearchManager sm = SearchManager.init();
-
                 for(String f in favs)
                 {
                     Set<TimelineEntry> entries = sm.performSearch(f.toLowerCase());
@@ -82,7 +76,6 @@ class FavoritesBloc
             (SharedPreferences prefs)
             {
                 List<String> favsList = _favorites.map((TimelineEntry en) => en.label).toList();
-                print("SAVING THIS LIST: $favsList");
                 prefs.setStringList(FavoritesBloc.FAVORITES_KEY, favsList);
             }
         );

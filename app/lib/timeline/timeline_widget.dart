@@ -2,7 +2,6 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:timeline/article/article_widget.dart';
-import 'package:timeline/bloc_provider.dart';
 import 'package:timeline/main_menu/menu_data.dart';
 import 'package:timeline/timeline/timeline.dart';
 import 'package:timeline/timeline/timeline_entry.dart';
@@ -14,7 +13,8 @@ typedef SelectItemCallback(TimelineEntry item);
 class TimelineWidget extends StatefulWidget 
 {
 	final MenuItemData focusItem;
-	TimelineWidget(this.focusItem, {Key key}) : super(key: key);
+    final Timeline timeline;
+	TimelineWidget(this.focusItem, this.timeline, {Key key}) : super(key: key);
 
 	@override
 	_TimelineWidgetState createState() => new _TimelineWidgetState();
@@ -26,7 +26,13 @@ class _TimelineWidgetState extends State<TimelineWidget>
 	double _scaleStartYearStart = -100.0;
 	double _scaleStartYearEnd = 100.0;
 	TimelineEntry _touchedEntry;
-    bool _isTimelineActive = true;
+
+    @override
+    void initState() 
+    {
+        super.initState();
+        widget.timeline.isActive = true;
+    }
 
 	void _scaleStart(ScaleStartDetails details, Timeline timeline)
 	{
@@ -63,7 +69,7 @@ class _TimelineWidgetState extends State<TimelineWidget>
 	{
         if(bubble != null)
         {
-            setState(() => _isTimelineActive = false);
+            widget.timeline.isActive = false;
             Navigator.of(context).push(
                 PageRouteBuilder(
                     opaque: true,
@@ -83,7 +89,8 @@ class _TimelineWidgetState extends State<TimelineWidget>
                         );
                     }
                 )
-            );
+            ).then((v) => widget.timeline.isActive = true);
+            // result.then((bool done) => widget.timeline.isActive = done);
         }
 	}
 
@@ -129,18 +136,16 @@ class _TimelineWidgetState extends State<TimelineWidget>
 	Widget build(BuildContext context) 
 	{
 		EdgeInsets devicePadding = MediaQuery.of(context).padding;
-        Timeline timeline = BlocProvider.getTimeline(context);
-        timeline.isActive = _isTimelineActive;
 		return Scaffold(
             body: GestureDetector(
-                onScaleStart: (ScaleStartDetails d)=>_scaleStart(d, timeline),
-                onScaleUpdate: (ScaleUpdateDetails d)=>_scaleUpdate(d, timeline),
-                onScaleEnd: (ScaleEndDetails d)=>_scaleEnd(d, timeline),
-                onTapUp: (TapUpDetails d)=>_tapUp(d, timeline),
+                onScaleStart: (ScaleStartDetails d)=>_scaleStart(d, widget.timeline),
+                onScaleUpdate: (ScaleUpdateDetails d)=>_scaleUpdate(d, widget.timeline),
+                onScaleEnd: (ScaleEndDetails d)=>_scaleEnd(d, widget.timeline),
+                onTapUp: (TapUpDetails d)=>_tapUp(d, widget.timeline),
                 child: new Stack(
                     children:<Widget>
                     [
-                        new TimelineRenderWidget(timeline: timeline, topOverlap:56.0+devicePadding.top,focusItem:widget.focusItem,
+                        new TimelineRenderWidget(timeline: widget.timeline, topOverlap:56.0+devicePadding.top,focusItem:widget.focusItem,
                         touchBubble: (Bubble b) => onTouchBubble(b, context),
                         touchEntry:onTouchEntry),
                         new Column(
@@ -158,6 +163,7 @@ class _TimelineWidgetState extends State<TimelineWidget>
                                         icon: new Icon(Icons.menu),
                                         onPressed: (){
                                             // Go back to the menu.
+                                            widget.timeline.isActive = false;
                                             Navigator.of(context).pop();
                                             return true;
                                         },

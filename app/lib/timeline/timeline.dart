@@ -60,7 +60,7 @@ class Timeline
 	bool _isFrameScheduled = false;
 	bool _isInteracting = false;
 	double _lastAssetY = 0.0;
-	bool isActive = false;
+	bool _isActive = false;
 	TimelineEntry _nextEntry;
 	TimelineEntry _renderNextEntry;
 	double _nextEntryOpacity = 0.0;
@@ -98,6 +98,19 @@ class Timeline
 			updateSteady();
 		}
 	}
+
+    get isActive => _isActive;
+    set isActive(bool isIt)
+    {
+        if(isIt != _isActive)
+        {
+            _isActive = isIt;
+            if(_isActive)
+            {
+                startRendering();
+            }
+        }
+    }
 
 	bool _isSteady = false;
 
@@ -163,15 +176,6 @@ class Timeline
 	Timeline()
 	{
 		setViewport(start: 1536.0, end: 3072.0);
-		loadFromBundle("assets/timeline.json").then((bool success)
-		{
-			// Double check: Make sure we have height by now...
-			//double scale = _height == 0.0 ? 1.0 : _height/(_entries.last.end-_entries.first.start);
-			// We use the scale to pad by the bubble height when we set the first range.
-			//setViewport(start: _entries.first.start - BubbleHeight/scale - InitialViewportPadding/scale, end: _entries.last.end + BubbleHeight/scale + InitialViewportPadding/scale, animate:true);
-			setViewport(start: _entries.first.start*2.0, end: _entries.first.start, animate:true);
-			advance(0.0, false);
-		});
 	}
 
 	double screenPaddingInTime(double start, double end)
@@ -187,7 +191,7 @@ class Timeline
 	TimelineEntry get nextEntry => _renderNextEntry;
 	double get nextEntryOpacity => _nextEntryOpacity;
 
-	Future<bool> loadFromBundle(String filename) async
+	Future<List<TimelineEntry>> loadFromBundle(String filename) async
 	{
 		List<TimelineEntry> allEntries = new List<TimelineEntry>();
 		String data = await rootBundle.loadString(filename);
@@ -429,7 +433,7 @@ class Timeline
         // Initialize the SearchDictionary.
         SearchManager.init(allEntries);
 
-		return true;	
+		return _entries;	
 	}
 
 	TimelineEntry getById(String id)

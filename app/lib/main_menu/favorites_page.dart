@@ -6,10 +6,10 @@ import "package:timeline/bloc_provider.dart";
 import "package:timeline/timeline/timeline_entry.dart";
 
 class FavoritesPage extends StatelessWidget
-{    
+{
     @override
     Widget build(BuildContext context) 
-    {        
+    {
         return Scaffold(
             appBar: AppBar(
                 backgroundColor: lightGrey,

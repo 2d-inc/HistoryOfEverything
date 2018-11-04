@@ -3,6 +3,7 @@ import "dart:async";
 import "package:flutter/material.dart";
 import "package:flutter/widgets.dart";
 import "package:share/share.dart";
+import 'package:timeline/bloc_provider.dart';
 import 'package:timeline/main_menu/collapsible.dart';
 
 import "package:timeline/main_menu/menu_data.dart";

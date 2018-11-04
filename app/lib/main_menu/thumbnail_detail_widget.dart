@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import 'package:timeline/bloc_provider.dart';
 import 'package:timeline/main_menu/menu_data.dart';
 import 'package:timeline/timeline/timeline_widget.dart';
 
@@ -35,7 +36,7 @@ class ThumbnailDetailWidget extends StatelessWidget
                         PageRouteBuilder(
                                 opaque: true,
                                 transitionDuration: const Duration(milliseconds: 300),
-                                pageBuilder: (context, _, __) => TimelineWidget(MenuItemData.fromData(timelineEntry.label, start, end)),
+                                pageBuilder: (context, _, __) => TimelineWidget(MenuItemData.fromData(timelineEntry.label, start, end), BlocProvider.getTimeline(context)),
                                 transitionsBuilder: (_, Animation<double> animation, __, Widget child)
                                 {
                                     return new SlideTransition(

@@ -136,7 +136,7 @@ class _ArticleWidgetState extends State<ArticleWidget> with SingleTickerProvider
 			});
 		});
 	}
-
+/*
 	void didUpdateWidget(covariant ArticleWidget oldWidget) 
 	{ 
 		super.didUpdateWidget(oldWidget);
@@ -184,7 +184,7 @@ class _ArticleWidgetState extends State<ArticleWidget> with SingleTickerProvider
 		// 		});
 		// 	}
 		// }
-        FavoritesBloc bloc = FavoritesBloc();
+        FavoritesBloc bloc = BlocProvider.favorites(context);
         bloc.fetchFavorites().then((List<TimelineEntry> favs)
         {
             bool isFav = favs.any((TimelineEntry te) => te.label.toLowerCase() == _title.toLowerCase());
@@ -195,7 +195,7 @@ class _ArticleWidgetState extends State<ArticleWidget> with SingleTickerProvider
         }
         );
 	}
-
+*/
     @override
     Widget build(BuildContext context) 
 	{
@@ -220,7 +220,9 @@ class _ArticleWidgetState extends State<ArticleWidget> with SingleTickerProvider
 								child: new IconButton(
 									alignment: Alignment.centerLeft,
 									icon: new Icon(Icons.arrow_back),
-									onPressed: () { Navigator.of(context).pop(); },
+									onPressed: () {
+                                            Navigator.pop(context, true);
+                                        },
 								)
 							),
 							Expanded(

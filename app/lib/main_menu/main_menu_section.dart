@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:timeline/bloc_provider.dart';
 import 'package:timeline/main_menu/menu_data.dart';
 import "package:flare/flare_actor.dart" as flare;
 import 'package:timeline/main_menu/menu_vignette.dart';
@@ -140,7 +141,7 @@ class _SectionState extends State<MenuSection> with SingleTickerProviderStateMix
                                                                     PageRouteBuilder(
                                                                         opaque: true,
                                                                         transitionDuration: const Duration(milliseconds: 300),
-                                                                        pageBuilder: (context, _, __) => TimelineWidget(item),
+                                                                        pageBuilder: (context, _, __) => TimelineWidget(item, BlocProvider.getTimeline(context)),
                                                                         transitionsBuilder: (_, Animation<double> animation, __, Widget child)
                                                                         {
                                                                             return SlideTransition(

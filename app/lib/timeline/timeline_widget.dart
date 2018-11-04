@@ -166,6 +166,7 @@ class _TimelineWidgetState extends State<TimelineWidget>
 										children: <Widget>[
 										new IconButton(
 											padding: EdgeInsets.only(left:20.0, right:20.0),
+											color: Colors.black.withOpacity(0.5),
 											alignment: Alignment.centerLeft,
 											icon: new Icon(Icons.menu),
 											onPressed: () { this.widget.showMenu(); },

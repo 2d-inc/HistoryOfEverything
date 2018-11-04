@@ -23,6 +23,7 @@ class _SearchState extends State<SearchWidget>
                 color: lightGrey,
                 borderRadius: BorderRadius.circular(24.0),
             ),
+            height: 40.0,
             child: Theme(
 					data: ThemeData(
 						primaryColor: darkText.withOpacity(darkText.opacity*0.5),
@@ -33,7 +34,6 @@ class _SearchState extends State<SearchWidget>
 						decoration: new InputDecoration(
 							hintText: "Search",
 							hintStyle: TextStyle(
-								height: 18.0/16.0, // Set line height to 18.
 								fontSize: 16.0,
 								fontFamily: "Roboto",
 								color: darkText.withOpacity(darkText.opacity*0.5),

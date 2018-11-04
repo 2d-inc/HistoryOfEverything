@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:timeline/article/article_widget.dart';
@@ -119,23 +120,8 @@ class _TimelineWidgetState extends State<TimelineWidget>
             widget.timeline.isActive = false;
             
             Navigator.of(context).push(
-                PageRouteBuilder(
-                    opaque: true,
-                    transitionDuration: const Duration(milliseconds: 300),
-                    pageBuilder: (context, _, __) => ArticleWidget(article: _touchedBubble.entry),
-                    transitionsBuilder: (_, Animation<double> animation, __, Widget child)
-                    {
-                        return new SlideTransition(
-                            child: child,
-                            position: new Tween<Offset>(
-                                begin: const Offset(1.0, 0.0),
-                                end: Offset.zero
-                            ).animate(CurvedAnimation(
-                                parent: animation,
-                                curve: Curves.fastOutSlowIn
-                            ))
-                        );
-                    }
+                CupertinoPageRoute(
+                    builder: (BuildContext context) => ArticleWidget(article: _touchedBubble.entry)
                 )
             ).then((v) => widget.timeline.isActive = true);
         }

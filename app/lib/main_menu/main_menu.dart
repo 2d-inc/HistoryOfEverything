@@ -1,5 +1,6 @@
 import "dart:async";
 
+import 'package:flutter/cupertino.dart';
 import "package:flutter/material.dart";
 import "package:flutter/widgets.dart";
 import "package:share/share.dart";
@@ -142,23 +143,8 @@ class _MainMenuWidgetState extends State<MainMenuWidget> with SingleTickerProvid
                 ..add(
                     FlatButton(
                         onPressed: () => Navigator.of(context).push(
-                            PageRouteBuilder(
-                                opaque: true,
-                                transitionDuration: const Duration(milliseconds: 300),
-                                pageBuilder: (context, _, __) => FavoritesPage(),
-                                transitionsBuilder: (_, Animation<double> animation, __, Widget child)
-                                {
-                                    return new SlideTransition(
-                                        child: child,
-                                        position: new Tween<Offset>(
-                                            begin: const Offset(1.0, 0.0),
-                                            end: Offset.zero
-                                        ).animate(CurvedAnimation(
-                                            parent: animation,
-                                            curve: Curves.fastOutSlowIn
-                                        ))
-                                    );
-                                }
+                            CupertinoPageRoute(
+                                builder: (BuildContext context) => new FavoritesPage()
                             )
                         ),
                         color: Colors.transparent,
@@ -221,23 +207,8 @@ class _MainMenuWidgetState extends State<MainMenuWidget> with SingleTickerProvid
                         padding: const EdgeInsets.only(bottom: 30.0),
                         child: FlatButton(
                             onPressed: () => Navigator.of(context).push(
-                                PageRouteBuilder(
-                                    opaque: true,
-                                    transitionDuration: const Duration(milliseconds: 300),
-                                    pageBuilder: (context, _, __) => AboutPage(),
-                                    transitionsBuilder: (_, Animation<double> animation, __, Widget child)
-                                    {
-                                        return new SlideTransition(
-                                            child: child,
-                                            position: new Tween<Offset>(
-                                                begin: const Offset(1.0, 0.0),
-                                                end: Offset.zero
-                                            ).animate(CurvedAnimation(
-                                                parent: animation,
-                                                curve: Curves.fastOutSlowIn
-                                            ))
-                                        );
-                                    }
+                                CupertinoPageRoute(
+                                    builder: (BuildContext context) => new AboutPage()
                                 )
                             ),
                             color: Colors.transparent,

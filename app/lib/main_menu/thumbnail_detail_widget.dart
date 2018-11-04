@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import "package:flutter/material.dart";
 import 'package:timeline/bloc_provider.dart';
 import 'package:timeline/main_menu/menu_data.dart';
@@ -25,24 +26,9 @@ class ThumbnailDetailWidget extends StatelessWidget
                 {
                     MenuItemData item = MenuItemData.fromEntry(timelineEntry);
                     Navigator.of(context).push(
-                        PageRouteBuilder(
-                                opaque: true,
-                                transitionDuration: const Duration(milliseconds: 300),
-                                pageBuilder: (context, _, __) => TimelineWidget(item, BlocProvider.getTimeline(context)),
-                                transitionsBuilder: (_, Animation<double> animation, __, Widget child)
-                                {
-                                    return new SlideTransition(
-                                        child: child,
-                                        position: new Tween<Offset>(
-                                            begin: const Offset(1.0, 0.0),
-                                            end: Offset.zero
-                                        ).animate(CurvedAnimation(
-                                            parent: animation,
-                                            curve: Curves.fastOutSlowIn
-                                        ))
-                                    );
-                                }
-                            )
+                        CupertinoPageRoute(
+                            builder: (BuildContext context) => TimelineWidget(item, BlocProvider.getTimeline(context))
+                        )
                     );
                 },
                 child: Column(

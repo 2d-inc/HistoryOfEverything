@@ -10,6 +10,9 @@ class FavoritesPage extends StatelessWidget
     @override
     Widget build(BuildContext context) 
     {
+        List<Widget> favorites = BlocProvider.favorites(context).favorites.map(
+                        (TimelineEntry te) => ThumbnailDetailWidget(te)
+                    ).toList();
         return Scaffold(
             appBar: AppBar(
                 backgroundColor: lightGrey,
@@ -29,10 +32,49 @@ class FavoritesPage extends StatelessWidget
             ),
             body: Padding(
                 padding: const EdgeInsets.symmetric(horizontal:20.0),
-                child: ListView(
-                    children: BlocProvider.favorites(context).favorites.map(
-                        (TimelineEntry te) => ThumbnailDetailWidget(te)
-                    ).toList()
+                child: favorites.isEmpty ?
+                    Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children:
+                        [
+                            Container(
+                                margin: EdgeInsets.only(bottom: 23.1),
+                                child: Image.asset(
+                                    "assets/heart_outline.png",
+                                    width: 64, 
+                                    height: 56.9,
+                                ),
+                            ),
+                            Padding(
+                                padding: EdgeInsets.only(bottom: 23.1, left: 78.0, right: 78.0),
+                                child: Text(
+                                    "You haven’t favorited anything yet.",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        fontFamily: "RobotoMedium",
+                                        fontSize: 20,
+                                        color: darkText.withOpacity(darkText.opacity*0.75)
+                                    )
+                                ),
+                            ),
+                            Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 68.0),
+                                child: Text(
+                                    "Browse to an event in the timeline and tap on the heart icon to save something in this list.",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        fontFamily: "Roboto",
+                                        fontSize: 16,
+                                        height: 28/16,
+                                        color: Colors.black.withOpacity(0.75)
+                                    )
+                                ),
+                            ),
+                        ]
+                )
+                : 
+                ListView(
+                    children: favorites
                 ),
             )
         );

@@ -11,8 +11,8 @@ class MyApp extends StatelessWidget {
             child: MaterialApp(
                 title: 'History & Future of Everything',
                 theme: new ThemeData(
-                    primarySwatch: Colors.blue,
-                    backgroundColor: background
+                    backgroundColor: background,
+                    scaffoldBackgroundColor: background
                 ),
                 home: MenuPage()
         )

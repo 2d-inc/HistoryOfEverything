@@ -308,17 +308,17 @@ class VignetteRenderObject extends RenderBox
 		if(_timelineEntry != null)
 		{
 			TimelineAsset asset = _timelineEntry.asset;
-			if(asset is TimelineNima && asset.actor != null)
+			if(asset is TimelineNima && _nimaActor != null)
 			{
 				asset.animationTime += elapsed;
 				if(asset.loop)
 				{
 					asset.animationTime %= asset.animation.duration;
 				}
-				asset.animation.apply(asset.animationTime, asset.actor, 1.0);
-				asset.actor.advance(elapsed);
+				asset.animation.apply(asset.animationTime, _nimaActor, 1.0);
+				_nimaActor.advance(elapsed);
 			}
-			else if(asset is TimelineFlare && asset.actor != null)
+			else if(asset is TimelineFlare && _flareActor != null)
 			{
 				if(_firstUpdate)
 				{
@@ -339,8 +339,8 @@ class VignetteRenderObject extends RenderBox
 				{
 					asset.animationTime %= asset.animation.duration;
 				}
-				asset.animation.apply(asset.animationTime, asset.actor, 1.0);
-				asset.actor.advance(elapsed);
+				asset.animation.apply(asset.animationTime, _flareActor, 1.0);
+				_flareActor.advance(elapsed);
 			}
 		} 
 

@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import "package:flutter/material.dart";
 import "package:flutter/widgets.dart";
 import "package:share/share.dart";
+import 'package:timeline/bloc_provider.dart';
 import 'package:timeline/main_menu/collapsible.dart';
 
 import "package:timeline/main_menu/menu_data.dart";
@@ -15,8 +16,7 @@ import 'package:timeline/main_menu/thumbnail_detail_widget.dart';
 import "package:timeline/search_manager.dart";
 import "package:timeline/colors.dart";
 import "package:timeline/timeline/timeline_entry.dart";
-
-typedef VisibilityChanged(bool isVisible);
+import 'package:timeline/timeline/timeline_widget.dart';
 
 class MainMenuWidget extends StatefulWidget  
 {
@@ -37,6 +37,7 @@ class _MainMenuWidgetState extends State<MainMenuWidget> with SingleTickerProvid
 	));
 	Animation<Offset> _menuOffset;
     bool _isSearching = false;
+    bool _isSectionActive = true;
     List<TimelineEntry> _searchResults = new List<TimelineEntry>();
     final MenuData _menu = new MenuData();
     
@@ -54,6 +55,18 @@ class _MainMenuWidgetState extends State<MainMenuWidget> with SingleTickerProvid
 			_searchTimer = null;
 		}
 	}
+
+    navigateToTimeline(MenuItemData item)
+    {
+        setState(() => _isSectionActive = false);
+                                                                
+        Navigator.of(context).push(
+            CupertinoPageRoute(
+                builder: (BuildContext context) => new TimelineWidget(item, BlocProvider.getTimeline(context)),
+            )
+        ).then((v) => setState(() => _isSectionActive = true)
+        );
+    }
 
 	updateSearch()
 	{
@@ -129,6 +142,8 @@ class _MainMenuWidgetState extends State<MainMenuWidget> with SingleTickerProvid
 				  						section.backgroundColor, 
 				  						section.textColor, 
 				  						section.items,
+                                        navigateToTimeline,
+                                        _isSectionActive,
 										assetId: section.assetId,
 				  						)
 				  					)

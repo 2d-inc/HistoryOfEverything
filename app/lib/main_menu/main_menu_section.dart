@@ -5,7 +5,8 @@ import 'package:timeline/main_menu/menu_data.dart';
 import "package:flare/flare_actor.dart" as flare;
 import 'package:timeline/main_menu/menu_vignette.dart';
 import 'package:timeline/timeline/timeline_widget.dart';
-typedef SelectItemCallback(MenuItemData item);
+
+typedef NavigateTo(MenuItemData item);
 
 class MenuSection extends StatefulWidget
 {
@@ -14,10 +15,10 @@ class MenuSection extends StatefulWidget
     final Color accentColor;
     final List<MenuItemData> menuOptions;
 	final String assetId;
+    final NavigateTo navigateTo;
+    final bool isActive;
 
-    MenuSection(this.title, this.backgroundColor, this.accentColor, this.menuOptions, {this.assetId, Key key}) : super(key: key);
-
-  get isActive => null;
+    MenuSection(this.title, this.backgroundColor, this.accentColor, this.menuOptions, this.navigateTo, this.isActive, {this.assetId, Key key}) : super(key: key);
 
     @override
     State<StatefulWidget> createState() => _SectionState();
@@ -33,7 +34,6 @@ class _SectionState extends State<MenuSection> with SingleTickerProviderStateMix
 
 	Animation<double> _sizeAnimation;
 	bool _isExpanded = false;
-    bool _isSectionActive = true;
 
     initState()
     {
@@ -91,7 +91,7 @@ class _SectionState extends State<MenuSection> with SingleTickerProviderStateMix
 					child:  new ClipRRect(borderRadius: BorderRadius.circular(10.0), child:
 						new Stack(children: <Widget>
 						[
-							new Positioned.fill(left:0, top:0, child:new MenuVignette(gradientColor:widget.backgroundColor, isActive: _isSectionActive, assetId:widget.assetId)),
+							new Positioned.fill(left:0, top:0, child:new MenuVignette(gradientColor:widget.backgroundColor, isActive: widget.isActive, assetId:widget.assetId)),
 							Column(children: <Widget>
 							[
 								Container
@@ -134,16 +134,7 @@ class _SectionState extends State<MenuSection> with SingleTickerProviderStateMix
 													(item) 
 													{
 														return GestureDetector(
-                                                            onTap: () {
-                                                                setState(() => _isSectionActive = false);
-                                                                
-                                                                Navigator.of(context).push(
-                                                                    CupertinoPageRoute(
-                                                                        builder: (BuildContext context) => new TimelineWidget(item, BlocProvider.getTimeline(context))
-                                                                    )
-                                                                ).then((v) => setState(() => _isSectionActive = false)
-                                                                );
-                                                            },
+                                                            onTap: () => widget.navigateTo(item),
 															child: Row(
 																	crossAxisAlignment: CrossAxisAlignment.start,
 																	children:

@@ -21,7 +21,7 @@ class _SearchState extends State<SearchWidget>
         return Container(
 				decoration: BoxDecoration(
                 color: lightGrey,
-                borderRadius: BorderRadius.circular(20.0),
+                borderRadius: BorderRadius.circular(24.0),
             ),
             child: Theme(
 					data: ThemeData(

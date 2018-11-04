@@ -58,15 +58,16 @@ class _MainMenuWidgetState extends State<MainMenuWidget> with SingleTickerProvid
 
     navigateToTimeline(MenuItemData item)
     {
-        setState(() => _isSectionActive = false);
-                                                                
+        _pauseSection();                                                                
         Navigator.of(context).push(
             CupertinoPageRoute(
                 builder: (BuildContext context) => new TimelineWidget(item, BlocProvider.getTimeline(context)),
             )
-        ).then((v) => setState(() => _isSectionActive = true)
-        );
+        ).then(_restoreSection);
     }
+
+    _restoreSection(v) => setState(() => _isSectionActive = true);
+    _pauseSection() => setState(() => _isSectionActive = false);
 
 	updateSearch()
 	{
@@ -157,11 +158,14 @@ class _MainMenuWidgetState extends State<MainMenuWidget> with SingleTickerProvid
                     )
                 ..add(
                     FlatButton(
-                        onPressed: () => Navigator.of(context).push(
-                            CupertinoPageRoute(
-                                builder: (BuildContext context) => new FavoritesPage()
-                            )
-                        ),
+                        onPressed: () {
+                            _pauseSection();
+                            Navigator.of(context).push(
+                                CupertinoPageRoute(
+                                    builder: (BuildContext context) => new FavoritesPage()
+                                )
+                            ).then(_restoreSection);
+                        },
                         color: Colors.transparent,
                         child: Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
@@ -221,11 +225,14 @@ class _MainMenuWidgetState extends State<MainMenuWidget> with SingleTickerProvid
                     Padding(
                         padding: const EdgeInsets.only(bottom: 30.0),
                         child: FlatButton(
-                            onPressed: () => Navigator.of(context).push(
-                                CupertinoPageRoute(
-                                    builder: (BuildContext context) => new AboutPage()
-                                )
-                            ),
+                            onPressed: () {
+                                _pauseSection();
+                                Navigator.of(context).push(
+                                    CupertinoPageRoute(
+                                        builder: (BuildContext context) => new AboutPage()
+                                    )
+                                ).then(_restoreSection);
+                            },
                             color: Colors.transparent,
                             child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.center,

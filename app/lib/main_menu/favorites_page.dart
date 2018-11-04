@@ -73,9 +73,7 @@ class FavoritesPage extends StatelessWidget
                         ]
                 )
                 : 
-                ListView(
-                    children: favorites
-                ),
+                ListView(children: favorites)
             )
         );
     }

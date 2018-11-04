@@ -50,6 +50,10 @@ class SearchManager
     {
         if(_queryMap.containsKey(query))
             return _queryMap[query];
+        else if(query.isNotEmpty)
+        {
+            return Set();
+        }
         Iterable<String> keys = _queryMap.keys;
         Set<TimelineEntry> res = Set();
         for(String k in keys)

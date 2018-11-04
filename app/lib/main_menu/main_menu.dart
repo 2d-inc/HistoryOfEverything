@@ -108,7 +108,167 @@ class _MainMenuWidgetState extends State<MainMenuWidget> with SingleTickerProvid
     Widget build(BuildContext context) 
     {
 		EdgeInsets devicePadding = MediaQuery.of(context).padding;
-		
+
+        List<Widget> tail = [];
+		if(_isSearching)
+        {
+            tail = _searchResults.map<Widget>((TimelineEntry sr)
+                    {
+                        return ThumbnailDetailWidget(sr);
+                    }
+                ).toList(growable:false);
+        }
+        else
+        {
+            tail
+                ..addAll(_menu.sections.map<Widget>((MenuSectionData section)
+				  				=> Container(
+				  					margin: EdgeInsets.only(top:20.0),
+				  					child: MenuSection(
+				  						section.label, 
+				  						section.backgroundColor, 
+				  						section.textColor, 
+				  						section.items,
+										assetId: section.assetId,
+				  						)
+				  					)
+				  				).toList(growable:false))
+                ..add(
+                        Container(
+                            margin: EdgeInsets.symmetric(vertical:40.0),
+                            height: 1.0,
+                            color: const Color.fromRGBO(151, 151, 151, 0.29),
+                        )
+                    )
+                ..add(
+                    FlatButton(
+                        onPressed: () => Navigator.of(context).push(
+                            PageRouteBuilder(
+                                opaque: true,
+                                transitionDuration: const Duration(milliseconds: 300),
+                                pageBuilder: (context, _, __) => FavoritesPage(),
+                                transitionsBuilder: (_, Animation<double> animation, __, Widget child)
+                                {
+                                    return new SlideTransition(
+                                        child: child,
+                                        position: new Tween<Offset>(
+                                            begin: const Offset(1.0, 0.0),
+                                            end: Offset.zero
+                                        ).animate(CurvedAnimation(
+                                            parent: animation,
+                                            curve: Curves.fastOutSlowIn
+                                        ))
+                                    );
+                                }
+                            )
+                        ),
+                        color: Colors.transparent,
+                        child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: 
+                            [
+                                Container(
+                                    margin: EdgeInsets.only(right:15.5),
+                                    child: Image.asset(
+                                            "assets/heart_icon.png",
+                                            height:20.0,
+                                            width: 20.0,
+                                            color: Colors.black
+                                        ),
+                                    ),
+                                    Text(
+                                        "Your Favorites",
+                                        style: TextStyle(
+                                            fontSize: 20.0,
+                                            fontFamily: "RobotoMedium",
+                                            color: darkText
+                                        ),
+                                    )
+                            ]
+                        )
+                    )
+                )
+                ..add(
+                    FlatButton(
+                        onPressed: () => Share.share("Build your own animations at www.2dimensions.com"),
+                        color: Colors.transparent,
+                        child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: 
+                            [
+                                Container(
+                                    margin: EdgeInsets.only(right:15.5),
+                                    child: Image.asset(
+                                            "assets/share_icon.png",
+                                            height:20.0,
+                                            width: 20.0,
+                                            color: Colors.black
+                                        ),
+                                    ),
+                                    Text(
+                                        "Share",
+                                        style: TextStyle(
+                                            fontSize: 20.0,
+                                            fontFamily: "RobotoMedium",
+                                            color: darkText
+                                        ),
+                                    )
+                            ]
+                        )
+                    )
+                )
+                ..add(
+                    Padding(
+                        padding: const EdgeInsets.only(bottom: 30.0),
+                        child: FlatButton(
+                            onPressed: () => Navigator.of(context).push(
+                                PageRouteBuilder(
+                                    opaque: true,
+                                    transitionDuration: const Duration(milliseconds: 300),
+                                    pageBuilder: (context, _, __) => AboutPage(),
+                                    transitionsBuilder: (_, Animation<double> animation, __, Widget child)
+                                    {
+                                        return new SlideTransition(
+                                            child: child,
+                                            position: new Tween<Offset>(
+                                                begin: const Offset(1.0, 0.0),
+                                                end: Offset.zero
+                                            ).animate(CurvedAnimation(
+                                                parent: animation,
+                                                curve: Curves.fastOutSlowIn
+                                            ))
+                                        );
+                                    }
+                                )
+                            ),
+                            color: Colors.transparent,
+                            child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: 
+                                [
+                                    Container(
+                                        margin: EdgeInsets.only(right:15.5),
+                                        child: Image.asset(
+                                                "assets/info_icon.png",
+                                                height:20.0,
+                                                width: 20.0,
+                                                color: Colors.black
+                                            ),
+                                        ),
+                                        Text(
+                                            "About",
+                                            style: TextStyle(
+                                                fontSize: 20.0,
+                                                fontFamily: "RobotoMedium",
+                                                color: darkText
+                                            ),
+                                        )
+                                ]
+                            )
+                        ),
+                    )
+                );
+        }
         return Container(
 				color: background,
 				child: Padding(
@@ -163,163 +323,8 @@ class _MainMenuWidgetState extends State<MainMenuWidget> with SingleTickerProvid
 								padding: EdgeInsets.only(top:22.0),
 								child: SearchWidget(_searchFocusNode, _searchTextController)
 							)
-				  		]
-				  		+
-				  		(
-				  			_isSearching ? 
-				  			_searchResults.map<Widget>((TimelineEntry sr)
-				  				{
-				  					return ThumbnailDetailWidget(sr);
-				  				}
-				  			).toList(growable:false)
-				  			:
-				  			_menu.sections.map<Widget>((MenuSectionData section)
-				  				=> Container(
-				  					margin: EdgeInsets.only(top:20.0),
-				  					child: MenuSection(
-				  						section.label, 
-				  						section.backgroundColor, 
-				  						section.textColor, 
-				  						section.items,
-										assetId: section.assetId,
-				  						)
-				  					)
-				  				).toList(growable:false)
-				  		)..add(
-				  				Container(
-				  					margin: EdgeInsets.symmetric(vertical:40.0),
-				  					height: 1.0,
-				  					color: const Color.fromRGBO(151, 151, 151, 0.29),
-				  				)
-				  			)
-				  			..add(
-				  				FlatButton(
-				  					onPressed: () => Navigator.of(context).push(
-				  						PageRouteBuilder(
-				  							opaque: true,
-				  							transitionDuration: const Duration(milliseconds: 300),
-				  							pageBuilder: (context, _, __) => FavoritesPage(),
-				  							transitionsBuilder: (_, Animation<double> animation, __, Widget child)
-				  							{
-				  								return new SlideTransition(
-				  									child: child,
-				  									position: new Tween<Offset>(
-				  										begin: const Offset(1.0, 0.0),
-				  										end: Offset.zero
-				  									).animate(CurvedAnimation(
-				  										parent: animation,
-				  										curve: Curves.fastOutSlowIn
-				  									))
-				  								);
-				  							}
-				  						)
-				  					),
-				  					color: Colors.transparent,
-				  					child: Row(
-				  						crossAxisAlignment: CrossAxisAlignment.center,
-				  						children: 
-				  						[
-				  							Container(
-				  								margin: EdgeInsets.only(right:15.5),
-				  								child: Image.asset(
-				  										"assets/heart_icon.png",
-				  										height:20.0,
-				  										width: 20.0,
-				  										color: Colors.black
-				  									),
-				  								),
-				  								Text(
-				  									"Your Favorites",
-				  									style: TextStyle(
-				  										fontSize: 20.0,
-				  										fontFamily: "RobotoMedium",
-				  										color: darkText
-				  									),
-				  								)
-				  						]
-				  					)
-				  				)
-				  			)
-				  			..add(
-				  				FlatButton(
-				  					onPressed: () => Share.share("Build your own animations at www.2dimensions.com"),
-				  					color: Colors.transparent,
-				  					child: Row(
-				  						crossAxisAlignment: CrossAxisAlignment.center,
-				  						children: 
-				  						[
-				  							Container(
-				  								margin: EdgeInsets.only(right:15.5),
-				  								child: Image.asset(
-				  										"assets/share_icon.png",
-				  										height:20.0,
-				  										width: 20.0,
-				  										color: Colors.black
-				  									),
-				  								),
-				  								Text(
-				  									"Share",
-				  									style: TextStyle(
-				  										fontSize: 20.0,
-				  										fontFamily: "RobotoMedium",
-				  										color: darkText
-				  									),
-				  								)
-				  						]
-				  					)
-				  				)
-				  			)
-				  			..add(
-				  				Padding(
-				  					padding: const EdgeInsets.only(bottom: 30.0),
-				  					child: FlatButton(
-				  						onPressed: () => Navigator.of(context).push(
-				  							PageRouteBuilder(
-				  								opaque: true,
-				  								transitionDuration: const Duration(milliseconds: 300),
-				  								pageBuilder: (context, _, __) => AboutPage(),
-				  								transitionsBuilder: (_, Animation<double> animation, __, Widget child)
-				  								{
-				  									return new SlideTransition(
-				  										child: child,
-				  										position: new Tween<Offset>(
-				  											begin: const Offset(1.0, 0.0),
-				  											end: Offset.zero
-				  										).animate(CurvedAnimation(
-				  											parent: animation,
-				  											curve: Curves.fastOutSlowIn
-				  										))
-				  									);
-				  								}
-				  							)
-				  						),
-				  						color: Colors.transparent,
-				  						child: Row(
-				  							crossAxisAlignment: CrossAxisAlignment.center,
-				  							children: 
-				  							[
-				  								Container(
-				  									margin: EdgeInsets.only(right:15.5),
-				  									child: Image.asset(
-				  											"assets/info_icon.png",
-				  											height:20.0,
-				  											width: 20.0,
-				  											color: Colors.black
-				  										),
-				  									),
-				  									Text(
-				  										"About",
-				  										style: TextStyle(
-				  											fontSize: 20.0,
-				  											fontFamily: "RobotoMedium",
-				  											color: darkText
-				  										),
-				  									)
-				  							]
-				  						)
-				  					),
-				  				)
-				  			)
+				  		] 
+                        + tail
 				  		)
 				  	),
 				)

@@ -80,6 +80,7 @@
 	{
 		"date": -4050000000,
 		"label": "Single Celled Organisms",
+		"article":"single_celled_organisms.txt",
 		"asset": 
 		{
 			"source": "Cells/Cells.nma",

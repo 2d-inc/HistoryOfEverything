@@ -13,9 +13,6 @@ class MenuSection extends StatefulWidget
     final Color accentColor;
     final List<MenuItemData> menuOptions;
 	final String assetId;
-	// final SelectItemCallback selectItem;
-	// final Timeline timeline;
-	// final bool isActive;
 
     MenuSection(this.title, this.backgroundColor, this.accentColor, this.menuOptions, {this.assetId, Key key}) : super(key: key);
 
@@ -35,6 +32,7 @@ class _SectionState extends State<MenuSection> with SingleTickerProviderStateMix
 
 	Animation<double> _sizeAnimation;
 	bool _isExpanded = false;
+    bool _isSectionActive = true;
 
     initState()
     {
@@ -80,7 +78,6 @@ class _SectionState extends State<MenuSection> with SingleTickerProviderStateMix
 
     @override
     Widget build(BuildContext context) {
-        bool isMenuSectionActive = _sizeAnimation.status == AnimationStatus.forward || _sizeAnimation.status == AnimationStatus.completed;
 
         return GestureDetector(
             onTap: _toggleExpand,
@@ -93,7 +90,7 @@ class _SectionState extends State<MenuSection> with SingleTickerProviderStateMix
 					child:  new ClipRRect(borderRadius: BorderRadius.circular(10.0), child:
 						new Stack(children: <Widget>
 						[
-							new Positioned.fill(left:0, top:0, child:new MenuVignette(gradientColor:widget.backgroundColor, isActive: isMenuSectionActive, assetId:widget.assetId)),
+							new Positioned.fill(left:0, top:0, child:new MenuVignette(gradientColor:widget.backgroundColor, isActive: _isSectionActive, assetId:widget.assetId)),
 							Column(children: <Widget>
 							[
 								Container
@@ -137,6 +134,8 @@ class _SectionState extends State<MenuSection> with SingleTickerProviderStateMix
 													{
 														return GestureDetector(
                                                             onTap: () {
+                                                                setState(() => _isSectionActive = false);
+                                                                
                                                                 Navigator.of(context).push(
                                                                     PageRouteBuilder(
                                                                         opaque: true,
@@ -156,6 +155,7 @@ class _SectionState extends State<MenuSection> with SingleTickerProviderStateMix
                                                                             );
                                                                         }
                                                                     )
+                                                                ).then((v) => setState(() => _isSectionActive = false)
                                                                 );
                                                             },
 															child: Row(

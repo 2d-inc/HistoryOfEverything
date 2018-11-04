@@ -3,7 +3,6 @@ import "dart:async";
 import "package:flutter/material.dart";
 import "package:flutter/widgets.dart";
 import "package:share/share.dart";
-import 'package:timeline/bloc_provider.dart';
 import 'package:timeline/main_menu/collapsible.dart';
 
 import "package:timeline/main_menu/menu_data.dart";
@@ -20,11 +19,6 @@ typedef VisibilityChanged(bool isVisible);
 
 class MainMenuWidget extends StatefulWidget  
 {
-	// final SelectItemCallback selectItem;
-	// final MenuData data;
-	// final bool show;
-	// final VisibilityChanged visibilityChanged;
-	// final Timeline timeline;
 	MainMenuWidget({Key key}) : super(key: key);
 
 	@override
@@ -107,53 +101,15 @@ class _MainMenuWidgetState extends State<MainMenuWidget> with SingleTickerProvid
 			vsync: this,
 			duration: const Duration(milliseconds: 200),
 		);
-		_menuOffset = _controller.drive(_slideTween);		
-		// if(widget.show)
-		// {
-		// 	_controller.reverse();
-		// }
-		// else
-		// {
-		// 	_controller.forward();
-		// }									
+		_menuOffset = _controller.drive(_slideTween);						
 	}
-
-	// void didUpdateWidget(covariant MainMenuWidget oldWidget) 
-	// { 
-	// 	super.didUpdateWidget(oldWidget);
-	// 	if(oldWidget.show != widget.show)
-	// 	{
-	// 		if(widget.show)
-	// 		{
-	// 			_controller.reverse().whenComplete(()
-	// 			{
-	// 				setState(() 
-	// 				{
-	// 					widget.visibilityChanged(true);
-	// 				});
-	// 			});
-	// 		}
-	// 		else
-	// 		{
-	// 			_controller.forward().whenComplete(()
-	// 			{
-	// 				setState(() 
-	// 				{
-	// 					widget.visibilityChanged(false);
-	// 				});
-	// 			});
-	// 		}
-	// 	}
-	// }
 
     @override
     Widget build(BuildContext context) 
     {
 		EdgeInsets devicePadding = MediaQuery.of(context).padding;
 		
-        return SlideTransition(
-			position: _menuOffset, 
-			child: new Container(
+        return Container(
 				color: background,
 				child: Padding(
 				  padding: EdgeInsets.only(top:devicePadding.top+20.0),
@@ -225,10 +181,7 @@ class _MainMenuWidgetState extends State<MainMenuWidget> with SingleTickerProvid
 				  						section.backgroundColor, 
 				  						section.textColor, 
 				  						section.items,
-				  						// widget.selectItem,
 										assetId: section.assetId,
-										// timeline: widget.timeline,
-										// isActive: widget.show
 				  						)
 				  					)
 				  				).toList(growable:false)
@@ -370,7 +323,6 @@ class _MainMenuWidgetState extends State<MainMenuWidget> with SingleTickerProvid
 				  		)
 				  	),
 				)
-			)
 		);
     }
 }

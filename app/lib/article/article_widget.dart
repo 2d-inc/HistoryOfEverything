@@ -219,6 +219,8 @@ class _ArticleWidgetState extends State<ArticleWidget>
 								child: new IconButton(
 									alignment: Alignment.centerLeft,
 									icon: new Icon(Icons.arrow_back),
+                                    padding: EdgeInsets.only(left:20.0, right:20.0),
+					                color: Colors.black.withOpacity(0.5),
 									onPressed: () {
                                             Navigator.pop(context, true);
                                         },

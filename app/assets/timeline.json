@@ -102,8 +102,9 @@
 		}
 	},
 	{
-		"date": -490000000,
+		"date": -396000000,
 		"label": "Insects",
+		"article":"insects.txt",
 		"asset": 
 		{
 			"source": "Insects/Insects.nma",
@@ -114,6 +115,7 @@
 	{
 		"date": -312000000,
 		"label": "Reptiles",
+		"article":"reptiles.txt",
 		"asset": 
 		{
 			"source": "Reptiles/Reptiles.nma",
@@ -131,30 +133,33 @@
 		{
 			"source": "Dinosaurs/Dinosaurs.nma",
 			"width": 800,
-			"height": 770,
-			"offset":-275,
-			"gap": -40
+			"height": 570,
+			"offset":-170,
+			"gap": 0
 		}
 	},
 	{
 		"date": -200000000,
 		"label": "Mammals",
+		"article":"mammals.txt",
 		"asset": 
 		{
 			"source": "Mammals/Mammals.nma",
-			"offset":-20,
-			"width": 600,
-			"height": 600
+			"offset":-200,
+			"width": 400,
+			"height": 400
 		}
 	},
 	{
 		"date": -66000000,
 		"label": "Dinosaur Extinction",
+		"article":"dino_extinction.txt",
 		"asset": 
 		{
 			"source": "Dinosaur_Demise/Dinosaur_Demise.nma",
-			"width": 800,
-			"height": 400
+			"width": 700,
+			"height": 500,
+			"offset":-100
 		}
 	},
 	{
@@ -188,17 +193,19 @@
 	{
 		"date": -1500000,
 		"label": "Control Fire",
+		"article":"fire.txt",
 		"asset": 
 		{
 			"source": "Fire/Fire.nma",
 			"width": 528,
 			"height": 528,
-			"offset": -40
+			"offset": -50
 		}
 	},
 	{
 		"start": -300000,
 		"label": "Homo Sapiens Sapiens",
+		"article":"sapiens.txt",
 		"asset": 
 		{
 			"source": "Homo_Sapiens_Sapiens/Homo_Sapiens_Sapiens.nma",
@@ -209,14 +216,14 @@
 	},
 	{
 		"date": -12000,
-		"label": "Built First Temple",
+		"label": "First Temple",
 		"article":"first_temple.txt",
 		"asset": 
 		{
 			"source": "First_Temple/First_Temple.nma",
-			"width": 528,
-			"height": 528,
-			"offset": -40
+			"width": 340,
+			"height": 340,
+			"offset": -200
 		}
 	},
 	{
@@ -250,9 +257,9 @@
 		"asset": 
 		{
 			"source": "Pyramid/Pyramid.nma",
-			"width": 528,
-			"height": 528,
-			"offset": -40
+			"width": 400,
+			"height": 430,
+			"offset": -350
 		}
 	},
 	{
@@ -274,14 +281,10 @@
 		"asset": 
 		{
 			"source": "Recorded_history/Recorded_history.nma",
-			"width": 528,
-			"height": 528,
-			"offset": -40
+			"width": 400,
+			"height": 400,
+			"offset": -200
 		}
-	},
-	{
-		"start": 0,
-		"label": "Common Era"
 	},
 	{
 		"start": 1095,
@@ -293,8 +296,7 @@
 			"source": "Crusades/Crusades.nma",
 			"width": 528,
 			"height": 528,
-			"offset": -60,
-			"gap": -20
+			"offset": -60
 		}
 	},
 	{
@@ -304,8 +306,8 @@
 		"asset": 
 		{
 			"source": "Newton/Newton.nma",
-			"width": 800,
-			"height": 800
+			"width": 500,
+			"height": 500
 		}
 	},
 	{
@@ -315,8 +317,9 @@
 		"asset": 
 		{
 			"source": "Industrialization/Industrialization.nma",
-			"width": 800,
-			"height": 800
+			"width": 500,
+			"height": 500,
+			"offset": -100
 		}
 	},
 	{
@@ -326,8 +329,8 @@
 		"asset": 
 		{
 			"source": "Constantinople/Constantinople.nma",
-			"width": 800,
-			"height": 800
+			"width": 500,
+			"height": 500
 		}
 	},
 	{
@@ -339,7 +342,7 @@
 		{
 			"source": "BlackPlague/BlackPlague.nma",
 			"width": 800,
-			"height": 800
+			"height": 400
 		}
 	},
 	{
@@ -479,8 +482,8 @@
 		}
 	},
 	{
-		"date": 1960,
-		"label": "Internet",
+		"date": 1990,
+		"label": "World Wide Web",
 		"article":"internet.txt",
 		"asset": 
 		{

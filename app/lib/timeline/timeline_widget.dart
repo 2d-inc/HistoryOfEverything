@@ -103,7 +103,18 @@ class _TimelineWidgetState extends State<TimelineWidget>
 	
 	onTouchBubble(TapTarget bubble)
 	{
-        if(bubble != null)
+        _touchedBubble = bubble;
+	}
+
+	onTouchEntry(TimelineEntry entry)
+	{
+		_touchedEntry = entry;
+	}
+
+	void _tapUp(TapUpDetails details)
+	{
+		EdgeInsets devicePadding = MediaQuery.of(context).padding;
+        if(_touchedBubble != null)
         {
             widget.timeline.isActive = false;
             
@@ -111,7 +122,7 @@ class _TimelineWidgetState extends State<TimelineWidget>
                 PageRouteBuilder(
                     opaque: true,
                     transitionDuration: const Duration(milliseconds: 300),
-                    pageBuilder: (context, _, __) => ArticleWidget(article: bubble.entry),
+                    pageBuilder: (context, _, __) => ArticleWidget(article: _touchedBubble.entry),
                     transitionsBuilder: (_, Animation<double> animation, __, Widget child)
                     {
                         return new SlideTransition(
@@ -128,17 +139,7 @@ class _TimelineWidgetState extends State<TimelineWidget>
                 )
             ).then((v) => widget.timeline.isActive = true);
         }
-	}
-
-	onTouchEntry(TimelineEntry entry)
-	{
-		_touchedEntry = entry;
-	}
-
-	void _tapUp(TapUpDetails details)
-	{
-		EdgeInsets devicePadding = MediaQuery.of(context).padding;
-        if(_touchedEntry != null)
+        else if(_touchedEntry != null)
 		{	
 			MenuItemData target = MenuItemData.fromEntry(_touchedEntry);
 			

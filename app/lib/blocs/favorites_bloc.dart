@@ -1,50 +1,28 @@
 import "package:shared_preferences/shared_preferences.dart";
 
 import "package:timeline/timeline/timeline_entry.dart";
-import "package:timeline/search_manager.dart";
 
 class FavoritesBloc
 {
     static const String FAVORITES_KEY = "Favorites";
     final List<TimelineEntry> _favorites = [];
 
-    init() async
+    init(List<TimelineEntry> entries) async
     {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         List<String> favs = prefs.getStringList(FavoritesBloc.FAVORITES_KEY);
+        Map<String, TimelineEntry> entriesMap = new Map();
+        for(TimelineEntry e in entries)
+        {
+            entriesMap.putIfAbsent(e.label, () => e);
+        }
         if(favs != null)
         {
-            SearchManager sm = SearchManager.init();
-            _favorites.clear();
             for(String f in favs)
             {
-                Set<TimelineEntry> entries = sm.performSearch(f.toLowerCase());
-                if(entries.length == 1)
-                {
-                    this._favorites.add(entries.first);
-                }
+                _favorites.add(entriesMap[f]);
             }
         }
-    }
-
-    Future<List<TimelineEntry>> fetchFavorites()
-    {
-        return SharedPreferences.getInstance().then(
-            (SharedPreferences prefs) {
-                List<TimelineEntry> res = [];
-                List<String> favs = prefs.getStringList(FAVORITES_KEY) ?? [];
-                SearchManager sm = SearchManager.init();
-                for(String f in favs)
-                {
-                    Set<TimelineEntry> entries = sm.performSearch(f.toLowerCase());
-                    if(entries.length == 1)
-                    {
-                        res.add(entries.first);
-                    }    
-                }
-                return res;
-            }
-        );
     }
 
     List<TimelineEntry> get favorites

@@ -106,6 +106,7 @@ class _TimelineWidgetState extends State<TimelineWidget>
         if(bubble != null)
         {
             widget.timeline.isActive = false;
+            
             Navigator.of(context).push(
                 PageRouteBuilder(
                     opaque: true,
@@ -126,7 +127,6 @@ class _TimelineWidgetState extends State<TimelineWidget>
                     }
                 )
             ).then((v) => widget.timeline.isActive = true);
-            // result.then((bool done) => widget.timeline.isActive = done);
         }
 	}
 
@@ -138,11 +138,6 @@ class _TimelineWidgetState extends State<TimelineWidget>
 	void _tapUp(TapUpDetails details)
 	{
 		EdgeInsets devicePadding = MediaQuery.of(context).padding;
-		// if(_touchedBubble != null)
-		// {
-		// 	widget.selectItem(_touchedBubble.entry);
-		// }
-		// else 
         if(_touchedEntry != null)
 		{	
 			MenuItemData target = MenuItemData.fromEntry(_touchedEntry);

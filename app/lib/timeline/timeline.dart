@@ -16,7 +16,7 @@ import "package:flare/flare/animation/actor_animation.dart" as flare;
 import "package:flare/flare/math/aabb.dart" as flare;
 import "package:flare/flare/math/vec2d.dart" as flare;
 import "timeline_entry.dart";
-import "package:timeline/search_manager.dart";
+
 typedef PaintCallback();
 typedef ChangeEraCallback(TimelineEntry era);
 
@@ -436,11 +436,7 @@ class Timeline
 				_entries.add(entry);
 			}
 		}
-
-        // Initialize the SearchDictionary.
-        SearchManager.init(allEntries);
-
-		return _entries;	
+		return allEntries;
 	}
 
 	TimelineEntry getById(String id)

@@ -18,8 +18,6 @@ typedef TouchEntryCallback(TimelineEntry entry);
 
 class TimelineRenderWidget extends LeafRenderObjectWidget
 {
-	// final Timeline timeline;
-	// final bool isActive;
 	final MenuItemData focusItem;
 	final TouchBubbleCallback touchBubble;
 	final TouchEntryCallback touchEntry;
@@ -32,7 +30,6 @@ class TimelineRenderWidget extends LeafRenderObjectWidget
 	RenderObject createRenderObject(BuildContext context) 
 	{
 		return new TimelineRenderObject()
-							// ..isActive = isActive
                             ..timeline = timeline
 							..touchBubble = touchBubble
 							..touchEntry = touchEntry
@@ -45,7 +42,6 @@ class TimelineRenderWidget extends LeafRenderObjectWidget
 	{
 		renderObject
 					..timeline = timeline
-					// ..isActive = isActive
 					..focusItem = focusItem
 					..touchBubble = touchBubble
 					..touchEntry = touchEntry
@@ -80,7 +76,6 @@ class TimelineRenderObject extends RenderBox
 	List<TapTarget> _tapTargets = new List<TapTarget>();
 	Ticks _ticks = new Ticks();
 	Timeline _timeline;
-	// bool _isActive = false;
 	MenuItemData _focusItem;
 	Rect _nextEntryRect;
 
@@ -97,32 +92,9 @@ class TimelineRenderObject extends RenderBox
 		}
 		_timeline = value;
         _timeline.onNeedPaint = markNeedsPaint;
-		// _timeline.onNeedPaint = ()
-		// {
-		// 	if(_isActive)
-		// 	{
-		// 		markNeedsPaint();
-		// 	}
-		// };
         markNeedsPaint();
 		markNeedsLayout();
 	}
-
-	// bool get isActive => _isActive;
-	// set isActive(bool value)
-	// {
-	// 	if(_isActive == value)
-	// 	{
-	// 		return;
-	// 	}
-	// 	_timeline.isActive = value;
-	// 	_isActive = value;
-	// 	if(_isActive)
-	// 	{
-	// 		markNeedsPaint();
-	// 		markNeedsLayout();
-	// 	}
-	// }
 
 	MenuItemData get focusItem => _focusItem;
 	set focusItem(MenuItemData value)

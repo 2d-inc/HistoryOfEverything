@@ -1,5 +1,6 @@
 import "package:flutter/widgets.dart";
 import "package:timeline/blocs/favorites_bloc.dart";
+import 'package:timeline/search_manager.dart';
 import 'package:timeline/timeline/timeline.dart';
 import 'package:timeline/timeline/timeline_entry.dart';
 
@@ -17,8 +18,10 @@ class BlocProvider extends InheritedWidget
 		{
 			timeline.setViewport(start: entries.first.start*2.0, end: entries.first.start, animate:true);
 			timeline.advance(0.0, false);
+            
             // All the entries are loaded, we can fill in the favoritesBloc
-            favoritesBloc.init();
+            favoritesBloc.init(entries);
+            SearchManager.init(entries);
 		});
     }
 

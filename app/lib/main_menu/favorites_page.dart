@@ -21,10 +21,20 @@ class FavoritesPage extends StatelessWidget
             appBar: AppBar(
                 backgroundColor: lightGrey,
                 iconTheme: IconThemeData(
-                    color: Colors.black.withOpacity(0.54)
+                    color: Colors.black.withOpacity(0.54),
                 ),
                 elevation: 0.0,
                 centerTitle: false,
+				leading: new IconButton(
+					alignment: Alignment.centerLeft,
+					icon: new Icon(Icons.arrow_back),
+					padding: EdgeInsets.only(left:20.0, right:20.0),
+					color: Colors.black.withOpacity(0.5),
+					onPressed: () {
+							Navigator.pop(context, true);
+						},
+				),
+				titleSpacing: 9.0, // Note that the icon has 20 on the right due to its padding, so we add 10 to get our desired 29
                 title: Text(
                     "Your Favorites",
                     style: TextStyle(

@@ -80,6 +80,7 @@
 	{
 		"date": -4050000000,
 		"label": "Single Celled Organisms",
+		"article":"single_celled_organisms.txt",
 		"asset": 
 		{
 			"source": "Cells/Cells.nma",
@@ -104,6 +105,7 @@
 	{
 		"date": -490000000,
 		"label": "Insects",
+		"article":"insects.txt",
 		"asset": 
 		{
 			"source": "Insects/Insects.nma",
@@ -114,6 +116,7 @@
 	{
 		"date": -312000000,
 		"label": "Reptiles",
+		"article":"reptiles.txt",
 		"asset": 
 		{
 			"source": "Reptiles/Reptiles.nma",

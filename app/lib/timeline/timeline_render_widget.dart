@@ -152,7 +152,7 @@ class TimelineRenderObject extends RenderBox
 	@override
 	bool hitTestSelf(Offset screenOffset)
 	{
-		for(TapTarget bubble in _tapTargets)
+		for(TapTarget bubble in _tapTargets.reversed)
 		{
 			if(bubble.rect.contains(screenOffset))
 			{

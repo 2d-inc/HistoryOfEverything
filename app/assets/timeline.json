@@ -54,6 +54,7 @@
 	{
 		"date": -4100000000,
 		"label": "Heavy Bombardment",
+		"article": "bombardment.txt",
 		"asset": 
 		{
 			"source": "HeavyBombardment.flr",
@@ -90,11 +91,13 @@
 	},
 	{
 		"start": -600000000,
-		"label": "Animals"
+		"label": "Animals",
+		"article":"animals.txt"
 	},
 	{
-		"date": -550000000,
-		"label": "Fish and Stuff",
+		"date": -530000000,
+		"label": "Fish",
+		"article":"fish.txt",
 		"asset": 
 		{
 			"source": "Fish_and_Stuff/Fish_and_Stuff.nma",
@@ -165,7 +168,8 @@
 	},
 	{
 		"start": -6000000,
-		"label": "Humans"
+		"label": "Humans",
+		"article":"humans.txt"
 	},
 	{
 		"date": -4000000,

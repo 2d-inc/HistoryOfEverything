@@ -10,9 +10,13 @@ class FavoritesPage extends StatelessWidget
     @override
     Widget build(BuildContext context) 
     {
-        List<Widget> favorites = BlocProvider.favorites(context).favorites.map(
-                        (TimelineEntry te) => ThumbnailDetailWidget(te)
-                    ).toList();
+        List<Widget> favorites = [];
+        List<TimelineEntry> entries = BlocProvider.favorites(context).favorites;
+
+        for(int i = 0; i < entries.length; i++)
+        {
+            favorites.add(ThumbnailDetailWidget(entries[i], hasDivider: i != 0));
+        }
         return Scaffold(
             appBar: AppBar(
                 backgroundColor: lightGrey,

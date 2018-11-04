@@ -112,11 +112,10 @@ class _MainMenuWidgetState extends State<MainMenuWidget> with SingleTickerProvid
         List<Widget> tail = [];
 		if(_isSearching)
         {
-            tail = _searchResults.map<Widget>((TimelineEntry sr)
-                    {
-                        return ThumbnailDetailWidget(sr);
-                    }
-                ).toList(growable:false);
+            for(int i = 0; i < _searchResults.length; i++)
+            {
+                tail.add(ThumbnailDetailWidget(_searchResults[i], hasDivider: i != 0));
+            }
         }
         else
         {

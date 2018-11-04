@@ -10,8 +10,9 @@ import "package:timeline/timeline/timeline_entry.dart";
 class ThumbnailDetailWidget extends StatelessWidget
 {
     final TimelineEntry timelineEntry;
+    final bool hasDivider;
 
-    ThumbnailDetailWidget(this.timelineEntry, {Key key}) : super(key:key);
+    ThumbnailDetailWidget(this.timelineEntry, {this.hasDivider = true, Key key}) : super(key:key);
 
     @override
     Widget build(BuildContext context)
@@ -44,39 +45,49 @@ class ThumbnailDetailWidget extends StatelessWidget
                             )
                     );
                 },
-                child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 14.0),
-                        child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: 
-                            [
-                                ThumbnailWidget(timelineEntry),
-                                Container(
-                                    margin: EdgeInsets.only(left: 17.0),  
-                                    child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: 
-                                        [
-                                            Text(timelineEntry.label,
-                                                style: TextStyle(
-                                                    fontFamily: "RobotoMedium",
-                                                    fontSize: 20.0,
-                                                    color: darkText.withOpacity(darkText.opacity*0.75)
+                child: Column(
+                    children: <Widget>[
+                        hasDivider ? 
+                        Container(
+                            height: 1,
+                            color: const Color.fromRGBO(151, 151, 151, 0.29)
+                        )
+                        : Container(),
+                        Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 14.0),
+                            child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: 
+                                [
+                                    ThumbnailWidget(timelineEntry),
+                                    Container(
+                                        margin: EdgeInsets.only(left: 17.0),  
+                                        child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: 
+                                            [
+                                                Text(timelineEntry.label,
+                                                    style: TextStyle(
+                                                        fontFamily: "RobotoMedium",
+                                                        fontSize: 20.0,
+                                                        color: darkText.withOpacity(darkText.opacity*0.75)
+                                                    )
+                                                ,),
+                                                Text(timelineEntry.formatYearsAgo(),
+                                                    style: TextStyle(
+                                                        fontFamily: "Roboto",
+                                                        fontSize: 14.0,
+                                                        color: Colors.black.withOpacity(0.5)
+                                                    )
                                                 )
-                                            ,),
-                                            Text(timelineEntry.formatYearsAgo(),
-                                                style: TextStyle(
-                                                    fontFamily: "Roboto",
-                                                    fontSize: 14.0,
-                                                    color: Colors.black.withOpacity(0.5)
-                                                )
-                                            )
-                                        ]
-                                    ),
-                                )
-                            ],
+                                            ]
+                                        ),
+                                    )
+                                ],
+                            ),
                         ),
-                    ),
+                    ],
+                ),
             )
         );
     }

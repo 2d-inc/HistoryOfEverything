@@ -1,0 +1,3 @@
+The Internet is the biggest world-wide communication network of computers. Internet has millions of smaller domestic, academic, business,and government networks, which together carry many different kinds of information. The term is sometimes abbreviated as "the net". The __World Wide Web__ is one of its biggest services. It is used by a few billion people all over the world.
+
+The Internet was developed in the United States by the "United States Advanced Research Projects Agency" (DARPA). Internet was first connected in October, 1969, and was called ARPANET. The __World Wide Web__ was created at CERN in Switzerland in 1990 by a British (UK) scientist named Tim Berners-Lee.

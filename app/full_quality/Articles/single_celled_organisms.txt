@@ -1,0 +1,7 @@
+Prokaryotes (or monera) are the simplest living things: bacteria and archaea. They generally do not have a __cell__ nucleus, nuclear membrane or __cell__ organelles, however a small number of exceptions have been found. Prokaryotes are unicellular. They are either bacteria or archaea.
+
+Besides a nucleus, prokaryotes lack other things eukaryotes (__cells__ with a true nucleus) have. Prokaryotes do not have membranes inside the __cell__. This means that there are no vacuoles, Golgi apparatus, endoplasmic reticula or other organelles inside the __cell__. However, they do have ribosomes, though of a simpler kind than eukaryotes. Eukaryote __cells__ include organelles which were once free-living prokaryotes.
+
+In 1977, Carl Woese proposed dividing prokaryotes into the Bacteria and Archaea (originally Eubacteria and Archaebacteria) because of the major differences in the structure and genetics between the two groups of organisms. This arrangement of Eukaryota (also called "Eukarya"), Bacteria, and Archaea is called the three-domain system, replacing the traditional two-empire system.
+
+The Archaea include simple organisms which were first discovered in extreme environments. Most of them can survive at very high or very low temperatures. Some of them can also survive in highly salty, acidic or alkaline water. Some have been found in geysers, black smokers or oil wells.

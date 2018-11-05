@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.app">
+    package="com.twodimensions.timeline">
 
     <!-- The INTERNET permission is required for development. Specifically,
          flutter needs it to communicate with the running application
@@ -15,7 +15,7 @@
     <application
         android:name="io.flutter.app.FlutterApplication"
         android:label="History"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher_app">
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"

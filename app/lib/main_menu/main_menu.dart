@@ -195,7 +195,7 @@ class _MainMenuWidgetState extends State<MainMenuWidget> with SingleTickerProvid
                                             "assets/heart_icon.png",
                                             height:20.0,
                                             width: 20.0,
-                                            color: Colors.black
+                                            color: Colors.black.withOpacity(0.65)
                                         ),
                                     ),
                                     Text(
@@ -203,7 +203,7 @@ class _MainMenuWidgetState extends State<MainMenuWidget> with SingleTickerProvid
                                         style: TextStyle(
                                             fontSize: 20.0,
                                             fontFamily: "RobotoMedium",
-                                            color: darkText
+                                            color: Colors.black.withOpacity(0.65)
                                         ),
                                     )
                             ]
@@ -224,7 +224,7 @@ class _MainMenuWidgetState extends State<MainMenuWidget> with SingleTickerProvid
                                             "assets/share_icon.png",
                                             height:20.0,
                                             width: 20.0,
-                                            color: Colors.black
+                                            color: Colors.black.withOpacity(0.65)
                                         ),
                                     ),
                                     Text(
@@ -232,7 +232,7 @@ class _MainMenuWidgetState extends State<MainMenuWidget> with SingleTickerProvid
                                         style: TextStyle(
                                             fontSize: 20.0,
                                             fontFamily: "RobotoMedium",
-                                            color: darkText
+                                            color: Colors.black.withOpacity(0.65)
                                         ),
                                     )
                             ]
@@ -262,7 +262,7 @@ class _MainMenuWidgetState extends State<MainMenuWidget> with SingleTickerProvid
                                                 "assets/info_icon.png",
                                                 height:20.0,
                                                 width: 20.0,
-                                                color: Colors.black
+                                                color: Colors.black.withOpacity(0.65)
                                             ),
                                         ),
                                         Text(
@@ -270,7 +270,7 @@ class _MainMenuWidgetState extends State<MainMenuWidget> with SingleTickerProvid
                                             style: TextStyle(
                                                 fontSize: 20.0,
                                                 fontFamily: "RobotoMedium",
-                                                color: darkText
+                                                color: Colors.black.withOpacity(0.65)
                                             ),
                                         )
                                 ]

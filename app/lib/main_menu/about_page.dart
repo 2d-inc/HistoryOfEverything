@@ -66,8 +66,8 @@ class AboutPage extends StatelessWidget {
                                 "v1.0",
                                 style: TextStyle(
                                     fontFamily: "Roboto",
-                                    fontSize: 16.0,
-                                    height: 24.0/16.0,
+                                    fontSize: 17.0,
+                                    height: 1.5,
                                     color: darkText.withOpacity(darkText.opacity * 0.5)
                                 ),
                             ),
@@ -81,8 +81,8 @@ class AboutPage extends StatelessWidget {
                                             style: TextStyle(
                                                 color: darkText.withOpacity(darkText.opacity * 0.75),
                                                 fontFamily: "Roboto",
-                                                fontSize: 16.0,
-                                                height: 1.35
+                                                fontSize: 17.0,
+                                                height: 1.5
                                             ),
                                             children: 
                                             [
@@ -143,8 +143,8 @@ class AboutPage extends StatelessWidget {
                             "Designed by",
                             style: TextStyle(
                                     fontFamily: "Roboto",
-                                    fontSize: 16.0,
-                                    height: 28.0/16.0,
+                                    fontSize: 17.0,
+                                    height: 1.5,
                                     color: Colors.black.withOpacity(0.5)
                                 ),
                         ),
@@ -159,8 +159,8 @@ class AboutPage extends StatelessWidget {
                             "Built with",
                             style: TextStyle(
                                     fontFamily: "Roboto",
-                                    fontSize: 16.0,
-                                    height: 28.0/16.0,
+                                    fontSize: 17.0,
+                                    height: 1.5,
                                     color: Colors.black.withOpacity(0.5)
                                 ),
                         ),

@@ -98,6 +98,7 @@
 		"date": -530000000,
 		"label": "Fish",
 		"article":"fish.txt",
+		"id":"fish",
 		"asset": 
 		{
 			"source": "Fish_and_Stuff/Fish_and_Stuff.nma",
@@ -146,6 +147,7 @@
 		"date": -200000000,
 		"label": "Mammals",
 		"article":"mammals.txt",
+		"id":"mammal",
 		"asset": 
 		{
 			"source": "Mammals/Mammals.nma",

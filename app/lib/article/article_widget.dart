@@ -203,7 +203,7 @@ class _ArticleWidgetState extends State<ArticleWidget>
         bool isFav = favs.any((TimelineEntry te) => te.label.toLowerCase() == _title.toLowerCase());
 		return Scaffold(
 			body:Container(
-				color: background,
+				color: Color.fromRGBO(255, 255, 255, 1),
 				child: new Stack(
 					children:<Widget>
 					[
@@ -253,7 +253,7 @@ class _ArticleWidgetState extends State<ArticleWidget>
                                                                     style: TextStyle(
                                                                             color: darkText,
                                                                             fontSize: 24.0,
-                                                                            height: 1.3333333,
+                                                                            height: 1.1,
                                                                             fontFamily: "Roboto"
                                                                         )
                                                                     ),

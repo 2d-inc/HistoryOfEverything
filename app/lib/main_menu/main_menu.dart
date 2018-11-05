@@ -300,7 +300,7 @@ class _MainMenuWidgetState extends State<MainMenuWidget> with SingleTickerProvid
 											),
 										),
 										Text(
-											"The History & Future\nof Everything",
+											"The History of Everything",
 											textAlign: TextAlign.left,
 											style: TextStyle(
 													color: darkText.withOpacity(darkText.opacity*0.75),

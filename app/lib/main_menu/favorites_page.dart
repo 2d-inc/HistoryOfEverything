@@ -58,13 +58,13 @@ class FavoritesPage extends StatelessWidget
                         children:
                         [
                             Container(
-                                width:64.0,
-								height:60.0,
-                                margin: EdgeInsets.only(bottom: 23.1),
+                                width:128.0,
+								                height:114.0,
+                                margin: EdgeInsets.only(bottom: 30),
                                 child: FlareActor("assets/Broken Heart.flr", animation: "Heart Break", shouldClip: false)
                             ),
                             Container(
-                                padding: EdgeInsets.only(bottom: 23.1),
+                                padding: EdgeInsets.only(bottom: 20),
                                 width:218,
                                 child: Text(
                                     "You haven’t favorited anything yet.",
@@ -73,19 +73,20 @@ class FavoritesPage extends StatelessWidget
                                         fontFamily: "RobotoMedium",
                                         fontSize: 20,
                                         color: darkText.withOpacity(darkText.opacity*0.75),
-                                        height: 1.2,
+                                        height: 1.1,
                                     )
                                 ),
                             ),
                             Container(
                               width:238,
+                              margin: EdgeInsets.only(bottom: 114),
                                 child: Text(
                                     "Browse to an event in the timeline and tap on the heart icon to save something in this list.",
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
                                         fontFamily: "Roboto",
                                         fontSize: 16,
-                                        height: 1.5,
+                                        height: 1.35,
                                         color: Colors.black.withOpacity(0.75)
                                     )
                                 ),

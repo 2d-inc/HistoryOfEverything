@@ -45,7 +45,7 @@ class AboutPage extends StatelessWidget {
                     )
                     ),
             ),
-            body: Padding(
+            body:Padding(
                 padding: EdgeInsets.only(top: 30, bottom: 20, left: 20, right: 20),
                 child:
                 Column(
@@ -79,10 +79,10 @@ class AboutPage extends StatelessWidget {
                                     RichText(
                                         text: TextSpan(
                                             style: TextStyle(
-                                                color: Colors.black,
+                                                color: darkText.withOpacity(darkText.opacity * 0.75),
                                                 fontFamily: "Roboto",
                                                 fontSize: 16.0,
-                                                height: 24.0/16.0
+                                                height: 1.35
                                             ),
                                             children: 
                                             [
@@ -152,7 +152,7 @@ class AboutPage extends StatelessWidget {
                             onTap: () => _launchUrl("https://www.2dimensions.com"),
                             child: Padding(
                                 padding: EdgeInsets.only(top:10.0, bottom: 30.0),
-                                child: Image.asset("assets/twoDimensions_logo.png", height: 20.0, )
+                                child: Image.asset("assets/twoDimensions_logo.png", height: 16.0, )
                             ),
                         ),
                         Text(
@@ -177,7 +177,7 @@ class AboutPage extends StatelessWidget {
                                             margin: const EdgeInsets.only(left: 5.0),
                                             child: Text("Flutter",
                                                 style: TextStyle(
-                                                        fontSize: 28.0,
+                                                        fontSize: 26.0,
                                                         color: darkText.withOpacity(darkText.opacity * 0.6)
                                                     ),
                                             ),

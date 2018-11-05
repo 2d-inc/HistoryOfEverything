@@ -119,6 +119,24 @@ class _MainMenuWidgetState extends State<MainMenuWidget> with SingleTickerProvid
 		_menuOffset = _controller.drive(_slideTween);						
 	}
 
+    Future<bool> _popSearch()
+    {
+        if(_isSearching)
+        {
+            setState((){
+                _searchFocusNode.unfocus();
+                _searchTextController.clear();
+                _isSearching = false;
+            });
+            return Future(()=>false);
+        }
+        else
+        {
+            Navigator.of(context).pop(true);
+            return Future(()=>true);
+        }
+    }
+
     @override
     Widget build(BuildContext context) 
     {
@@ -261,65 +279,68 @@ class _MainMenuWidgetState extends State<MainMenuWidget> with SingleTickerProvid
                     )
                 );
         }
-        return Container(
-				color: background,
-				child: Padding(
-				  padding: EdgeInsets.only(top:devicePadding.top),
-				  child: SingleChildScrollView(
-					padding: EdgeInsets.only(top:20.0, left: 20, right:20, bottom: 20),
-				  	child: Column(
-						crossAxisAlignment: CrossAxisAlignment.start,
-				  		children: <Widget>[
-							  new Collapsible(
-								isCollapsed: _isSearching,
-								child: Column(
-									crossAxisAlignment: CrossAxisAlignment.start,
-									children:<Widget>[
-										Padding(
-											padding: const EdgeInsets.only(bottom:18.0),
-											child: Row(
-												crossAxisAlignment: CrossAxisAlignment.center,
-												children: <Widget>[
-													Image.asset("assets/flutter_logo.png",
-														color: Colors.black.withOpacity(0.62),
-														height: 22.0,
-														width: 22.0
-													),
-													Container(
-														margin: EdgeInsets.only(left: 10.0),
-														child: Text(
-															"Flutter Presents",
-															style: TextStyle(
-																color: darkText.withOpacity(darkText.opacity*0.75),
-																fontSize: 16.0,
-																fontFamily: "Roboto"
-																)
-														)
-													)
-												],
-											),
-										),
-										Text(
-											"The History of Everything",
-											textAlign: TextAlign.left,
-											style: TextStyle(
-													color: darkText.withOpacity(darkText.opacity*0.75),
-													fontSize: 34.0,
-													fontFamily: "RobotoMedium"
-												)
-										)
-									]
-								)
-							),
-							Padding(
-								padding: EdgeInsets.only(top:22.0),
-								child: SearchWidget(_searchFocusNode, _searchTextController)
-							)
-				  		] 
-                        + tail
-				  		)
-				  	),
-				)
-		);
+        return WillPopScope(
+                onWillPop: _popSearch,
+                child: Container(
+                    color: background,
+                    child: Padding(
+                    padding: EdgeInsets.only(top:devicePadding.top),
+                    child: SingleChildScrollView(
+                        padding: EdgeInsets.only(top:20.0, left: 20, right:20, bottom: 20),
+                        child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                                new Collapsible(
+                                    isCollapsed: _isSearching,
+                                    child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children:<Widget>[
+                                            Padding(
+                                                padding: const EdgeInsets.only(bottom:18.0),
+                                                child: Row(
+                                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                                    children: <Widget>[
+                                                        Image.asset("assets/flutter_logo.png",
+                                                            color: Colors.black.withOpacity(0.62),
+                                                            height: 22.0,
+                                                            width: 22.0
+                                                        ),
+                                                        Container(
+                                                            margin: EdgeInsets.only(left: 10.0),
+                                                            child: Text(
+                                                                "Flutter Presents",
+                                                                style: TextStyle(
+                                                                    color: darkText.withOpacity(darkText.opacity*0.75),
+                                                                    fontSize: 16.0,
+                                                                    fontFamily: "Roboto"
+                                                                    )
+                                                            )
+                                                        )
+                                                    ],
+                                                ),
+                                            ),
+                                            Text(
+                                                "The History of Everything",
+                                                textAlign: TextAlign.left,
+                                                style: TextStyle(
+                                                        color: darkText.withOpacity(darkText.opacity*0.75),
+                                                        fontSize: 34.0,
+                                                        fontFamily: "RobotoMedium"
+                                                    )
+                                            )
+                                        ]
+                                    )
+                                ),
+                                Padding(
+                                    padding: EdgeInsets.only(top:22.0),
+                                    child: SearchWidget(_searchFocusNode, _searchTextController)
+                                )
+                            ] 
+                            + tail
+                            )
+                        ),
+                    )
+            ),
+        );
     }
 }

@@ -146,6 +146,7 @@ class _TimelineWidgetState extends State<TimelineWidget>
 	{
 		EdgeInsets devicePadding = MediaQuery.of(context).padding;
 		return Scaffold(
+                backgroundColor: Colors.white,
                 body: GestureDetector(
                 onTapDown: _tapDown,
                 onScaleStart: _scaleStart,

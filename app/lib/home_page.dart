@@ -12,7 +12,7 @@ class MyApp extends StatelessWidget {
                 title: 'History & Future of Everything',
                 theme: new ThemeData(
                     backgroundColor: background,
-                    scaffoldBackgroundColor: Color.fromRGBO(255, 255, 255, 1)
+                    scaffoldBackgroundColor: background
                 ),
                 home: MenuPage()
         )

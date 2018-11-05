@@ -47,8 +47,13 @@ class FavoritesPage extends StatelessWidget
             body: Padding(
                 padding: const EdgeInsets.symmetric(horizontal:20.0),
                 child: favorites.isEmpty ?
-                    Column(
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children:
+                    [Column(
                         mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.max,
                         children:
                         [
                             Container(
@@ -59,35 +64,38 @@ class FavoritesPage extends StatelessWidget
                                     height: 56.9,
                                 ),
                             ),
-                            Padding(
-                                padding: EdgeInsets.only(bottom: 23.1, left: 78.0, right: 78.0),
+                            Container(
+                                padding: EdgeInsets.only(bottom: 23.1),
+                                width:218,
                                 child: Text(
                                     "You haven’t favorited anything yet.",
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
                                         fontFamily: "RobotoMedium",
                                         fontSize: 20,
-                                        color: darkText.withOpacity(darkText.opacity*0.75)
+                                        color: darkText.withOpacity(darkText.opacity*0.75),
+                                        height: 1.2,
                                     )
                                 ),
                             ),
-                            Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 68.0),
+                            Container(
+                              width:238,
                                 child: Text(
                                     "Browse to an event in the timeline and tap on the heart icon to save something in this list.",
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
                                         fontFamily: "Roboto",
                                         fontSize: 16,
-                                        height: 28/16,
+                                        height: 1.5,
                                         color: Colors.black.withOpacity(0.75)
                                     )
                                 ),
                             ),
                         ]
-                )
-                : 
-                ListView(children: favorites)
+                      )]
+                  )
+                  : 
+                  ListView(children: favorites)
             )
         );
     }

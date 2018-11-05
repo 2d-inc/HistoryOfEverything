@@ -186,7 +186,8 @@ class TimelineRenderObject extends RenderBox
 
 		if(timeline.renderAssets != null)
 		{
-			canvas.save();	
+			canvas.save();
+			canvas.clipRect(offset & size);
 			for(TimelineAsset asset in timeline.renderAssets)
 			{
 				if(asset.opacity > 0)

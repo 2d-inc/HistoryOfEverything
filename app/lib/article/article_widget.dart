@@ -270,27 +270,29 @@ class _ArticleWidgetState extends State<ArticleWidget>
                                                             ]
                                                         ),
                                                     ),
-                                                    Container(
-                                                        height: 18.0,
-                                                        width: 18.0,
-                                                        child: GestureDetector(
-                                                            child: FlareActor("assets/Favorite.flr", animation: isFav ? "Favorite" : "Unfavorite", shouldClip: false),
-                                                            onTap:()
-                                                            {
-                                                                setState(() {
-                                                                        _isFavorite = !_isFavorite;
-                                                                    });
-                                                                    if(_isFavorite)
-                                                                    {
-                                                                        BlocProvider.favorites(context).addFavorite(widget.article);
-                                                                    }
-                                                                    else
-                                                                    {
-                                                                        BlocProvider.favorites(context).removeFavorite(widget.article);
-                                                                    }
-                                                            }
-                                                        ),
-                                                    )
+                                                    GestureDetector(
+														child: Transform.translate(offset: const Offset(15.0, 0.0), child:Container(
+															height: 48.0,
+															width: 48.0,
+															padding: EdgeInsets.all(15.0),
+															color: Colors.white,
+															child: FlareActor("assets/Favorite.flr", animation: isFav ? "Favorite" : "Unfavorite", shouldClip: false),
+														)),
+														onTap:()
+														{
+															setState(() {
+																	_isFavorite = !_isFavorite;
+																});
+																if(_isFavorite)
+																{
+																	BlocProvider.favorites(context).addFavorite(widget.article);
+																}
+																else
+																{
+																	BlocProvider.favorites(context).removeFavorite(widget.article);
+																}
+														}
+													)
                                                     
                                                 ]
                                             ),

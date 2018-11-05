@@ -46,28 +46,30 @@ class ThumbnailDetailWidget extends StatelessWidget
                                 children: 
                                 [
                                     ThumbnailWidget(timelineEntry),
-                                    Container(
-                                        margin: EdgeInsets.only(left: 17.0),  
-                                        child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: 
-                                            [
-                                                Text(timelineEntry.label,
-                                                    style: TextStyle(
-                                                        fontFamily: "RobotoMedium",
-                                                        fontSize: 20.0,
-                                                        color: darkText.withOpacity(darkText.opacity*0.75)
+                                    Expanded(
+                                        child: Container(
+                                            margin: EdgeInsets.only(left: 17.0),  
+                                            child: Column(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: 
+                                                [
+                                                    Text(timelineEntry.label,
+                                                        style: TextStyle(
+                                                            fontFamily: "RobotoMedium",
+                                                            fontSize: 20.0,
+                                                            color: darkText.withOpacity(darkText.opacity*0.75)
+                                                        )
+                                                    ,),
+                                                    Text(timelineEntry.formatYearsAgo(),
+                                                        style: TextStyle(
+                                                            fontFamily: "Roboto",
+                                                            fontSize: 14.0,
+                                                            color: Colors.black.withOpacity(0.5)
+                                                        )
                                                     )
-                                                ,),
-                                                Text(timelineEntry.formatYearsAgo(),
-                                                    style: TextStyle(
-                                                        fontFamily: "Roboto",
-                                                        fontSize: 14.0,
-                                                        color: Colors.black.withOpacity(0.5)
-                                                    )
-                                                )
-                                            ]
-                                        ),
+                                                ]
+                                            ),
+                                        )
                                     )
                                 ],
                             ),

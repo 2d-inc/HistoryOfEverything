@@ -1,3 +1,4 @@
+import 'package:flare/flare_actor.dart';
 import "package:flutter/material.dart";
 import 'package:timeline/main_menu/thumbnail_detail_widget.dart';
 
@@ -57,12 +58,10 @@ class FavoritesPage extends StatelessWidget
                         children:
                         [
                             Container(
+                                width:64.0,
+								height:60.0,
                                 margin: EdgeInsets.only(bottom: 23.1),
-                                child: Image.asset(
-                                    "assets/heart_outline.png",
-                                    width: 64, 
-                                    height: 56.9,
-                                ),
+                                child: FlareActor("assets/Broken Heart.flr", animation: "Heart Break", shouldClip: false)
                             ),
                             Container(
                                 padding: EdgeInsets.only(bottom: 23.1),

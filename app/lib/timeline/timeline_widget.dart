@@ -97,9 +97,9 @@ class _TimelineWidgetState extends State<TimelineWidget>
 
 	void _scaleEnd(ScaleEndDetails details)
 	{
-		double scale = (timeline.end-timeline.start)/context.size.height;
+		//double scale = (timeline.end-timeline.start)/context.size.height;
 		timeline.isInteracting = false;
-		timeline.setViewport(velocity: details.velocity.pixelsPerSecond.dy * scale, animate: true);
+		timeline.setViewport(velocity: details.velocity.pixelsPerSecond.dy, animate: true);
 	}
 	
 	onTouchBubble(TapTarget bubble)

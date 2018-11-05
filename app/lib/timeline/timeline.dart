@@ -6,6 +6,7 @@ import "dart:ui" as ui;
 
 import "package:flutter/scheduler.dart";
 import "package:flutter/services.dart" show rootBundle;
+import 'package:flutter/widgets.dart';
 import "package:nima/nima.dart" as nima;
 import "package:nima/nima/actor_image.dart" as nima;
 import "package:nima/nima/animation/actor_animation.dart" as nima;
@@ -46,7 +47,6 @@ class Timeline
 	double _end = 0.0;
 	double _renderStart;
 	double _renderEnd;
-	double _velocity = 0.0;
 	double _lastFrameTime = 0.0;
 	double _height = 0.0;
 	List<TimelineEntry> _entries;
@@ -178,6 +178,8 @@ class Timeline
 	static const double InitialViewportPadding = 100.0;
 	static const double TravelViewportPaddingTop = 400.0;
 	static const double FadeAnimationStart = BubbleHeight + BubblePadding;///2.0 + BubblePadding;
+	Simulation _scrollSimulation;
+	double _simulationTime = 0.0;
 
 	Timeline()
 	{
@@ -483,7 +485,18 @@ class Timeline
 		}
 		if(velocity != double.maxFinite)
 		{
-			_velocity = velocity;
+			//_velocity = velocity;
+			_simulationTime = 0.0;
+			ScrollPhysics physics = new BouncingScrollPhysics();
+			ScrollMetrics metrics = FixedScrollMetrics(
+				minScrollExtent: double.negativeInfinity,
+				maxScrollExtent: double.infinity,
+				pixels: 0.0,
+				viewportDimension: _height,
+				axisDirection: AxisDirection.down
+			);
+			
+			_scrollSimulation = physics.createBallisticSimulation(metrics, velocity);
 		}
 		if(!animate)
 		{
@@ -534,19 +547,39 @@ class Timeline
 	{
 		double scale = _height/(_renderEnd-_renderStart);
 
+		bool doneRendering = true;
+		bool stillScaling = true;
 		// Attenuate velocity and displace targets.
-		_velocity *= 1.0 - min(1.0, elapsed*Deceleration);
-		double displace = _velocity*elapsed;
-		_start -= displace;
-		_end -= displace;
+		// _velocity *= 1.0 - min(1.0, elapsed*Deceleration);
+		// double displace = _velocity*elapsed;
+		// _start -= displace;
+		// _end -= displace;
+
+		if(_scrollSimulation == null)
+		{
+			doneRendering = true;
+		}
+		else
+		{
+			_simulationTime += elapsed;
+			double velocity = _scrollSimulation.dx(_simulationTime);
+			double scale = (_end-_start)/_height;
+			double displace = velocity*elapsed * scale;
+			
+			_start -= displace;
+			_end -= displace;
+
+			if(_scrollSimulation.isDone(_simulationTime))
+			{
+				_scrollSimulation = null;
+			}
+		}
 
 		// Animate movement.
 		double speed = min(1.0, elapsed*MoveSpeed);
 		double ds = _start - _renderStart;
 		double de = _end - _renderEnd;
 		
-		bool doneRendering = true;
-		bool stillScaling = true;
 		if(!animate || ((ds*scale).abs() < 1.0 && (de*scale).abs() < 1.0))
 		{
 			stillScaling = false;

@@ -151,7 +151,7 @@ class _MainMenuWidgetState extends State<MainMenuWidget> with SingleTickerProvid
 				  				).toList(growable:false))
                 ..add(
                         Container(
-                            margin: EdgeInsets.symmetric(vertical:40.0),
+                            margin: EdgeInsets.only(top:40.0, bottom:22),
                             height: 1.0,
                             color: const Color.fromRGBO(151, 151, 151, 0.29),
                         )

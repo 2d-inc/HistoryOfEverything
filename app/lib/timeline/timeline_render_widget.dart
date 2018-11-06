@@ -128,19 +128,6 @@ class TimelineRenderObject extends RenderBox
 	@override
 	bool hitTestSelf(Offset screenOffset)
 	{
-		for(TapTarget bubble in _tapTargets.reversed)
-		{
-			if(bubble.rect.contains(screenOffset))
-			{
-				if(touchBubble != null)
-				{
-					touchBubble(bubble);
-				}
-				return true;
-			}
-		}
-		touchBubble(null);
-
 		if(_timeline.nextEntryOpacity > 0.1 && timeline.nextEntry != null && _nextEntryRect != null && _nextEntryRect.contains(screenOffset))
 		{
 			touchEntry(timeline.nextEntry);
@@ -148,7 +135,20 @@ class TimelineRenderObject extends RenderBox
 		else
 		{
 			touchEntry(null);
+			for(TapTarget bubble in _tapTargets.reversed)
+			{
+				if(bubble.rect.contains(screenOffset))
+				{
+					if(touchBubble != null)
+					{
+						touchBubble(bubble);
+					}
+					return true;
+				}
+			}
 		}
+		touchBubble(null);
+
 
 		return true;
 	}

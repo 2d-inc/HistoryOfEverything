@@ -60,35 +60,35 @@ class _ArticleWidgetState extends State<ArticleWidget>
 		// }					
 
 		TextStyle style = new TextStyle(
-			color: darkText,
-			fontSize: 16.0,
-			height: 1.75,
+			color: darkText.withOpacity(darkText.opacity*0.68),
+			fontSize: 17.0,
+			height: 1.5,
 			fontFamily: "Roboto"
 		);
 		TextStyle h1 = new TextStyle(
-			color: darkText,
+			color: darkText.withOpacity(darkText.opacity*0.68),
 			fontSize: 32.0,
 			height: 1.625,
 			fontFamily: "Roboto",
             fontWeight: FontWeight.bold
 		);
 		TextStyle h2 = new TextStyle(
-			color: darkText,
+			color: darkText.withOpacity(darkText.opacity*0.68),
 			fontSize: 24.0,
 			height: 2,
 			fontFamily: "Roboto",
             fontWeight: FontWeight.bold
 		);
 		TextStyle strong = new TextStyle(
-			color: darkText,
-			fontSize: 16.0,
-			height: 1.75,
+			color: darkText.withOpacity(darkText.opacity*0.68),
+			fontSize: 17.0,
+			height: 1.5,
 			fontFamily: "RobotoMedium"
 		);
 		TextStyle em = new TextStyle(
-			color: darkText,
-			fontSize: 16.0,
-			height: 1.75,
+			color: darkText.withOpacity(darkText.opacity*0.68),
+			fontSize: 17.0,
+			height: 1.5,
 			fontFamily: "Roboto",
 			fontStyle: FontStyle.italic
 		);
@@ -229,74 +229,77 @@ class _ArticleWidgetState extends State<ArticleWidget>
 							Expanded(
 								child: SingleChildScrollView
 								(
-									padding: EdgeInsets.only(left: 20, right:20, bottom: 20),
+									padding: EdgeInsets.only(left: 20, right:20, bottom: 30),
 									child: Column
 									(
 										crossAxisAlignment: CrossAxisAlignment.start,
 										children: <Widget>
 										[
 											new Container(
-                                                height:280, 
+                                                height:280,
                                                 child: TimelineEntryWidget(isActive: true, timelineEntry: widget.article)
                                             ),
-                                            Row(
-                                                children:
-                                                [
-                                                    Expanded(
-                                                        child: Column(
-                                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                                            children:
-                                                            [
-                                                                Text(
-                                                                    _title,
-                                                                    textAlign: TextAlign.left,
-                                                                    style: TextStyle(
-                                                                            color: darkText,
-                                                                            fontSize: 24.0,
-                                                                            height: 1.1,
-                                                                            fontFamily: "Roboto"
-                                                                        )
-                                                                    ),
-                                                                Text(
-                                                                    _subTitle,
-                                                                    textAlign: TextAlign.left,
-                                                                    style: TextStyle(
-                                                                            color: darkText.withOpacity(darkText.opacity*0.5),
-                                                                            fontSize: 16.0,
-                                                                            height: 1.5,
-                                                                            fontFamily: "Roboto"
-                                                                        )
-                                                                    )
-                                                            ]
-                                                        ),
-                                                    ),
-                                                    GestureDetector(
-														child: Transform.translate(offset: const Offset(15.0, 0.0), child:Container(
-															height: 48.0,
-															width: 48.0,
-															padding: EdgeInsets.all(15.0),
-															color: Colors.white,
-															child: FlareActor("assets/Favorite.flr", animation: isFav ? "Favorite" : "Unfavorite", shouldClip: false),
-														)),
-														onTap:()
-														{
-															setState(() {
-																	_isFavorite = !_isFavorite;
-																});
-																if(_isFavorite)
-																{
-																	BlocProvider.favorites(context).addFavorite(widget.article);
-																}
-																else
-																{
-																	BlocProvider.favorites(context).removeFavorite(widget.article);
-																}
-														}
-													)
-                                                    
-                                                ]
+                                            Padding(
+                                              padding: EdgeInsets.only(top:30.0),
+                                              child: Row(
+                                                  children:
+                                                  [
+                                                      Expanded(
+                                                          child: Column(
+                                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                                              children:
+                                                              [
+                                                                  Text(
+                                                                      _title,
+                                                                      textAlign: TextAlign.left,
+                                                                      style: TextStyle(
+                                                                              color: darkText.withOpacity(darkText.opacity*0.87),
+                                                                              fontSize: 25.0,
+                                                                              height: 1.1,
+                                                                              fontFamily: "Roboto",
+                                                                          )
+                                                                      ),
+                                                                  Text(
+                                                                      _subTitle,
+                                                                      textAlign: TextAlign.left,
+                                                                      style: TextStyle(
+                                                                              color: darkText.withOpacity(darkText.opacity*0.5),
+                                                                              fontSize: 17.0,
+                                                                              height: 1.5,
+                                                                              fontFamily: "Roboto"
+                                                                          )
+                                                                      )
+                                                              ]
+                                                          ),
+                                                      ),
+                                                      GestureDetector(
+                                                        child: Transform.translate(offset: const Offset(15.0, 0.0), child:Container(
+                                                          height: 60.0,
+                                                          width: 60.0,
+                                                          padding: EdgeInsets.all(15.0),
+                                                          color: Colors.white,
+                                                          child: FlareActor("assets/Favorite.flr", animation: isFav ? "Favorite" : "Unfavorite", shouldClip: false),
+                                                        )),
+                                                        onTap:()
+                                                        {
+                                                          setState(() {
+                                                              _isFavorite = !_isFavorite;
+                                                            });
+                                                            if(_isFavorite)
+                                                            {
+                                                              BlocProvider.favorites(context).addFavorite(widget.article);
+                                                            }
+                                                            else
+                                                            {
+                                                              BlocProvider.favorites(context).removeFavorite(widget.article);
+                                                            }
+                                                        }
+                                                      )
+                                                      
+                                                  ]
+                                              ),
                                             ),
-											Container(margin:EdgeInsets.only(top:13, bottom:13), height:1, color:Colors.black.withOpacity(0.11)),
+											Container(margin:EdgeInsets.only(top:20, bottom:20), height:1, color:Colors.black.withOpacity(0.11)),
                                             MarkdownBody(data: _articleMarkdown, styleSheet: _markdownStyleSheet)
 										],
 									)

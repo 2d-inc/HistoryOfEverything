@@ -58,33 +58,34 @@ class FavoritesPage extends StatelessWidget
                         children:
                         [
                             Container(
-                                width:64.0,
-								height:60.0,
-                                margin: EdgeInsets.only(bottom: 23.1),
+                                width:128.0,
+								                height:114.0,
+                                margin: EdgeInsets.only(bottom: 30),
                                 child: FlareActor("assets/Broken Heart.flr", animation: "Heart Break", shouldClip: false)
                             ),
                             Container(
-                                padding: EdgeInsets.only(bottom: 23.1),
-                                width:218,
+                                padding: EdgeInsets.only(bottom: 21),
+                                width:250,
                                 child: Text(
                                     "You haven’t favorited anything yet.",
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
                                         fontFamily: "RobotoMedium",
-                                        fontSize: 20,
+                                        fontSize: 25,
                                         color: darkText.withOpacity(darkText.opacity*0.75),
                                         height: 1.2,
                                     )
                                 ),
                             ),
                             Container(
-                              width:238,
+                              width:270,
+                              margin: EdgeInsets.only(bottom: 114),
                                 child: Text(
                                     "Browse to an event in the timeline and tap on the heart icon to save something in this list.",
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
                                         fontFamily: "Roboto",
-                                        fontSize: 16,
+                                        fontSize: 17,
                                         height: 1.5,
                                         color: Colors.black.withOpacity(0.75)
                                     )

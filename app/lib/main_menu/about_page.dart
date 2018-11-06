@@ -45,8 +45,8 @@ class AboutPage extends StatelessWidget {
                     )
                     ),
             ),
-            body: Padding(
-                padding: EdgeInsets.all(20.0),
+            body:Padding(
+                padding: EdgeInsets.only(top: 30, bottom: 20, left: 20, right: 20),
                 child:
                 Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -66,8 +66,8 @@ class AboutPage extends StatelessWidget {
                                 "v1.0",
                                 style: TextStyle(
                                     fontFamily: "Roboto",
-                                    fontSize: 16.0,
-                                    height: 24.0/16.0,
+                                    fontSize: 17.0,
+                                    height: 1.5,
                                     color: darkText.withOpacity(darkText.opacity * 0.5)
                                 ),
                             ),
@@ -79,10 +79,10 @@ class AboutPage extends StatelessWidget {
                                     RichText(
                                         text: TextSpan(
                                             style: TextStyle(
-                                                color: Colors.black,
+                                                color: darkText.withOpacity(darkText.opacity * 0.75),
                                                 fontFamily: "Roboto",
-                                                fontSize: 16.0,
-                                                height: 24.0/16.0
+                                                fontSize: 17.0,
+                                                height: 1.5
                                             ),
                                             children: 
                                             [
@@ -120,6 +120,17 @@ class AboutPage extends StatelessWidget {
                                                     recognizer: TapGestureRecognizer()..onTap = () => _launchUrl("https://www.2dimensions.com")
                                                 ),
                                                 TextSpan(
+                                                    text: ".\n\nInspired by the Kurzgesagt video ",
+                                                ),
+                                                TextSpan(
+                                                    text: "The History & Future of Everything",
+                                                    style: TextStyle(
+                                                        fontWeight: FontWeight.bold,
+                                                        decoration: TextDecoration.underline
+                                                    ),
+                                                    recognizer: TapGestureRecognizer()..onTap = () => _launchUrl("https://www.youtube.com/watch?v=5TbUxGZtwGI")
+                                                ),
+                                                TextSpan(
                                                     text: ".",
                                                 )
                                             ]
@@ -132,8 +143,8 @@ class AboutPage extends StatelessWidget {
                             "Designed by",
                             style: TextStyle(
                                     fontFamily: "Roboto",
-                                    fontSize: 16.0,
-                                    height: 28.0/16.0,
+                                    fontSize: 17.0,
+                                    height: 1.5,
                                     color: Colors.black.withOpacity(0.5)
                                 ),
                         ),
@@ -141,15 +152,15 @@ class AboutPage extends StatelessWidget {
                             onTap: () => _launchUrl("https://www.2dimensions.com"),
                             child: Padding(
                                 padding: EdgeInsets.only(top:10.0, bottom: 30.0),
-                                child: Image.asset("assets/twoDimensions_logo.png", height: 20.0, )
+                                child: Image.asset("assets/twoDimensions_logo.png", height: 16.0, )
                             ),
                         ),
                         Text(
                             "Built with",
                             style: TextStyle(
                                     fontFamily: "Roboto",
-                                    fontSize: 16.0,
-                                    height: 28.0/16.0,
+                                    fontSize: 17.0,
+                                    height: 1.5,
                                     color: Colors.black.withOpacity(0.5)
                                 ),
                         ),
@@ -163,11 +174,11 @@ class AboutPage extends StatelessWidget {
                                     [
                                         Image.asset("assets/flutter_logo.png", height: 45.0, width: 37.0),
                                         Container(
-                                            margin: const EdgeInsets.only(left: 12.0),
+                                            margin: const EdgeInsets.only(left: 5.0),
                                             child: Text("Flutter",
                                                 style: TextStyle(
-                                                        fontSize: 23.0,
-                                                        color: darkText.withOpacity(darkText.opacity * 0.85)
+                                                        fontSize: 26.0,
+                                                        color: darkText.withOpacity(darkText.opacity * 0.6)
                                                     ),
                                             ),
                                         )

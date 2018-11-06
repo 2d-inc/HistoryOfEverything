@@ -85,14 +85,21 @@ class Ticks
 				))..pushStyle(new ui.TextStyle(color:const Color.fromRGBO(0, 0, 0, 0.6)));
 
 				int value = tt.round().abs();
-
-				NumberFormat formatter = NumberFormat.compact();
-				String label = formatter.format(value);
-				int digits = formatter.significantDigits;
-				while(usedValues.contains(label) && digits < 10)
+				String label;
+				if(value < 9000)
 				{
-					formatter.significantDigits = ++digits;
+					label = value.toStringAsFixed(0);
+				}
+				else
+				{
+					NumberFormat formatter = NumberFormat.compact();
 					label = formatter.format(value);
+					int digits = formatter.significantDigits;
+					while(usedValues.contains(label) && digits < 10)
+					{
+						formatter.significantDigits = ++digits;
+						label = formatter.format(value);
+					}
 				}
 				usedValues.add(label);
 				// int valueAbs = tt.round().abs();

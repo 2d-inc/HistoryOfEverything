@@ -1,10 +1,13 @@
 import 'package:flare/flare_actor.dart';
-import "package:flutter/material.dart";
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:timeline/main_menu/menu_data.dart';
 import 'package:timeline/main_menu/thumbnail_detail_widget.dart';
 
 import "package:timeline/colors.dart";
 import "package:timeline/bloc_provider.dart";
 import "package:timeline/timeline/timeline_entry.dart";
+import 'package:timeline/timeline/timeline_widget.dart';
 
 class FavoritesPage extends StatelessWidget
 {
@@ -16,7 +19,15 @@ class FavoritesPage extends StatelessWidget
 
         for(int i = 0; i < entries.length; i++)
         {
-            favorites.add(ThumbnailDetailWidget(entries[i], hasDivider: i != 0));
+            TimelineEntry entry = entries[i];
+            favorites.add(ThumbnailDetailWidget(entry, hasDivider: i != 0, tapSearchResult: (TimelineEntry entry){
+                MenuItemData item = MenuItemData.fromEntry(entry);
+                Navigator.of(context).push(
+                CupertinoPageRoute(
+                    builder: (BuildContext context) => TimelineWidget(item, BlocProvider.getTimeline(context))
+                    )
+                );
+            }));
         }
         return Scaffold(
             appBar: AppBar(

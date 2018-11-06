@@ -1,19 +1,18 @@
 import 'package:flutter/cupertino.dart';
 import "package:flutter/material.dart";
-import 'package:timeline/bloc_provider.dart';
-import 'package:timeline/main_menu/menu_data.dart';
-import 'package:timeline/timeline/timeline_widget.dart';
 
 import "thumbnail.dart";
 import "package:timeline/colors.dart";
 import "package:timeline/timeline/timeline_entry.dart";
+typedef TapSearchResultCallback(TimelineEntry entry);
 
 class ThumbnailDetailWidget extends StatelessWidget
 {
     final TimelineEntry timelineEntry;
     final bool hasDivider;
+	final TapSearchResultCallback tapSearchResult;
 
-    ThumbnailDetailWidget(this.timelineEntry, {this.hasDivider = true, Key key}) : super(key:key);
+    ThumbnailDetailWidget(this.timelineEntry, {this.hasDivider = true, this.tapSearchResult, Key key}) : super(key:key);
 
     @override
     Widget build(BuildContext context)
@@ -24,12 +23,10 @@ class ThumbnailDetailWidget extends StatelessWidget
             child: InkWell(
                 onTap: ()
                 {
-                    MenuItemData item = MenuItemData.fromEntry(timelineEntry);
-                    Navigator.of(context).push(
-                        CupertinoPageRoute(
-                            builder: (BuildContext context) => TimelineWidget(item, BlocProvider.getTimeline(context))
-                        )
-                    );
+					if(tapSearchResult != null)
+					{
+						tapSearchResult(timelineEntry);
+					}
                 },
                 child: Column(
                     children: <Widget>[

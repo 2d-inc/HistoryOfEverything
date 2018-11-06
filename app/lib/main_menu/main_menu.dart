@@ -28,14 +28,6 @@ class MainMenuWidget extends StatefulWidget
 
 class _MainMenuWidgetState extends State<MainMenuWidget> with SingleTickerProviderStateMixin
 {
-	AnimationController _controller;
-	static final Animatable<Offset> _slideTween = Tween<Offset>(
-		begin: const Offset(0.0, 0.0),
-		end: const Offset(-1.0, 0.0),
-	).chain(CurveTween(
-		curve: Curves.fastOutSlowIn,
-	));
-	Animation<Offset> _menuOffset;
     bool _isSearching = false;
     bool _isSectionActive = true;
     List<TimelineEntry> _searchResults = new List<TimelineEntry>();
@@ -110,13 +102,7 @@ class _MainMenuWidgetState extends State<MainMenuWidget> with SingleTickerProvid
                 _isSearching = _searchFocusNode.hasFocus;
 				updateSearch();
             } );
-        });
-
-		_controller = AnimationController(
-			vsync: this,
-			duration: const Duration(milliseconds: 200),
-		);
-		_menuOffset = _controller.drive(_slideTween);						
+        });					
 	}
 
     Future<bool> _popSearch()
@@ -137,6 +123,11 @@ class _MainMenuWidgetState extends State<MainMenuWidget> with SingleTickerProvid
         }
     }
 
+	void _tapSearchResult(TimelineEntry entry)
+	{
+		navigateToTimeline(MenuItemData.fromEntry(entry));
+	}
+
     @override
     Widget build(BuildContext context) 
     {
@@ -147,7 +138,7 @@ class _MainMenuWidgetState extends State<MainMenuWidget> with SingleTickerProvid
         {
             for(int i = 0; i < _searchResults.length; i++)
             {
-                tail.add(ThumbnailDetailWidget(_searchResults[i], hasDivider: i != 0));
+                tail.add(ThumbnailDetailWidget(_searchResults[i], hasDivider: i != 0, tapSearchResult: _tapSearchResult));
             }
         }
         else

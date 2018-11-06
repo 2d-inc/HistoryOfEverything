@@ -16,10 +16,11 @@ class MyApp extends StatelessWidget {
                     backgroundColor: background,
                     scaffoldBackgroundColor: background
                 ),
-                home: MenuPage()
-        )
-    );
-  }
+                home: MenuPage(),
+            ),
+            platform: Theme.of(context).platform,
+        );
+    }
 }
 
 class MenuPage extends StatelessWidget

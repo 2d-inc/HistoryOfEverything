@@ -181,7 +181,9 @@ class Timeline
 	Simulation _scrollSimulation;
 	double _simulationTime = 0.0;
 
-	Timeline()
+    final TargetPlatform _platform;
+
+	Timeline(this._platform)
 	{
 		setViewport(start: 1536.0, end: 3072.0);
 	}
@@ -487,7 +489,15 @@ class Timeline
 		{
 			//_velocity = velocity;
 			_simulationTime = 0.0;
-			ScrollPhysics physics = new BouncingScrollPhysics();
+			ScrollPhysics physics;
+            if(_platform == TargetPlatform.iOS)
+            {
+                physics = BouncingScrollPhysics();
+            }
+            else
+            {
+                physics = ClampingScrollPhysics();
+            }
 			ScrollMetrics metrics = FixedScrollMetrics(
 				minScrollExtent: double.negativeInfinity,
 				maxScrollExtent: double.infinity,

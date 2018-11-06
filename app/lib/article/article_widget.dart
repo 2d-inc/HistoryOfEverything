@@ -136,7 +136,6 @@ class _ArticleWidgetState extends State<ArticleWidget>
 				child: new Stack(
 					children:<Widget>
 					[
-						//new TimelineRenderWidget(timeline: _timeline, isActive:widget.isActive, focusItem:widget.focusItem, touchBubble:onTouchBubble),
 						new Column(
 						children: <Widget>[
 							Container(

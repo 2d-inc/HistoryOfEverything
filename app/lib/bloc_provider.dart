@@ -9,8 +9,8 @@ class BlocProvider extends InheritedWidget
     final FavoritesBloc favoritesBloc;
     final Timeline timeline;
 
-    BlocProvider({Key key, FavoritesBloc fb, Timeline t, @required Widget child}) : 
-        timeline = t ?? new Timeline(),
+    BlocProvider({Key key, FavoritesBloc fb, Timeline t, @required Widget child, TargetPlatform platform = TargetPlatform.iOS}) : 
+        timeline = t ?? new Timeline(platform),
         favoritesBloc = fb ?? new FavoritesBloc(),
         super(key: key, child: child)
     {

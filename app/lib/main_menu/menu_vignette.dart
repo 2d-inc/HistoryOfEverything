@@ -218,7 +218,7 @@ class MenuVignetteRenderObject extends RenderBox
 		else if(asset is TimelineFlare && asset.actor != null)
 		{
 			Alignment alignment = Alignment.center;
-			BoxFit fit = BoxFit.contain;
+			BoxFit fit = BoxFit.cover;
 
 			flare.AABB bounds = asset.setupAABB;
 			double contentWidth = bounds[2] - bounds[0];
@@ -269,8 +269,17 @@ class MenuVignetteRenderObject extends RenderBox
 			canvas.scale(scaleX, scaleY);
 			canvas.translate(x, y);
 
-			asset.actor.draw(canvas, opacity:asset.opacity);
+			asset.actor.draw(canvas);
+            
 			canvas.restore();
+            double gradientFade = 1.0-opacity;
+			List<ui.Color> colors = <ui.Color>[gradientColor.withOpacity(gradientFade), gradientColor.withOpacity(min(1.0, gradientFade+0.9))];
+			List<double> stops = <double>[0.0, 1.0];
+			
+			ui.Paint paint = new ui.Paint()
+									..shader = new ui.Gradient.linear(new ui.Offset(0.0, offset.dy), new ui.Offset(0.0, offset.dy+150.0), colors, stops)
+									..style = ui.PaintingStyle.fill;
+			canvas.drawRect(offset & size, paint);
 		}
 		canvas.restore();
 	}

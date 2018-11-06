@@ -276,7 +276,7 @@ class VignetteRenderObject extends RenderBox
 			canvas.scale(scaleX, scaleY);
 			canvas.translate(x, y);
 
-			_flareActor.draw(canvas, opacity:asset.opacity);
+			_flareActor.draw(canvas);
 			canvas.restore();
 		}
 		canvas.restore();

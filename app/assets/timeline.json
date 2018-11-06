@@ -6,7 +6,7 @@
 
 		"asset": 
 		{
-			"source": "Big_Bang/Big_Bang.nma",
+			"source": "Big_Bang/Big_Bang.flr",
 			"width": 2048,
 			"height": 2048,
 			"offset": 700,
@@ -21,7 +21,7 @@
 		"article": "milky_way.txt",
 		"asset": 
 		{
-			"source": "Milky Way/Milky Way.nma",
+			"source": "Milky Way/Milky Way.flr",
 			"width": 800,
 			"height": 800
 		}
@@ -420,7 +420,7 @@
 		"article":"amelia_earhart.txt",
 		"asset": 
 		{
-			"source": "Amelia_Earhart/Amelia_Earhart.nma",
+			"source": "Amelia_Earhart/Amelia_Earhart.flr",
 			"width": 528,
 			"height": 528,
 			"offset": -140

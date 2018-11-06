@@ -7,7 +7,6 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 import "../bloc_provider.dart";
 import "../colors.dart";
 import '../article/timeline_entry_widget.dart';
-import "../blocs/favorites_bloc.dart";
 import '../timeline/timeline_entry.dart';
 
 typedef GoBackCallback();
@@ -15,11 +14,8 @@ typedef ArticleVisibilityChanged(bool isVisible);
 
 class ArticleWidget extends StatefulWidget  
 {
-	// final GoBackCallback goBack;
-	// final bool show;
-	// final ArticleVisibilityChanged visibilityChanged;
 	final TimelineEntry article;
-	ArticleWidget({/* this.goBack, this.show, this.visibilityChanged, */ this.article, Key key}) : super(key: key);
+	ArticleWidget({this.article, Key key}) : super(key: key);
 
   @override
   _ArticleWidgetState createState() => new _ArticleWidgetState();
@@ -50,14 +46,6 @@ class _ArticleWidgetState extends State<ArticleWidget>
 			duration: const Duration(milliseconds: 200),
 		);
 		_articleOffset = _controller.drive(_slideTween);
-		// if(widget.show)
-		// {
-		// 	_controller.reverse(from:0.0);
-		// }
-		// else
-		// {
-		// 	_controller.forward(from:1.0);
-		// }					
 
 		TextStyle style = new TextStyle(
 			color: darkText.withOpacity(darkText.opacity*0.68),
@@ -135,66 +123,7 @@ class _ArticleWidgetState extends State<ArticleWidget>
 			});
 		});
 	}
-/*
-	void didUpdateWidget(covariant ArticleWidget oldWidget) 
-	{ 
-		super.didUpdateWidget(oldWidget);
-		if(oldWidget.article != widget.article)
-		{
-			setState(() 
-			{
-				print("ARTICLE ${widget.article}");
-				if(widget.article == null)
-				{
-					_title = "N/A";
-					_subTitle = "N/A";
-					_articleMarkdown = "";
-					return;	
-				}
-				_title = widget.article.label;
-				_subTitle = widget.article.formatYearsAgo();
-				_articleMarkdown = "";
-			});
-			if(widget.article.articleFilename != null)
-			{
-				loadMarkdown(widget.article.articleFilename);
-			}
-		}
-		// if(oldWidget.show != widget.show)
-		// {
-		// 	if(widget.show)
-		// 	{
-		// 		_controller.reverse().whenComplete(()
-		// 		{
-		// 			setState(() 
-		// 			{
-		// 				widget.visibilityChanged(true);
-		// 			});
-		// 		});
-		// 	}
-		// 	else
-		// 	{
-		// 		_controller.forward().whenComplete(()
-		// 		{
-		// 			setState(() 
-		// 			{
-		// 				widget.visibilityChanged(false);
-		// 			});
-		// 		});
-		// 	}
-		// }
-        FavoritesBloc bloc = BlocProvider.favorites(context);
-        bloc.fetchFavorites().then((List<TimelineEntry> favs)
-        {
-            bool isFav = favs.any((TimelineEntry te) => te.label.toLowerCase() == _title.toLowerCase());
-            if(isFav != _isFavorite)
-            {
-                setState(() => _isFavorite = isFav);
-            }
-        }
-        );
-	}
-*/
+
     @override
     Widget build(BuildContext context) 
 	{

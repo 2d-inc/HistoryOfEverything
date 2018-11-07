@@ -191,6 +191,9 @@ class Timeline
 	static const double ViewportPaddingBottom = 100.0;
 	static const double FadeAnimationStart = BubbleHeight + BubblePadding;///2.0 + BubblePadding;
 	Simulation _scrollSimulation;
+	ScrollPhysics _scrollPhysics;
+	ScrollMetrics _scrollMetrics;
+
 	double _simulationTime = 0.0;
 	double _timeMin = 0.0;
 	double _timeMax = 0.0;
@@ -587,16 +590,15 @@ class Timeline
 
 			//_velocity = velocity;
 			_simulationTime = 0.0;
-			ScrollPhysics physics;
             if(_platform == TargetPlatform.iOS)
             {
-                physics = BouncingScrollPhysics();
+                _scrollPhysics = BouncingScrollPhysics();
             }
             else
             {
-                physics = ClampingScrollPhysics();
+                _scrollPhysics = ClampingScrollPhysics();
             }
-			ScrollMetrics metrics = FixedScrollMetrics(
+			_scrollMetrics = FixedScrollMetrics(
 				// minScrollExtent: double.negativeInfinity,
 				// maxScrollExtent: double.infinity,
 				// pixels: 0.0,
@@ -607,7 +609,7 @@ class Timeline
 				axisDirection: AxisDirection.down
 			);
 			
-			_scrollSimulation = physics.createBallisticSimulation(metrics, -velocity);
+			_scrollSimulation = _scrollPhysics.createBallisticSimulation(_scrollMetrics, -velocity);
 		}
 		if(!animate)
 		{
@@ -675,7 +677,11 @@ class Timeline
 			_simulationTime += elapsed;
 			double scale = _height/(_end-_start);
 			double range = _end-_start;
-			_start = _scrollSimulation.x(_simulationTime)/scale;
+			double value = _scrollSimulation.x(_simulationTime);
+			
+
+			double overScroll = _scrollPhysics.applyBoundaryConditions(_scrollMetrics, value);
+			_start = (value-overScroll)/scale;
 			_end = _start + range;
 			// double velocity = _scrollSimulation.dx(_simulationTime);
 			
@@ -686,6 +692,8 @@ class Timeline
 
 			if(_scrollSimulation.isDone(_simulationTime))
 			{
+				_scrollMetrics = null;
+				_scrollPhysics = null;
 				_scrollSimulation = null;
 			}
 		}

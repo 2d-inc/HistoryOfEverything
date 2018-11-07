@@ -3,7 +3,7 @@
 		"date": -13800000000,
 		"label": "Big Bang",
 		"article":"big_bang.txt",
-
+		"background": [13, 36, 55],
 		"asset": 
 		{
 			"source": "Big_Bang/Big_Bang.flr",
@@ -67,6 +67,7 @@
 		"start": -4000000000,
 		"label": "Life on Earth",
 		"article": "life_on_earth.txt",
+		"background": [77, 111, 131],
 
 		"asset": 
 		{
@@ -92,7 +93,8 @@
 	{
 		"start": -600000000,
 		"label": "Animals",
-		"article":"animals.txt"
+		"article":"animals.txt",
+		"background": [132, 162, 164]
 	},
 	{
 		"date": -530000000,
@@ -171,7 +173,8 @@
 	{
 		"start": -6000000,
 		"label": "Humans",
-		"article":"humans.txt"
+		"article":"humans.txt",
+		"background": [255, 255, 255]
 	},
 	{
 		"date": -4000000,

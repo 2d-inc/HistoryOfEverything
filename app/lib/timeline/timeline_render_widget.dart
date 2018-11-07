@@ -177,6 +177,35 @@ class TimelineRenderObject extends RenderBox
 			return;
 		}
 
+		List<TimelineBackgroundColor> backgroundColors = timeline.backgroundColors;
+		if(backgroundColors != null && backgroundColors.length > 0)
+		{
+			double rangeStart = backgroundColors.first.start;
+			double range = backgroundColors.last.start - backgroundColors.first.start;
+			List<ui.Color> colors = <ui.Color>[];
+			List<double> stops = <double>[];
+			for(TimelineBackgroundColor bg in backgroundColors)
+			{
+				colors.add(bg.color);
+				stops.add((bg.start-rangeStart)/range);
+			}
+			double s = timeline.computeScale(timeline.renderStart, timeline.renderEnd);
+			double y1 = (backgroundColors.first.start-timeline.renderStart) * s;
+			double y2 = (backgroundColors.last.start-timeline.renderStart) * s;
+
+			// Fill Background.
+			ui.Paint paint = new ui.Paint()
+										..shader = new ui.Gradient.linear(new ui.Offset(0.0, y1), new ui.Offset(0.0, y2), colors, stops)
+										..style = ui.PaintingStyle.fill;
+
+			if(y1 > offset.dy)
+			{
+				canvas.drawRect(new Rect.fromLTWH(offset.dx, offset.dy, size.width, y1-offset.dy+1.0), new ui.Paint()..color = backgroundColors.first.color);
+			}
+			canvas.drawRect(new Rect.fromLTWH(offset.dx, y1, size.width, y2-y1), paint);
+			
+			//print("SIZE ${new Rect.fromLTWH(offset.dx, y1, size.width, y2-y1)}");
+		}
 		_tapTargets.clear();
 		double renderStart = _timeline.renderStart;
 		double renderEnd = _timeline.renderEnd;

@@ -34,9 +34,11 @@ class _TimelineWidgetState extends State<TimelineWidget>
 	TimelineEntry _touchedEntry;
 	String _eraName;
 	Timeline get timeline => widget.timeline;
+	bool _didScale = false;
 
 	void _scaleStart(ScaleStartDetails details)
 	{
+		_didScale = false;
 		_lastFocalPoint = details.focalPoint;
 		_scaleStartYearStart = timeline.start;
 		_scaleStartYearEnd = timeline.end;
@@ -51,7 +53,10 @@ class _TimelineWidgetState extends State<TimelineWidget>
 		
 		double focus = _scaleStartYearStart + details.focalPoint.dy * scale;
 		double focalDiff = (_scaleStartYearStart + _lastFocalPoint.dy * scale) - focus;
-		
+		if(changeScale != 1.0)
+		{
+			_didScale = true;
+		}
 		timeline.setViewport(
 			start: focus + (_scaleStartYearStart-focus)/changeScale + focalDiff,
 			end: focus + (_scaleStartYearEnd-focus)/changeScale + focalDiff,
@@ -79,6 +84,7 @@ class _TimelineWidgetState extends State<TimelineWidget>
 	void didUpdateWidget(covariant TimelineWidget oldWidget)
 	{
 		super.didUpdateWidget(oldWidget);
+
 		if(timeline != oldWidget.timeline && timeline != null)
 		{
 			timeline.onEraChanged = (TimelineEntry entry)
@@ -99,6 +105,10 @@ class _TimelineWidgetState extends State<TimelineWidget>
 	{
 		//double scale = (timeline.end-timeline.start)/context.size.height;
 		timeline.isInteracting = false;
+		if(_didScale)
+		{
+			timeline.clampScroll();
+		}
 		timeline.setViewport(velocity: details.velocity.pixelsPerSecond.dy, animate: true);
 	}
 	
@@ -145,6 +155,10 @@ class _TimelineWidgetState extends State<TimelineWidget>
 	Widget build(BuildContext context) 
 	{
 		EdgeInsets devicePadding = MediaQuery.of(context).padding;
+		if(timeline != null)
+		{
+			timeline.setPadding(devicePadding);
+		}
 		return Scaffold(
                 backgroundColor: Colors.white,
                 body: GestureDetector(

@@ -41,6 +41,12 @@ String removeExtension(String filename)
 	return filename.substring(0, dot);
 }
 
+class TimelineBackgroundColor
+{
+	Color color;
+	double start;
+}
+
 class Timeline
 {
 	double _start = 0.0;
@@ -49,6 +55,7 @@ class Timeline
 	double _renderEnd;
 	double _lastFrameTime = 0.0;
 	double _height = 0.0;
+	List<TimelineBackgroundColor> _backgroundColors;
 	List<TimelineEntry> _entries;
 	Map<String, TimelineEntry> _entriesById = new Map<String, TimelineEntry>();
 	List<TimelineAsset> _renderAssets;
@@ -72,6 +79,7 @@ class Timeline
 	TimelineEntry get currentEra => _currentEra;
 
 	List<TimelineEntry> get entries => _entries;
+	List<TimelineBackgroundColor> get backgroundColors => _backgroundColors;
 	double get renderOffsetDepth => _renderOffsetDepth;
 	double get renderLabelX => _renderLabelX;
 	List<TimelineAsset> get renderAssets => _renderAssets;
@@ -162,7 +170,8 @@ class Timeline
 	static const double DepthOffset = LineSpacing+LineWidth;
 
 	static const double EdgePadding = 8.0;
-	static const double MoveSpeed = 40.0;
+	static const double MoveSpeed = 10.0;
+	static const double MoveSpeedInteracting = 40.0;
 	static const double Deceleration = 3.0;
 	static const double GutterLeft = 45.0;
 	
@@ -177,9 +186,14 @@ class Timeline
 	static const double AssetScreenScale = 0.3;
 	static const double InitialViewportPadding = 100.0;
 	static const double TravelViewportPaddingTop = 400.0;
+
+	static const double ViewportPaddingTop = 120.0;
+	static const double ViewportPaddingBottom = 100.0;
 	static const double FadeAnimationStart = BubbleHeight + BubblePadding;///2.0 + BubblePadding;
 	Simulation _scrollSimulation;
 	double _simulationTime = 0.0;
+	double _timeMin = 0.0;
+	double _timeMax = 0.0;
 
     final TargetPlatform _platform;
 
@@ -206,6 +220,8 @@ class Timeline
 		List<TimelineEntry> allEntries = new List<TimelineEntry>();
 		String data = await rootBundle.loadString(filename);
 		List jsonEntries = json.decode(data) as List;
+
+		_backgroundColors = new List<TimelineBackgroundColor>();
 		for(dynamic entry in jsonEntries)
 		{
 			Map map = entry as Map;
@@ -229,6 +245,19 @@ class Timeline
 				else
 				{
 					continue;
+				}
+
+				if(map.containsKey("background"))
+				{
+					dynamic bg = map["background"];
+					if(bg is List && bg.length == 3)
+					{
+						_backgroundColors.add(
+							new TimelineBackgroundColor()
+								..color =new Color.fromARGB(255, bg[0] as int, bg[1] as int, bg[2] as int)
+								..start = timelineEntry.start
+						);
+					}
 				}
 
 				if(map.containsKey("end"))
@@ -398,11 +427,27 @@ class Timeline
 			return a.start.compareTo(b.start);
 		});
 
+		_backgroundColors.sort((TimelineBackgroundColor a, TimelineBackgroundColor b)
+		{
+			return a.start.compareTo(b.start);
+		});
+		print("BG $_backgroundColors");
+
+		_timeMin = double.maxFinite;
+		_timeMax = -double.maxFinite;
 		_entries = new List<TimelineEntry>();
 		// build up hierarchy (eras are grouped into spanning eras and events are placed into the eras they belong to)
 		TimelineEntry previous;
 		for(TimelineEntry entry in allEntries)
 		{
+			if(entry.start < _timeMin)
+			{
+				_timeMin = entry.start;
+			}
+			if(entry.end > _timeMax)
+			{
+				_timeMax = entry.end;
+			}
 			if(previous != null)
 			{
 				previous.next = entry;
@@ -448,9 +493,59 @@ class Timeline
 		return _entriesById[id];
 	}
 
+	EdgeInsets _padding;
+	setPadding(EdgeInsets padding)
+	{
+		_padding = padding;
+	}
+
+	clampScroll()
+	{
+		double scale = computeScale(_start, _end);
+		double padTop = (_padding.top + ViewportPaddingTop)/scale;
+		double padBottom = (_padding.bottom + ViewportPaddingBottom)/scale;
+		bool fixStart = _start < _timeMin - padTop;
+		bool fixEnd = _end > _timeMax + padBottom;
+
+		// As the scale changes we need to re-solve the right padding
+		// Don't think there's an analytical single solution for this
+		// so we do it in steps approaching the correct answer.
+		for(int i = 0; i < 20; i++)
+		{
+			double scale = computeScale(_start, _end);
+			double padTop = (_padding.top + ViewportPaddingTop)/scale;
+			double padBottom = (_padding.bottom + ViewportPaddingBottom)/scale;
+			if(fixStart)
+			{
+				_start = _timeMin - padTop;
+			}
+			if(fixEnd)
+			{
+				_end = _timeMax + padBottom;
+			}
+		}
+		// _start = max(_start, _first.start - padTop);
+		// _end = min(_end, _last.end + padBottom);
+		if(!_isFrameScheduled)
+		{
+			_isFrameScheduled = true;
+			_lastFrameTime = 0.0;
+			SchedulerBinding.instance.scheduleFrameCallback(beginFrame);
+		}
+	}
+
 	void setViewport({double start = double.maxFinite, bool pad = false, double end = double.maxFinite, double height = double.maxFinite, double velocity = double.maxFinite, bool animate = false})
 	{
-//		print("SETVIEW $start $end");
+		if(height != double.maxFinite)
+		{
+			if(_height == 0.0 && _entries != null && _entries.length > 0)
+			{
+				double scale = height/(_end-_start);
+				_start = _start - (BubbleHeight+InitialViewportPadding)/scale;
+				_end = _end + (BubbleHeight+InitialViewportPadding)/scale;
+			}
+			_height = height;
+		}
 		if(start != double.maxFinite && end != double.maxFinite)
 		{
 			_start = start;
@@ -475,18 +570,21 @@ class Timeline
 				_end = pad ? end + (BubbleHeight+InitialViewportPadding)/scale : end;
 			}
 		}
-		if(height != double.maxFinite)
-		{
-			if(_height == 0.0 && _entries != null && _entries.length > 0)
-			{
-				double scale = height/(_end-_start);
-				_start = _start - (BubbleHeight+InitialViewportPadding)/scale;
-				_end = _end + (BubbleHeight+InitialViewportPadding)/scale;
-			}
-			_height = height;
-		}
+		
 		if(velocity != double.maxFinite)
 		{
+			double scale = computeScale(_start, _end);
+			double padTop = (_padding.top + ViewportPaddingTop)/computeScale(_start, _end);
+			double padBottom = (_padding.bottom + ViewportPaddingBottom)/computeScale(_start, _end);
+			double rangeMin = (_timeMin - padTop) * scale;
+			double rangeMax = (_timeMax + padBottom) * scale - _height;
+			if(rangeMax < rangeMin)
+			{
+				rangeMax = rangeMin;
+			}
+			double position = _start * scale;
+			//  Conver to pixels...
+
 			//_velocity = velocity;
 			_simulationTime = 0.0;
 			ScrollPhysics physics;
@@ -499,14 +597,17 @@ class Timeline
                 physics = ClampingScrollPhysics();
             }
 			ScrollMetrics metrics = FixedScrollMetrics(
-				minScrollExtent: double.negativeInfinity,
-				maxScrollExtent: double.infinity,
-				pixels: 0.0,
+				// minScrollExtent: double.negativeInfinity,
+				// maxScrollExtent: double.infinity,
+				// pixels: 0.0,
+				minScrollExtent: rangeMin,
+				maxScrollExtent: rangeMax,
+				pixels: position,
 				viewportDimension: _height,
 				axisDirection: AxisDirection.down
 			);
 			
-			_scrollSimulation = physics.createBallisticSimulation(metrics, velocity);
+			_scrollSimulation = physics.createBallisticSimulation(metrics, -velocity);
 		}
 		if(!animate)
 		{
@@ -572,12 +673,16 @@ class Timeline
 		else
 		{
 			_simulationTime += elapsed;
-			double velocity = _scrollSimulation.dx(_simulationTime);
-			double scale = (_end-_start)/_height;
-			double displace = velocity*elapsed * scale;
+			double scale = _height/(_end-_start);
+			double range = _end-_start;
+			_start = _scrollSimulation.x(_simulationTime)/scale;
+			_end = _start + range;
+			// double velocity = _scrollSimulation.dx(_simulationTime);
 			
-			_start -= displace;
-			_end -= displace;
+			// double displace = velocity*elapsed * scale;
+			
+			// _start -= displace;
+			// _end -= displace;
 
 			if(_scrollSimulation.isDone(_simulationTime))
 			{
@@ -586,7 +691,7 @@ class Timeline
 		}
 
 		// Animate movement.
-		double speed = min(1.0, elapsed*MoveSpeed);
+		double speed = min(1.0, elapsed*(_isInteracting ? MoveSpeedInteracting : MoveSpeed));
 		double ds = _start - _renderStart;
 		double de = _end - _renderEnd;
 		

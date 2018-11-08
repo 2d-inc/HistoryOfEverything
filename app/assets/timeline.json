@@ -3,17 +3,17 @@
 		"date": -13800000000,
 		"label": "Big Bang",
 		"article":"big_bang.txt",
-		"background": [8, 49, 88],
+		"background": [0, 38, 75],
 		"ticks": 
 		{
-			"background": [32, 69, 104, 240],
+			"background": [20, 57, 92, 240],
 			"long": [255, 255, 255, 75],
 			"short": [255, 255, 255, 51],
 			"text": [255, 255, 255, 157]
 		},
 		"header": 
 		{
-			"background": [32, 69, 104, 240],
+			"background": [11, 47, 81, 94],
 			"text": [255, 255, 255, 157]
 		},
 		"asset": 
@@ -104,7 +104,7 @@
 		}
 	},
 	{
-		"date": -4050000000,
+		"date": -3800000000,
 		"label": "Single Celled Organisms",
 		"article":"single_celled_organisms.txt",
 		"asset": 
@@ -174,10 +174,23 @@
 		"id":"dinosaur",
 		"asset": 
 		{
+			"source": "Dinosaurs.flr",
+			"width": 800,
+			"height": 570,
+			"offset":0,
+			"gap": 0
+		}
+	},
+	{
+		"date": -150000000,
+		"label": "Stegosaurus",
+		"article":"stegosaurus.txt",
+		"asset": 
+		{
 			"source": "Dinosaurs/Dinosaurs.nma",
 			"width": 800,
 			"height": 570,
-			"offset":-170,
+			"offset":-200,
 			"gap": 0
 		}
 	},
@@ -437,7 +450,7 @@
 			"source": "Moon/Moon.nma",
 			"width": 528,
 			"height": 528,
-			"offset": -40
+			"offset": -100
 		}
 	},
 	{

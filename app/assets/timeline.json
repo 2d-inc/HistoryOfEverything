@@ -96,11 +96,11 @@
 		"asset": 
 		{
 			"source": "HeavyBombardment.flr",
-			"width": 800,
-			"height": 800,
+			"width": 1000,
+			"height": 1000,
 			"intro":"Transformation",
 			"idle":"Life on Earth",
-			"offset":750
+			"offset":500
 		}
 	},
 	{

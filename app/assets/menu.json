@@ -22,8 +22,8 @@
                 "label": "Earth is Born"
             },
             {
-                "start": -4120000000,
-                "end": -4080000000,
+                "start": -4250000000,
+                "end": -3890000000,
                 "label": "Heavy Bombardment"
             }
         ]
@@ -36,7 +36,7 @@
         "items":
         [
             {
-                "start": -4150000000,
+                "start": -4300000000,
                 "end": -3560000000,
                 "label": "Single Celled Organisms"
             },

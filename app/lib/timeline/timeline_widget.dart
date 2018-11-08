@@ -8,6 +8,7 @@ import 'package:timeline/timeline/timeline.dart';
 import 'package:timeline/timeline/timeline_entry.dart';
 import 'package:timeline/timeline/timeline_render_widget.dart';
 import "package:timeline/colors.dart";
+import 'package:flare/flare_actor.dart';
 
 typedef ShowMenuCallback();
 typedef SelectItemCallback(TimelineEntry item);
@@ -37,6 +38,7 @@ class _TimelineWidgetState extends State<TimelineWidget>
 	bool _didScale = false;
 	Color _headerTextColor;
 	Color _headerBackgroundColor;
+	bool _showFavorites = false;
 
 	void _scaleStart(ScaleStartDetails details)
 	{
@@ -91,6 +93,7 @@ class _TimelineWidgetState extends State<TimelineWidget>
 
 			_headerTextColor = timeline.headerTextColor;
 			_headerBackgroundColor = timeline.headerBackgroundColor;
+			_showFavorites = timeline.showFavorites;
 		}
 	}
 
@@ -124,6 +127,7 @@ class _TimelineWidgetState extends State<TimelineWidget>
 			setState(() 
 			{
 				_eraName = timeline.currentEra != null ? timeline.currentEra : DefaultEraName;
+				_showFavorites = timeline.showFavorites;
 			});
 		}
 	}
@@ -232,7 +236,35 @@ class _TimelineWidgetState extends State<TimelineWidget>
                                                     fontSize: 20.0,
                                                     color: _headerTextColor != null ? _headerTextColor : darkText.withOpacity(darkText.opacity * 0.75)
                                                 ),
-                                            )
+                                            ),
+											Expanded(
+												child:GestureDetector(
+                                                        child: Transform.translate(offset: const Offset(0.0, 0.0), child:Container(
+                                                          height: 60.0,
+                                                          width: 60.0,
+                                                          padding: EdgeInsets.all(18.0),
+                                                          color: Colors.white.withOpacity(0.0),
+                                                          child: FlareActor("assets/Favorite.flr", animation: _showFavorites ? "Favorite" : "Unfavorite", shouldClip: false, color:_headerTextColor != null ? _headerTextColor : darkText.withOpacity(darkText.opacity * 0.75), alignment: Alignment.centerRight),
+                                                        )),
+                                                        onTap:()
+                                                        {
+															timeline.showFavorites = !timeline.showFavorites;
+															setState(() 
+															{
+																_showFavorites = timeline.showFavorites;
+                                                            //   _isFavorite = !_isFavorite;
+                                                            });
+                                                            // if(_isFavorite)
+                                                            // {
+                                                            //   BlocProvider.favorites(context).addFavorite(widget.article);
+                                                            // }
+                                                            // else
+                                                            // {
+                                                            //   BlocProvider.favorites(context).removeFavorite(widget.article);
+                                                            // }
+                                                        }
+                                                      )
+											),
                                         ])
                                     )
                                 ]

@@ -122,6 +122,7 @@ class Timeline
 	double _renderEnd;
 	double _lastFrameTime = 0.0;
 	double _height = 0.0;
+	bool _showFavorites = false;
 	List<TimelineBackgroundColor> _backgroundColors;
 	List<TickColors> _tickColors;
 	List<HeaderColors> _headerColors;
@@ -171,6 +172,15 @@ class Timeline
 	double get renderStart => _renderStart;
 	double get renderEnd => _renderEnd;
 	bool get isInteracting => _isInteracting;
+	bool get showFavorites => _showFavorites;
+	set showFavorites(bool value)
+	{
+		if(_showFavorites != value)
+		{
+			_showFavorites = value;
+			startRendering();
+		}
+	}
 
 	bool _isScaling = false;
 	set isInteracting(bool value)
@@ -251,10 +261,11 @@ class Timeline
 	static const double MoveSpeedInteracting = 40.0;
 	static const double Deceleration = 3.0;
 	static const double GutterLeft = 45.0;
+	static const double GutterLeftExpanded = 90.0;
 	
 	static const double EdgeRadius = 4.0;
 	static const double MinChildLength = 50.0;
-	static const double MarginLeft = GutterLeft + LineSpacing;
+	//static const double MarginLeft = GutterLeft + LineSpacing;
 	static const double BubbleHeight = 50.0;
 	static const double BubbleArrowSize = 19.0;
 	static const double BubblePadding = 20.0;
@@ -274,6 +285,8 @@ class Timeline
 	double _simulationTime = 0.0;
 	double _timeMin = 0.0;
 	double _timeMax = 0.0;
+	double _gutterWidth = GutterLeft;
+	double get gutterWidth => _gutterWidth;
 
     final TargetPlatform _platform;
 
@@ -853,12 +866,9 @@ class Timeline
 		// _start -= displace;
 		// _end -= displace;
 
-		if(_scrollSimulation == null)
+		if(_scrollSimulation != null)
 		{
-			doneRendering = true;
-		}
-		else
-		{
+			doneRendering = false;
 			_simulationTime += elapsed;
 			double scale = _height/(_end-_start);
 			double range = _end-_start;
@@ -883,6 +893,18 @@ class Timeline
 			}
 		}
 
+		double targetGutterWidth = _showFavorites ? GutterLeftExpanded : GutterLeft;
+		double dgw = targetGutterWidth - _gutterWidth;
+		if(!animate || dgw.abs() < 1)
+		{
+			_gutterWidth = targetGutterWidth;
+		}
+		else
+		{
+			doneRendering = false;
+			_gutterWidth += dgw * min(1.0, elapsed*10.0);
+		}
+		 
 		// Animate movement.
 		double speed = min(1.0, elapsed*(_isInteracting ? MoveSpeedInteracting : MoveSpeed));
 		double ds = _start - _renderStart;
@@ -972,7 +994,7 @@ class Timeline
 		_nextEntry = null;
 		if(_entries != null)
 		{
-			if(advanceItems(_entries, MarginLeft, scale, elapsed, animate, 0))
+			if(advanceItems(_entries, _gutterWidth + LineSpacing, scale, elapsed, animate, 0))
 			{
 				doneRendering = false;
 			}

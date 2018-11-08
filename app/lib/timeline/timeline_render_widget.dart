@@ -361,8 +361,8 @@ class TimelineRenderObject extends RenderBox
 		if(_timeline.entries != null)
 		{
 			canvas.save();
-			canvas.clipRect(new Rect.fromLTWH(offset.dx + Timeline.GutterLeft, offset.dy, size.width-Timeline.GutterLeft, size.height));
-			drawItems(context, offset, _timeline.entries, Timeline.MarginLeft-Timeline.DepthOffset*_timeline.renderOffsetDepth, scale, 0);
+			canvas.clipRect(new Rect.fromLTWH(offset.dx + _timeline.gutterWidth, offset.dy, size.width-_timeline.gutterWidth, size.height));
+			drawItems(context, offset, _timeline.entries, _timeline.gutterWidth+Timeline.LineSpacing-Timeline.DepthOffset*_timeline.renderOffsetDepth, scale, 0);
 			canvas.restore();
 		}
 

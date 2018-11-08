@@ -8,7 +8,6 @@ class Ticks
 {
 	static const double Margin = 20.0;
 	static const double Width = 40.0;
-	static const double Gutter = 45.0;
 	static const double LabelPadLeft = 5.0;
 	static const double LabelPadRight = 1.0;
 	static const int TickDistance = 16;
@@ -23,6 +22,7 @@ class Ticks
 		double bottom = height;
 		double tickDistance = TickDistance.toDouble();
 		double textTickDistance = TextTickDistance.toDouble();
+		double gutterWidth = timeline.gutterWidth;
 
 		double scaledTickDistance = tickDistance * scale;
 
@@ -89,19 +89,19 @@ class Ticks
 
 			if(y1 > offset.dy)
 			{
-				canvas.drawRect(new Rect.fromLTWH(offset.dx, offset.dy, Gutter, y1-offset.dy+1.0), new ui.Paint()..color = tickColors.first.background);
+				canvas.drawRect(new Rect.fromLTWH(offset.dx, offset.dy, gutterWidth, y1-offset.dy+1.0), new ui.Paint()..color = tickColors.first.background);
 			}
 			if(y2 < offset.dy+height)
 			{
-				canvas.drawRect(new Rect.fromLTWH(offset.dx, y2-1, Gutter, (offset.dy+height)-y2), new ui.Paint()..color = tickColors.last.background);
+				canvas.drawRect(new Rect.fromLTWH(offset.dx, y2-1, gutterWidth, (offset.dy+height)-y2), new ui.Paint()..color = tickColors.last.background);
 			}
-			canvas.drawRect(new Rect.fromLTWH(offset.dx, y1, Gutter, y2-y1), paint);
+			canvas.drawRect(new Rect.fromLTWH(offset.dx, y1, gutterWidth, y2-y1), paint);
 			
 			//print("SIZE ${new Rect.fromLTWH(offset.dx, y1, size.width, y2-y1)}");
 		}
 		else
 		{
-			canvas.drawRect(Rect.fromLTWH(offset.dx, offset.dy, Gutter, height), new Paint()..color = Color.fromRGBO(246, 246, 246, 0.95));
+			canvas.drawRect(Rect.fromLTWH(offset.dx, offset.dy, gutterWidth, height), new Paint()..color = Color.fromRGBO(246, 246, 246, 0.95));
 		}
 		
 		
@@ -117,7 +117,7 @@ class Ticks
 			TickColors colors = timeline.findTickColors(offset.dy+height-o);
 			if(tt%textTickDistance == 0)
 			{
-				canvas.drawRect(Rect.fromLTWH(offset.dx+Gutter-TickSize, offset.dy+height-o, TickSize, 1.0), new Paint()..color = colors.long);
+				canvas.drawRect(Rect.fromLTWH(offset.dx+gutterWidth-TickSize, offset.dy+height-o, TickSize, 1.0), new Paint()..color = colors.long);
 				ui.ParagraphBuilder builder = new ui.ParagraphBuilder(new ui.ParagraphStyle(
 					textAlign:TextAlign.end,
 					fontFamily: "Roboto",
@@ -165,12 +165,12 @@ class Ticks
 				// }
 				builder.addText(label);
 				ui.Paragraph tickParagraph = builder.build();
-				tickParagraph.layout(new ui.ParagraphConstraints(width: Gutter-LabelPadLeft-LabelPadRight));			
+				tickParagraph.layout(new ui.ParagraphConstraints(width: gutterWidth-LabelPadLeft-LabelPadRight));			
 				canvas.drawParagraph(tickParagraph, new Offset(offset.dx+LabelPadLeft-LabelPadRight, offset.dy + height - o - tickParagraph.height - 5));
 			}
 			else
 			{
-				canvas.drawRect(Rect.fromLTWH(offset.dx+Gutter-SmallTickSize, offset.dy+height-o, SmallTickSize, 1.0), new Paint()..color = colors.short);
+				canvas.drawRect(Rect.fromLTWH(offset.dx+gutterWidth-SmallTickSize, offset.dy+height-o, SmallTickSize, 1.0), new Paint()..color = colors.short);
 			}
 			startingTickMarkValue += tickDistance;
 		}

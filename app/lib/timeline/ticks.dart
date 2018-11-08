@@ -84,17 +84,16 @@ class Ticks
 
 			// Fill Background.
 			ui.Paint paint = new ui.Paint()
-										..color = Colors.white.withOpacity(0.95)
 										..shader = new ui.Gradient.linear(new ui.Offset(0.0, y1), new ui.Offset(0.0, y2), colors, stops)
 										..style = ui.PaintingStyle.fill;
 
 			if(y1 > offset.dy)
 			{
-				canvas.drawRect(new Rect.fromLTWH(offset.dx, offset.dy, Gutter, y1-offset.dy+1.0), new ui.Paint()..color = tickColors.first.background.withOpacity(0.95));
+				canvas.drawRect(new Rect.fromLTWH(offset.dx, offset.dy, Gutter, y1-offset.dy+1.0), new ui.Paint()..color = tickColors.first.background);
 			}
 			if(y2 < offset.dy+height)
 			{
-				canvas.drawRect(new Rect.fromLTWH(offset.dx, y2-1, Gutter, (offset.dy+height)-y2), new ui.Paint()..color = tickColors.last.background.withOpacity(0.95));
+				canvas.drawRect(new Rect.fromLTWH(offset.dx, y2-1, Gutter, (offset.dy+height)-y2), new ui.Paint()..color = tickColors.last.background);
 			}
 			canvas.drawRect(new Rect.fromLTWH(offset.dx, y1, Gutter, y2-y1), paint);
 			

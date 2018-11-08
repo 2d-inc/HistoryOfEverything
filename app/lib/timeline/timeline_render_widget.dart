@@ -196,6 +196,7 @@ class TimelineRenderObject extends RenderBox
 		}
 
 		List<TimelineBackgroundColor> backgroundColors = timeline.backgroundColors;
+		ui.Paint backgroundPaint;
 		if(backgroundColors != null && backgroundColors.length > 0)
 		{
 			double rangeStart = backgroundColors.first.start;
@@ -212,7 +213,7 @@ class TimelineRenderObject extends RenderBox
 			double y2 = (backgroundColors.last.start-timeline.renderStart) * s;
 
 			// Fill Background.
-			ui.Paint paint = new ui.Paint()
+			backgroundPaint = new ui.Paint()
 										..shader = new ui.Gradient.linear(new ui.Offset(0.0, y1), new ui.Offset(0.0, y2), colors, stops)
 										..style = ui.PaintingStyle.fill;
 
@@ -220,7 +221,7 @@ class TimelineRenderObject extends RenderBox
 			{
 				canvas.drawRect(new Rect.fromLTWH(offset.dx, offset.dy, size.width, y1-offset.dy+1.0), new ui.Paint()..color = backgroundColors.first.color);
 			}
-			canvas.drawRect(new Rect.fromLTWH(offset.dx, y1, size.width, y2-y1), paint);
+			canvas.drawRect(new Rect.fromLTWH(offset.dx, y1, size.width, y2-y1), backgroundPaint);
 			
 			//print("SIZE ${new Rect.fromLTWH(offset.dx, y1, size.width, y2-y1)}");
 		}
@@ -450,6 +451,9 @@ class TimelineRenderObject extends RenderBox
 		double favoritesGutter = _timeline.gutterWidth - Timeline.GutterLeft;
 		if(_favorites != null && _favorites.length > 0 && favoritesGutter > 0.0)
 		{
+			Paint accentPaint = new Paint()..color=favoritesGutterAccent..style=PaintingStyle.stroke..strokeWidth=2.0;
+			Paint accentFill = new Paint()..color=favoritesGutterAccent..style=PaintingStyle.fill;
+			Paint whitePaint = new Paint()..color=Colors.white;
 			double scale = timeline.computeScale(timeline.renderStart, timeline.renderEnd);
 			double fullMargin = 50.0;
 			double favoritesRadius = 20.0;
@@ -496,11 +500,12 @@ class TimelineRenderObject extends RenderBox
 				}
 				double y = favorite.favoriteY;//((favorite.start-timeline.renderStart)*scale).clamp(offset.dy + topOverlap + favoritesRadius + padFavorites, offset.dy + size.height - favoritesRadius - padFavorites);
 
-				canvas.drawCircle(new Offset(x, y), favoritesRadius, new Paint()..color=Colors.white..style=PaintingStyle.fill);
-				canvas.drawCircle(new Offset(x, y), favoritesRadius, new Paint()..color=favoritesGutterAccent..style=PaintingStyle.stroke..strokeWidth=2.0);
+				canvas.drawCircle(new Offset(x, y), favoritesRadius, backgroundPaint != null ? backgroundPaint : new Paint()..color=Colors.white..style=PaintingStyle.fill);
+				canvas.drawCircle(new Offset(x, y), favoritesRadius, accentPaint);
+				canvas.drawCircle(new Offset(x, y), favoritesRadius-4.0, whitePaint);
 
 				TimelineAsset asset = favorite.asset;
-				double assetSize = 40.0;
+				double assetSize = 40.0-8.0;
 				Size renderSize = new Size(assetSize, assetSize);
 				Offset renderOffset = new Offset(x - assetSize/2.0, y - assetSize/2.0);
 
@@ -613,6 +618,55 @@ class TimelineRenderObject extends RenderBox
 					canvas.restore();
 					_tapTargets.add(new TapTarget()..entry=asset.entry..rect=renderOffset & renderSize..zoom=true);
 				}	
+			}
+
+			// do labels
+			TimelineEntry previous;
+			for(TimelineEntry favorite in _favorites)
+			{
+				if(favorite.isFavoriteOccluded)
+				{
+					continue;
+				}
+				if(previous != null)
+				{
+					double distance = (favorite.favoriteY - previous.favoriteY);
+					if(distance > favoritesRadius*2.0)
+					{
+						canvas.drawLine(new Offset(x, previous.favoriteY + favoritesRadius), new Offset(x, favorite.favoriteY - favoritesRadius), accentPaint);
+						double labelY = previous.favoriteY + distance/2.0;
+						double labelWidth = 37.0;
+						double labelHeight = 8.5*2.0;
+						if(distance - favoritesRadius*2.0 > labelHeight)
+						{
+							ui.ParagraphBuilder builder = new ui.ParagraphBuilder(new ui.ParagraphStyle(
+								textAlign:TextAlign.center,
+								fontFamily: "RobotoMedium",
+								fontSize: 10.0
+							))..pushStyle(new ui.TextStyle(color:Colors.white));
+
+							int value = (favorite.start - previous.start).round().abs();
+							String label;
+							if(value < 9000)
+							{
+								label = value.toStringAsFixed(0);
+							}
+							else
+							{
+								NumberFormat formatter = NumberFormat.compact();
+								label = formatter.format(value);
+							}
+
+							builder.addText(label);
+							ui.Paragraph distanceParagraph = builder.build();
+							distanceParagraph.layout(new ui.ParagraphConstraints(width: labelWidth));			
+							
+							canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromLTWH(x-labelWidth/2.0, labelY-labelHeight/2.0, labelWidth, labelHeight), Radius.circular(labelHeight)), accentFill);
+							canvas.drawParagraph(distanceParagraph, new Offset(x-labelWidth/2.0, labelY - distanceParagraph.height/2.0));						
+						}
+					}
+				}
+				previous = favorite;
 			}
 		}
 	}

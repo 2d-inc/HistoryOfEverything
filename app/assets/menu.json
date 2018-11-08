@@ -7,22 +7,22 @@
         "items":
         [
             {
-                "start": -14200000000,
+                "start": -15000000000,
                 "end": -10000000000,
                 "label": "Big Bang"
             },
             {
-                "start": -4630000000,
-                "end": -4550000000,
+                "start": -4625000000,
+                "end": -4560000000,
                 "label": "Birth of the Sun"
             },
             {
-                "start": -4510000000,
+                "start": -4520000000,
                 "end": -4490000000,
                 "label": "Earth is Born"
             },
             {
-                "start": -4110000000,
+                "start": -4120000000,
                 "end": -4080000000,
                 "label": "Heavy Bombardment"
             }
@@ -36,18 +36,18 @@
         "items":
         [
             {
-                "start": -4500000000,
-                "end": -3500000000,
+                "start": -4150000000,
+                "end": -3560000000,
                 "label": "Single Celled Organisms"
             },
             {
-                "start": -624000000,
+                "start": -638000000,
                 "end": -350000000,
                 "label": "Animals"
             },
             {
-                "start": -238612227.2686652,
-                "end": -215710341.03659436,
+                "start": -400000000,
+                "end": -25000000,
                 "label": "Dinosaur Age"
             },
             {
@@ -56,9 +56,9 @@
                 "label": "Mammals"
             },
             {
-                "start": -334555.54727230733,
-                "end": -219665.8468262614,
-                "label": "Homo Sapiens Sapiens"
+                "start": -6800000,
+                "end": -3000000,
+                "label": "Humans"
             }
         ]
     },
@@ -75,29 +75,39 @@
                 "label": "Crusades"
             },
             {
-                "start": 1662.2,
-                "end": 1734,
+                "start": 1620,
+                "end": 1824,
                 "label": "Newton's Theory of Gravity"
             },
             {
-                "start": 1896,
-                "end": 1899,
+                "start": 1852,
+                "end": 1876,
+                "label": "Marie Curie"
+            },
+            {
+                "start": 1890,
+                "end": 1908,
                 "label": "Amelia Earhart"
             },
             {
-                "start": 1912,
+                "start": 1910,
                 "end": 1917,
                 "label": "World War I"
             },
             {
-                "start": 1899,
-                "end": 1909,
-                "label": "Suffragettes"
+                "start": 1930,
+                "end": 1955,
+                "label": "World War II"
             },
             {
-                "start": 1926,
-                "end": 1935,
+                "start": 1911,
+                "end": 1936,
                 "label": "Martin Luther King, Jr."
+            },
+            {
+                "start": 1955,
+                "end": 2000,
+                "label": "Moon Landing"
             }
         ]
     }

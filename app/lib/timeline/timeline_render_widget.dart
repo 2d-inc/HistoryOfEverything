@@ -412,7 +412,7 @@ class TimelineRenderObject extends RenderBox
 				textAlign:TextAlign.center,
 				fontFamily: "Roboto",
 				fontSize: 14.0,
-				lineHeight: 1.428
+				lineHeight: 1.3
 			))..pushStyle(new ui.TextStyle(color:color));
 
 

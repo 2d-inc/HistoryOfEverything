@@ -174,10 +174,23 @@
 		"id":"dinosaur",
 		"asset": 
 		{
+			"source": "Dinosaurs.flr",
+			"width": 800,
+			"height": 570,
+			"offset":0,
+			"gap": 0
+		}
+	},
+	{
+		"date": -150000000,
+		"label": "Stegosaurus",
+		"article":"stegosaurus.txt",
+		"asset": 
+		{
 			"source": "Dinosaurs/Dinosaurs.nma",
 			"width": 800,
 			"height": 570,
-			"offset":-170,
+			"offset":-200,
 			"gap": 0
 		}
 	},
@@ -437,7 +450,7 @@
 			"source": "Moon/Moon.nma",
 			"width": 528,
 			"height": 528,
-			"offset": -40
+			"offset": -100
 		}
 	},
 	{

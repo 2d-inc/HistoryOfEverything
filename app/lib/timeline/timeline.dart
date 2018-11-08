@@ -267,7 +267,7 @@ class Timeline
 				if(map.containsKey("background"))
 				{
 					dynamic bg = map["background"];
-					if(bg is List && bg.length == 3)
+					if(bg is List && bg.length >= 3)
 					{
 						_backgroundColors.add(
 							new TimelineBackgroundColor()
@@ -288,24 +288,24 @@ class Timeline
 						Color textColor = Colors.black;
 
 						dynamic bg = ticks["background"];
-						if(bg is List && bg.length == 3)
+						if(bg is List && bg.length >= 3)
 						{
-							bgColor = new Color.fromARGB(255, bg[0] as int, bg[1] as int, bg[2] as int);
+							bgColor = new Color.fromARGB(bg.length > 3 ? bg[3] as int : 255, bg[0] as int, bg[1] as int, bg[2] as int);
 						}
 						dynamic long = ticks["long"];
-						if(long is List && long.length == 3)
+						if(long is List && long.length >= 3)
 						{
-							longColor = new Color.fromARGB(255, long[0] as int, long[1] as int, long[2] as int);
+							longColor = new Color.fromARGB(long.length > 3 ? long[3] as int : 255, long[0] as int, long[1] as int, long[2] as int);
 						}
 						dynamic short = ticks["short"];
-						if(short is List && short.length == 3)
+						if(short is List && short.length >= 3)
 						{
-							shortColor = new Color.fromARGB(255, short[0] as int, short[1] as int, short[2] as int);
+							shortColor = new Color.fromARGB(short.length > 3 ? short[3] as int : 255, short[0] as int, short[1] as int, short[2] as int);
 						}
 						dynamic text = ticks["text"];
-						if(text is List && text.length == 3)
+						if(text is List && text.length >= 3)
 						{
-							textColor = new Color.fromARGB(255, text[0] as int, text[1] as int, text[2] as int);
+							textColor = new Color.fromARGB(text.length > 3 ? text[3] as int : 255, text[0] as int, text[1] as int, text[2] as int);
 						}
 						
 						_tickColors.add(
@@ -791,11 +791,14 @@ class Timeline
 		// Update scale after changing render range.
 		scale = _height/(_renderEnd-_renderStart);
 		// Update color screen positions.
-		if(_tickColors != null)
+		
+		if(_tickColors != null && _tickColors.length > 0)
 		{
+			double lastStart = _tickColors.first.start;
 			for(TickColors color in _tickColors)
 			{
-				color.screenY = (color.start-_renderStart)*scale;
+				color.screenY = (lastStart+(color.start-lastStart/2.0)-_renderStart)*scale;
+				lastStart = color.start;
 			}
 		}
 

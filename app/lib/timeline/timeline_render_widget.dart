@@ -369,7 +369,8 @@ class TimelineRenderObject extends RenderBox
 		_nextEntryRect = null;
 		if(_timeline.nextEntry != null && _timeline.nextEntryOpacity > 0.0)
 		{
-			Color color = Color.fromRGBO(69, 211, 197, _timeline.nextEntryOpacity);
+			double opacity = _timeline.nextEntryOpacity;
+			Color color = Color.fromRGBO(69, 211, 197, opacity);
 			double pageSize = (_timeline.renderEnd-_timeline.renderStart);
 			double pageReference = _timeline.renderEnd;//_timeline.renderStart + pageSize/2.0;
 
@@ -399,10 +400,11 @@ class TimelineRenderObject extends RenderBox
 			_nextEntryRect.expandToInclude(Rect.fromLTWH(x-radius, y-radius, radius*2.0, radius*2.0));
 			Path path = new Path();
 			double arrowSize = 6.0;
-			path.moveTo(offset.dx + size.width/2.0-arrowSize, y-arrowSize+arrowSize/2.0);
-			path.lineTo(offset.dx + size.width/2.0, y+arrowSize/2.0);
-			path.lineTo(offset.dx + size.width/2.0+arrowSize, y-arrowSize+arrowSize/2.0);
-			canvas.drawPath(path, new  Paint()..color=Colors.white..style=PaintingStyle.stroke..strokeWidth=2.0);
+			double arrowOffset = 1.0;
+			path.moveTo(offset.dx + size.width/2.0-arrowSize, y-arrowSize+arrowSize/2.0+arrowOffset);
+			path.lineTo(offset.dx + size.width/2.0, y+arrowSize/2.0+arrowOffset);
+			path.lineTo(offset.dx + size.width/2.0+arrowSize, y-arrowSize+arrowSize/2.0+arrowOffset);
+			canvas.drawPath(path, new  Paint()..color=Colors.white.withOpacity(opacity)..style=PaintingStyle.stroke..strokeWidth=2.0);
 			y += 15+radius;
 
 

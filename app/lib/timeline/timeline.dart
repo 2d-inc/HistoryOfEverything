@@ -21,6 +21,54 @@ import "timeline_entry.dart";
 
 typedef PaintCallback();
 typedef ChangeEraCallback(TimelineEntry era);
+typedef ChangeHeaderColorCallback(Color background, Color text);
+
+Color interpolateColor(Color from, Color to, double elapsed)
+{
+	double r, g, b, a;
+	double speed = min(1.0, elapsed*5.0);
+	double c = to.alpha.toDouble() - from.alpha.toDouble();
+	if(c.abs() < 1.0)
+	{
+		a = to.alpha.toDouble();
+	}
+	else
+	{
+		a = from.alpha + c * speed;
+	}
+
+	c = to.red.toDouble() - from.red.toDouble();
+	if(c.abs() < 1.0)
+	{
+		r = to.red.toDouble();
+	}
+	else
+	{
+		r = from.red + c * speed;
+	}
+
+	c = to.green.toDouble() - from.green.toDouble();
+	if(c.abs() < 1.0)
+	{
+		g = to.green.toDouble();
+	}
+	else
+	{
+		g = from.green + c * speed;
+	}
+
+	c = to.blue.toDouble() - from.blue.toDouble();
+	if(c.abs() < 1.0)
+	{
+		b = to.blue.toDouble();
+	}
+	else
+	{
+		b = from.blue + c * speed;
+	}
+
+	return Color.fromARGB(a.round(), r.round(), g.round(), b.round());
+}
 
 String getExtension(String filename)
 {
@@ -68,6 +116,9 @@ class Timeline
 	double _height = 0.0;
 	List<TimelineBackgroundColor> _backgroundColors;
 	List<TickColors> _tickColors;
+	TickColors _headerColors;
+	Color _headerTextColor;
+	Color _headerBackgroundColor;
 	List<TimelineEntry> _entries;
 	Map<String, TimelineEntry> _entriesById = new Map<String, TimelineEntry>();
 	List<TimelineAsset> _renderAssets;
@@ -93,6 +144,9 @@ class Timeline
 	List<TimelineEntry> get entries => _entries;
 	List<TimelineBackgroundColor> get backgroundColors => _backgroundColors;
 	List<TickColors> get tickColors => _tickColors;
+	TickColors get headerColors => _headerColors;
+	Color get headerTextColor => _headerTextColor;
+	Color get headerBackgroundColor => _headerBackgroundColor;
 	double get renderOffsetDepth => _renderOffsetDepth;
 	double get renderLabelX => _renderLabelX;
 	List<TimelineAsset> get renderAssets => _renderAssets;
@@ -101,6 +155,7 @@ class Timeline
 
 	PaintCallback onNeedPaint;
 	ChangeEraCallback onEraChanged;
+	ChangeHeaderColorCallback onHeaderColorsChanged;
 	Timer _steadyTimer;
 	double get start => _start;
 	double get end => _end;
@@ -715,6 +770,10 @@ class Timeline
 
 	TickColors findTickColors(double screen)
 	{
+		if(_tickColors == null)
+		{
+			return null;
+		}
 		for(TickColors color in _tickColors.reversed)
 		{
 			if(screen >= color.screenY)
@@ -799,6 +858,43 @@ class Timeline
 			{
 				color.screenY = (lastStart+(color.start-lastStart/2.0)-_renderStart)*scale;
 				lastStart = color.start;
+			}
+		}
+
+		_headerColors = findTickColors(0.0);
+
+		if(_headerColors != null)
+		{
+			if(_headerTextColor == null)
+			{
+				_headerTextColor = _headerColors.text;
+				_headerBackgroundColor = _headerColors.background;
+			}
+			else
+			{
+				bool stillColoring = false;
+				Color headerTextColor = interpolateColor(_headerTextColor, _headerColors.text, elapsed);
+				
+				if(headerTextColor != _headerTextColor)
+				{
+					_headerTextColor = headerTextColor;
+					stillColoring = true;
+					doneRendering = false;
+				}
+				Color headerBackgroundColor = interpolateColor(_headerBackgroundColor, _headerColors.background, elapsed);
+				if(headerBackgroundColor != _headerBackgroundColor)
+				{
+					_headerBackgroundColor = headerBackgroundColor;
+					stillColoring = true;
+					doneRendering = false;
+				}
+				if(stillColoring)
+				{
+					if(onHeaderColorsChanged != null)
+					{
+						onHeaderColorsChanged(_headerBackgroundColor, _headerTextColor);
+					}
+				}
 			}
 		}
 

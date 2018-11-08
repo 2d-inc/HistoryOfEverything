@@ -35,6 +35,8 @@ class _TimelineWidgetState extends State<TimelineWidget>
 	String _eraName;
 	Timeline get timeline => widget.timeline;
 	bool _didScale = false;
+	Color _headerTextColor;
+	Color _headerBackgroundColor;
 
 	void _scaleStart(ScaleStartDetails details)
 	{
@@ -71,6 +73,14 @@ class _TimelineWidgetState extends State<TimelineWidget>
 		{
             widget.timeline.isActive = true;
 			_eraName = timeline.currentEra != null ? timeline.currentEra.label : DefaultEraName;
+			timeline.onHeaderColorsChanged = (Color background, Color text)
+			{
+				setState(() 
+				{
+					_headerTextColor = text;
+					_headerBackgroundColor = background;
+				});
+			};
 			timeline.onEraChanged = (TimelineEntry entry)
 			{
 				setState(() 
@@ -78,6 +88,9 @@ class _TimelineWidgetState extends State<TimelineWidget>
 					_eraName = entry != null ? entry.label : DefaultEraName;
 				});
 			};
+
+			_headerTextColor = timeline.headerTextColor;
+			_headerBackgroundColor = timeline.headerBackgroundColor;
 		}
 	}
 
@@ -87,6 +100,20 @@ class _TimelineWidgetState extends State<TimelineWidget>
 
 		if(timeline != oldWidget.timeline && timeline != null)
 		{
+			setState(() 
+			{
+				_headerTextColor = timeline.headerTextColor;
+				_headerBackgroundColor = timeline.headerBackgroundColor;
+			});
+			
+			timeline.onHeaderColorsChanged = (Color background, Color text)
+			{
+				setState(() 
+				{
+					_headerTextColor = text;
+					_headerBackgroundColor = background;
+				});
+			};
 			timeline.onEraChanged = (TimelineEntry entry)
 			{
 				setState(() 
@@ -178,10 +205,10 @@ class _TimelineWidgetState extends State<TimelineWidget>
                                 children: <Widget>[
                                     Container(
                                         height:devicePadding.top,
-                                        color:Color.fromRGBO(238, 240, 242, 0.81)
+                                        color:_headerBackgroundColor != null ? _headerBackgroundColor : Color.fromRGBO(238, 240, 242, 0.81)
                                     ),
                                     Container(
-                                        color:Color.fromRGBO(238, 240, 242, 0.81), 
+                                        color:_headerBackgroundColor != null ? _headerBackgroundColor : Color.fromRGBO(238, 240, 242, 0.81), 
                                         height: 56.0,
                                         width: double.infinity,
                                         child: Row(
@@ -189,7 +216,7 @@ class _TimelineWidgetState extends State<TimelineWidget>
                                             children: <Widget>[
                                             IconButton(
                                                 padding: EdgeInsets.only(left:20.0, right:20.0),
-                                                color: Colors.black.withOpacity(0.5),
+                                                color: _headerTextColor != null ? _headerTextColor : Colors.black.withOpacity(0.5),
                                                 alignment: Alignment.centerLeft,
                                                 icon: Icon(Icons.menu),
                                                 onPressed: () {
@@ -203,7 +230,7 @@ class _TimelineWidgetState extends State<TimelineWidget>
                                                 style: TextStyle(
                                                     fontFamily: "RobotoMedium",
                                                     fontSize: 20.0,
-                                                    color: darkText.withOpacity(darkText.opacity * 0.75)
+                                                    color: _headerTextColor != null ? _headerTextColor : darkText.withOpacity(darkText.opacity * 0.75)
                                                 ),
                                             )
                                         ])

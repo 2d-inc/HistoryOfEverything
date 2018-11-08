@@ -39,6 +39,10 @@ class FavoritesBloc
         if(!_favorites.contains(e))
         {
             this._favorites.add(e);
+            _favorites.sort((TimelineEntry a, TimelineEntry b)
+            {
+                return a.start.compareTo(b.start);
+            });
             _save();
         }
     }

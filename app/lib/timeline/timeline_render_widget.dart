@@ -351,12 +351,11 @@ class TimelineRenderObject extends RenderBox
 				}
 			}
 			canvas.restore();
-			//print("DREW ${timeline.renderAssets.length}");
 		}
 
 		canvas.save();
 		canvas.clipRect(new Rect.fromLTWH(offset.dx, offset.dy+topOverlap, size.width, size.height));
-		_ticks.paint(context, offset, -renderStart*scale, scale, size.height);
+		_ticks.paint(context, offset, -renderStart*scale, scale, size.height, timeline);
 		canvas.restore();
 
 		if(_timeline.entries != null)

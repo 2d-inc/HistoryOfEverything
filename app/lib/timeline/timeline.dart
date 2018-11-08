@@ -4,6 +4,7 @@ import "dart:math";
 import "dart:typed_data";
 import "dart:ui" as ui;
 
+import 'package:flutter/material.dart';
 import "package:flutter/scheduler.dart";
 import "package:flutter/services.dart" show rootBundle;
 import 'package:flutter/widgets.dart';
@@ -47,6 +48,16 @@ class TimelineBackgroundColor
 	double start;
 }
 
+class TickColors
+{
+	Color background;
+	Color long;
+	Color short;
+	Color text;
+	double start;
+	double screenY;
+}
+
 class Timeline
 {
 	double _start = 0.0;
@@ -56,6 +67,7 @@ class Timeline
 	double _lastFrameTime = 0.0;
 	double _height = 0.0;
 	List<TimelineBackgroundColor> _backgroundColors;
+	List<TickColors> _tickColors;
 	List<TimelineEntry> _entries;
 	Map<String, TimelineEntry> _entriesById = new Map<String, TimelineEntry>();
 	List<TimelineAsset> _renderAssets;
@@ -80,6 +92,7 @@ class Timeline
 
 	List<TimelineEntry> get entries => _entries;
 	List<TimelineBackgroundColor> get backgroundColors => _backgroundColors;
+	List<TickColors> get tickColors => _tickColors;
 	double get renderOffsetDepth => _renderOffsetDepth;
 	double get renderLabelX => _renderLabelX;
 	List<TimelineAsset> get renderAssets => _renderAssets;
@@ -225,6 +238,7 @@ class Timeline
 		List jsonEntries = json.decode(data) as List;
 
 		_backgroundColors = new List<TimelineBackgroundColor>();
+		_tickColors = new List<TickColors>();
 		for(dynamic entry in jsonEntries)
 		{
 			Map map = entry as Map;
@@ -259,6 +273,49 @@ class Timeline
 							new TimelineBackgroundColor()
 								..color =new Color.fromARGB(255, bg[0] as int, bg[1] as int, bg[2] as int)
 								..start = timelineEntry.start
+						);
+					}
+				}
+
+				if(map.containsKey("ticks"))
+				{
+					dynamic ticks = map["ticks"];
+					if(ticks is Map)
+					{
+						Color bgColor = Colors.black;
+						Color longColor = Colors.black;
+						Color shortColor = Colors.black;
+						Color textColor = Colors.black;
+
+						dynamic bg = ticks["background"];
+						if(bg is List && bg.length == 3)
+						{
+							bgColor = new Color.fromARGB(255, bg[0] as int, bg[1] as int, bg[2] as int);
+						}
+						dynamic long = ticks["long"];
+						if(long is List && long.length == 3)
+						{
+							longColor = new Color.fromARGB(255, long[0] as int, long[1] as int, long[2] as int);
+						}
+						dynamic short = ticks["short"];
+						if(short is List && short.length == 3)
+						{
+							shortColor = new Color.fromARGB(255, short[0] as int, short[1] as int, short[2] as int);
+						}
+						dynamic text = ticks["text"];
+						if(text is List && text.length == 3)
+						{
+							textColor = new Color.fromARGB(255, text[0] as int, text[1] as int, text[2] as int);
+						}
+						
+						_tickColors.add(
+							new TickColors()
+								..background = bgColor
+								..long = longColor
+								..short = shortColor
+								..text = textColor
+								..start = timelineEntry.start
+								..screenY = 0.0
 						);
 					}
 				}
@@ -656,6 +713,19 @@ class Timeline
 		}
 	}
 
+	TickColors findTickColors(double screen)
+	{
+		for(TickColors color in _tickColors.reversed)
+		{
+			if(screen >= color.screenY)
+			{
+				return color;
+			}
+		}
+
+		return screen < _tickColors.first.screenY ? _tickColors.first : _tickColors.last;
+	}
+
 	bool advance(double elapsed, bool animate)
 	{
 		double scale = _height/(_renderEnd-_renderStart);
@@ -717,8 +787,17 @@ class Timeline
 		}
 		isScaling = stillScaling;
 
+
 		// Update scale after changing render range.
 		scale = _height/(_renderEnd-_renderStart);
+		// Update color screen positions.
+		if(_tickColors != null)
+		{
+			for(TickColors color in _tickColors)
+			{
+				color.screenY = (color.start-_renderStart)*scale;
+			}
+		}
 
 		_lastEntryY = -double.maxFinite;
 		_lastOnScreenEntryY = 0.0;

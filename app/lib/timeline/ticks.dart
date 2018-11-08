@@ -1,6 +1,8 @@
 import 'dart:ui' as ui;
+import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:intl/intl.dart';
+import 'package:timeline/timeline/timeline.dart';
 
 class Ticks
 {
@@ -14,7 +16,7 @@ class Ticks
 	static const double TickSize = 15.0;
 	static const double SmallTickSize = 5.0;
 
-	void paint(PaintingContext context, Offset offset, double translation, double scale, double height)
+	void paint(PaintingContext context, Offset offset, double translation, double scale, double height, Timeline timeline)
 	{
 		final Canvas canvas = context.canvas;
 
@@ -61,9 +63,47 @@ class Ticks
 
 		//canvas.save();
 		
-		final Paint tickPaint = new Paint()..color = Color.fromRGBO(0, 0, 0, 0.3);
-		final Paint smallTickPaint = new Paint()..color = Color.fromRGBO(0, 0, 0, 0.1);
-		canvas.drawRect(Rect.fromLTWH(offset.dx, offset.dy, Gutter, height), new Paint()..color = Color.fromRGBO(246, 246, 246, 0.95));
+		// final Paint tickPaint = new Paint()..color = Color.fromRGBO(0, 0, 0, 0.3);
+		// final Paint smallTickPaint = new Paint()..color = Color.fromRGBO(0, 0, 0, 0.1);
+		
+		List<TickColors> tickColors = timeline.tickColors;
+		if(tickColors != null && tickColors.length > 0)
+		{
+			double rangeStart = tickColors.first.start;
+			double range = tickColors.last.start - tickColors.first.start;
+			List<ui.Color> colors = <ui.Color>[];
+			List<double> stops = <double>[];
+			for(TickColors bg in tickColors)
+			{
+				colors.add(bg.background);
+				stops.add((bg.start-rangeStart)/range);
+			}
+			double s = timeline.computeScale(timeline.renderStart, timeline.renderEnd);
+			double y1 = (tickColors.first.start-timeline.renderStart) * s;
+			double y2 = (tickColors.last.start-timeline.renderStart) * s;
+
+			// Fill Background.
+			ui.Paint paint = new ui.Paint()
+										..color = Colors.white.withOpacity(0.95)
+										..shader = new ui.Gradient.linear(new ui.Offset(0.0, y1), new ui.Offset(0.0, y2), colors, stops)
+										..style = ui.PaintingStyle.fill;
+
+			if(y1 > offset.dy)
+			{
+				canvas.drawRect(new Rect.fromLTWH(offset.dx, offset.dy, Gutter, y1-offset.dy+1.0), new ui.Paint()..color = tickColors.first.background.withOpacity(0.95));
+			}
+			if(y2 < offset.dy+height)
+			{
+				canvas.drawRect(new Rect.fromLTWH(offset.dx, y2-1, Gutter, (offset.dy+height)-y2), new ui.Paint()..color = tickColors.last.background.withOpacity(0.95));
+			}
+			canvas.drawRect(new Rect.fromLTWH(offset.dx, y1, Gutter, y2-y1), paint);
+			
+			//print("SIZE ${new Rect.fromLTWH(offset.dx, y1, size.width, y2-y1)}");
+		}
+		else
+		{
+			canvas.drawRect(Rect.fromLTWH(offset.dx, offset.dy, Gutter, height), new Paint()..color = Color.fromRGBO(246, 246, 246, 0.95));
+		}
 		
 		
 		Set<String> usedValues = new Set<String>();
@@ -71,18 +111,19 @@ class Ticks
 		for(int i = 0; i < numTicks; i++)
 		{
 			tickOffset += scaledTickDistance;
-			
+
 			int tt = startingTickMarkValue.round();
 			tt = -tt;
 			int o = tickOffset.floor();
+			TickColors colors = timeline.findTickColors(offset.dy+height-o);
 			if(tt%textTickDistance == 0)
 			{
-				canvas.drawRect(Rect.fromLTWH(offset.dx+Gutter-TickSize, offset.dy+height-o, TickSize, 1.0), tickPaint);
+				canvas.drawRect(Rect.fromLTWH(offset.dx+Gutter-TickSize, offset.dy+height-o, TickSize, 1.0), new Paint()..color = colors.long);
 				ui.ParagraphBuilder builder = new ui.ParagraphBuilder(new ui.ParagraphStyle(
 					textAlign:TextAlign.end,
 					fontFamily: "Roboto",
 					fontSize: 10.0
-				))..pushStyle(new ui.TextStyle(color:const Color.fromRGBO(0, 0, 0, 0.6)));
+				))..pushStyle(new ui.TextStyle(color:colors.text));//const Color.fromRGBO(0, 0, 0, 0.6)));
 
 				int value = tt.round().abs();
 				String label;
@@ -130,7 +171,7 @@ class Ticks
 			}
 			else
 			{
-				canvas.drawRect(Rect.fromLTWH(offset.dx+Gutter-SmallTickSize, offset.dy+height-o, SmallTickSize, 1.0), smallTickPaint);
+				canvas.drawRect(Rect.fromLTWH(offset.dx+Gutter-SmallTickSize, offset.dy+height-o, SmallTickSize, 1.0), new Paint()..color = colors.short);
 			}
 			startingTickMarkValue += tickDistance;
 		}

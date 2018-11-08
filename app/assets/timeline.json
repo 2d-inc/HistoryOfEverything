@@ -4,6 +4,13 @@
 		"label": "Big Bang",
 		"article":"big_bang.txt",
 		"background": [13, 36, 55],
+		"ticks": 
+		{
+			"background": [3, 26, 45],
+			"long": [255, 255, 255],
+			"short": [255, 255, 255],
+			"text": [255, 255, 255]
+		},
 		"asset": 
 		{
 			"source": "Big_Bang/Big_Bang.flr",
@@ -68,6 +75,13 @@
 		"label": "Life on Earth",
 		"article": "life_on_earth.txt",
 		"background": [77, 111, 131],
+		"ticks": 
+		{
+			"background": [67, 101, 121],
+			"long": [255, 255, 255],
+			"short": [255, 255, 255],
+			"text": [255, 255, 255]
+		},
 
 		"asset": 
 		{
@@ -94,7 +108,14 @@
 		"start": -600000000,
 		"label": "Animals",
 		"article":"animals.txt",
-		"background": [132, 162, 164]
+		"background": [132, 162, 164],
+		"ticks": 
+		{
+			"background": [67, 101, 121],
+			"long": [255, 255, 255],
+			"short": [255, 255, 255],
+			"text": [255, 255, 255]
+		}
 	},
 	{
 		"date": -530000000,
@@ -174,7 +195,14 @@
 		"start": -6000000,
 		"label": "Humans",
 		"article":"humans.txt",
-		"background": [255, 255, 255]
+		"background": [255, 255, 255],
+		"ticks": 
+		{
+			"background": [245, 245, 245],
+			"long": [0, 0, 0],
+			"short": [0, 0, 0],
+			"text": [0, 0, 0]
+		}
 	},
 	{
 		"date": -4000000,

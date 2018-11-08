@@ -235,7 +235,7 @@ class _TimelineWidgetState extends State<TimelineWidget>
                                                 padding: EdgeInsets.only(left:20.0, right:20.0),
                                                 color: _headerTextColor != null ? _headerTextColor : Colors.black.withOpacity(0.5),
                                                 alignment: Alignment.centerLeft,
-                                                icon: Icon(Icons.menu),
+                                                icon: Icon(Icons.arrow_back),
                                                 onPressed: () {
                                                     widget.timeline.isActive = false;
                                                     Navigator.of(context).pop();

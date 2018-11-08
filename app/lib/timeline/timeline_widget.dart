@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:timeline/article/article_widget.dart';
+import 'package:timeline/bloc_provider.dart';
 import 'package:timeline/main_menu/menu_data.dart';
 import 'package:timeline/timeline/timeline.dart';
 import 'package:timeline/timeline/timeline_entry.dart';
@@ -158,13 +159,25 @@ class _TimelineWidgetState extends State<TimelineWidget>
 		EdgeInsets devicePadding = MediaQuery.of(context).padding;
         if(_touchedBubble != null)
         {
-            widget.timeline.isActive = false;
-            
-            Navigator.of(context).push(
-                CupertinoPageRoute(
-                    builder: (BuildContext context) => ArticleWidget(article: _touchedBubble.entry)
-                )
-            ).then((v) => widget.timeline.isActive = true);
+			if(_touchedBubble.zoom)
+			{
+				MenuItemData target = MenuItemData.fromEntry(_touchedBubble.entry);
+				
+				double topPadding = timeline.screenPaddingInTime(TopOverlap+devicePadding.top+target.padTop, target.start, target.end);
+				double bottomPadding = timeline.screenPaddingInTime(target.padBottom, target.start, target.end);
+
+				timeline.setViewport(start:target.start-topPadding, end:target.end+bottomPadding, animate: true);
+			}
+			else
+			{
+				widget.timeline.isActive = false;
+				
+				Navigator.of(context).push(
+					CupertinoPageRoute(
+						builder: (BuildContext context) => ArticleWidget(article: _touchedBubble.entry)
+					)
+				).then((v) => widget.timeline.isActive = true);
+			}
         }
         else if(_touchedEntry != null)
 		{	
@@ -201,7 +214,7 @@ class _TimelineWidgetState extends State<TimelineWidget>
                 child: Stack(
                     children:<Widget>
                     [
-                        TimelineRenderWidget(timeline: timeline, topOverlap:TopOverlap+devicePadding.top, focusItem:widget.focusItem, touchBubble:onTouchBubble, touchEntry:onTouchEntry),
+                        TimelineRenderWidget(timeline: timeline, favorites:BlocProvider.favorites(context).favorites, topOverlap:TopOverlap+devicePadding.top, focusItem:widget.focusItem, touchBubble:onTouchBubble, touchEntry:onTouchEntry),
                         BackdropFilter(
                             filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
                             child: Column(

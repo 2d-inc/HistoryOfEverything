@@ -22,6 +22,7 @@ class TimelineAnimatedAsset extends TimelineAsset
 
 class TimelineNima extends TimelineAnimatedAsset
 {
+	nima.FlutterActor actorStatic;
 	nima.FlutterActor actor;
 	nima.ActorAnimation animation;
 	nima.AABB setupAABB;
@@ -30,6 +31,7 @@ class TimelineNima extends TimelineAnimatedAsset
 
 class TimelineFlare extends TimelineAnimatedAsset
 {
+	flare.FlutterActor actorStatic;
 	flare.FlutterActor actor;
 	flare.ActorAnimation animation;
 
@@ -81,6 +83,8 @@ class TimelineEntry
 	double legOpacity = 0.0;
 	double labelY = 0.0;
 	double labelVelocity = 0.0;
+	double favoriteY = 0.0;
+	bool isFavoriteOccluded = false;
 
 	bool get isVisible
 	{

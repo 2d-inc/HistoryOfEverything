@@ -23,6 +23,10 @@ class FavoritesBloc
                 _favorites.add(entriesMap[f]);
             }
         }
+		_favorites.sort((TimelineEntry a, TimelineEntry b)
+		{
+			return a.start.compareTo(b.start);
+		});
     }
 
     List<TimelineEntry> get favorites

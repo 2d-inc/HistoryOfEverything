@@ -261,7 +261,7 @@ class Timeline
 	static const double MoveSpeedInteracting = 40.0;
 	static const double Deceleration = 3.0;
 	static const double GutterLeft = 45.0;
-	static const double GutterLeftExpanded = 90.0;
+	static const double GutterLeftExpanded = 75.0;
 	
 	static const double EdgeRadius = 4.0;
 	static const double MinChildLength = 50.0;
@@ -478,12 +478,9 @@ class Timeline
 									_flareResources[filename] = actor;
 								}
 							}
-							else
-							{
-								actor = actor.makeInstance();
-							}
 							if(actor != null)
 							{
+								flareAsset.actorStatic = actor;
 								flareAsset.actor = actor.makeInstance();
 								flareAsset.animation = actor.animations[0];
 								
@@ -511,7 +508,9 @@ class Timeline
 
 								flareAsset.setupAABB = flareAsset.actor.computeAABB();
 								flareAsset.animation.apply(flareAsset.animationTime, flareAsset.actor, 1.0);
+								flareAsset.animation.apply(flareAsset.animation.duration, flareAsset.actorStatic, 1.0);
 								flareAsset.actor.advance(0.0);
+								flareAsset.actorStatic.advance(0.0);
 								//print("AABB $source ${flareAsset.setupAABB}");
 								//nima.Vec2D size = nima.AABB.size(new nima.Vec2D(), flareAsset.setupAABB);
 								//flareAsset.width = size[0];
@@ -540,6 +539,7 @@ class Timeline
 							}
 							if(actor != null)
 							{
+								nimaAsset.actorStatic = actor;
 								nimaAsset.actor = actor.makeInstance();
 								nimaAsset.animation = actor.animations[0];
 								nimaAsset.animationTime = 0.0;
@@ -547,7 +547,9 @@ class Timeline
 								
 								nimaAsset.setupAABB = nimaAsset.actor.computeAABB();
 								nimaAsset.animation.apply(nimaAsset.animationTime, nimaAsset.actor, 1.0);
+								nimaAsset.animation.apply(nimaAsset.animation.duration, nimaAsset.actorStatic, 1.0);
 								nimaAsset.actor.advance(0.0);
+								nimaAsset.actorStatic.advance(0.0);
 								//print("AABB $source ${nimaAsset.setupAABB}");
 								//nima.Vec2D size = nima.AABB.size(new nima.Vec2D(), nimaAsset.setupAABB);
 								//nimaAsset.width = size[0];

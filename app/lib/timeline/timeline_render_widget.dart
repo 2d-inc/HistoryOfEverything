@@ -8,6 +8,7 @@ import 'package:nima/nima/actor_image.dart' as nima;
 import 'package:nima/nima/math/aabb.dart' as nima;
 import 'package:flare/flare/actor_image.dart' as flare;
 import 'package:flare/flare/math/aabb.dart' as flare;
+import 'package:timeline/colors.dart';
 import 'package:timeline/main_menu/menu_data.dart';
 import 'package:timeline/timeline/ticks.dart';
 import 'package:timeline/timeline/timeline.dart';
@@ -23,8 +24,9 @@ class TimelineRenderWidget extends LeafRenderObjectWidget
 	final TouchEntryCallback touchEntry;
 	final double topOverlap;
     final Timeline timeline; 
+	final List<TimelineEntry> favorites;
 
-	TimelineRenderWidget({Key key, this.focusItem, this.touchBubble, this.touchEntry, this.topOverlap, this.timeline}): super(key: key);
+	TimelineRenderWidget({Key key, this.focusItem, this.touchBubble, this.touchEntry, this.topOverlap, this.timeline, this.favorites}): super(key: key);
 
 	@override
 	RenderObject createRenderObject(BuildContext context) 
@@ -34,6 +36,7 @@ class TimelineRenderWidget extends LeafRenderObjectWidget
 							..touchBubble = touchBubble
 							..touchEntry = touchEntry
 							..focusItem = focusItem
+							..favorites = favorites
 							..topOverlap = topOverlap;
 	}
 
@@ -45,6 +48,7 @@ class TimelineRenderWidget extends LeafRenderObjectWidget
 					..focusItem = focusItem
 					..touchBubble = touchBubble
 					..touchEntry = touchEntry
+					..favorites = favorites
 					..topOverlap = topOverlap;
 	}
 
@@ -60,6 +64,7 @@ class TapTarget
 {
 	TimelineEntry entry;
 	Rect rect;
+	bool zoom = false;
 }
 
 class TimelineRenderObject extends RenderBox
@@ -92,6 +97,19 @@ class TimelineRenderObject extends RenderBox
 		}
 		_timeline = value;
         _timeline.onNeedPaint = markNeedsPaint;
+        markNeedsPaint();
+		markNeedsLayout();
+	}
+
+	List<TimelineEntry> _favorites;
+	List<TimelineEntry> get favorites => _favorites;
+	set favorites(List<TimelineEntry> value)
+	{
+		if(_favorites == value)
+		{
+			return;
+		}
+		_favorites = value;
         markNeedsPaint();
 		markNeedsLayout();
 	}
@@ -369,6 +387,7 @@ class TimelineRenderObject extends RenderBox
 		_nextEntryRect = null;
 		if(_timeline.nextEntry != null && _timeline.nextEntryOpacity > 0.0)
 		{
+			double x = offset.dx + _timeline.gutterWidth - Timeline.GutterLeft;
 			double opacity = _timeline.nextEntryOpacity;
 			Color color = Color.fromRGBO(69, 211, 197, opacity);
 			double pageSize = (_timeline.renderEnd-_timeline.renderStart);
@@ -386,24 +405,24 @@ class TimelineRenderObject extends RenderBox
 			labelParagraph.layout(new ui.ParagraphConstraints(width: MaxLabelWidth));	
 
 			double y = offset.dy + size.height - 200.0;
-			double x = offset.dx + size.width/2.0 - labelParagraph.maxIntrinsicWidth/2.0;
-			canvas.drawParagraph(labelParagraph, new Offset(x, y));
+			double labelX = x + size.width/2.0 - labelParagraph.maxIntrinsicWidth/2.0;
+			canvas.drawParagraph(labelParagraph, new Offset(labelX, y));
 			y += labelParagraph.height;
 
-			_nextEntryRect = new Rect.fromLTWH(x, y, labelParagraph.maxIntrinsicWidth, offset.dy+size.height-y);
+			_nextEntryRect = new Rect.fromLTWH(labelX, y, labelParagraph.maxIntrinsicWidth, offset.dy+size.height-y);
 
 
 			const double radius = 25.0;
-			x = offset.dx + size.width/2.0;
+			labelX = x + size.width/2.0;
 			y += 15+radius;
-			canvas.drawCircle(new Offset(x, y), radius, new Paint()..color=color..style=PaintingStyle.fill);
-			_nextEntryRect.expandToInclude(Rect.fromLTWH(x-radius, y-radius, radius*2.0, radius*2.0));
+			canvas.drawCircle(new Offset(labelX, y), radius, new Paint()..color=color..style=PaintingStyle.fill);
+			_nextEntryRect.expandToInclude(Rect.fromLTWH(labelX-radius, y-radius, radius*2.0, radius*2.0));
 			Path path = new Path();
 			double arrowSize = 6.0;
 			double arrowOffset = 1.0;
-			path.moveTo(offset.dx + size.width/2.0-arrowSize, y-arrowSize+arrowSize/2.0+arrowOffset);
-			path.lineTo(offset.dx + size.width/2.0, y+arrowSize/2.0+arrowOffset);
-			path.lineTo(offset.dx + size.width/2.0+arrowSize, y-arrowSize+arrowSize/2.0+arrowOffset);
+			path.moveTo(x + size.width/2.0-arrowSize, y-arrowSize+arrowSize/2.0+arrowOffset);
+			path.lineTo(x + size.width/2.0, y+arrowSize/2.0+arrowOffset);
+			path.lineTo(x + size.width/2.0+arrowSize, y-arrowSize+arrowSize/2.0+arrowOffset);
 			canvas.drawPath(path, new  Paint()..color=Colors.white.withOpacity(opacity)..style=PaintingStyle.stroke..strokeWidth=2.0);
 			y += 15+radius;
 
@@ -424,9 +443,177 @@ class TimelineRenderObject extends RenderBox
 			builder.addText(until);
 			labelParagraph = builder.build();
 			labelParagraph.layout(new ui.ParagraphConstraints(width: size.width));			
-			canvas.drawParagraph(labelParagraph, new Offset(offset.dx, y));
+			canvas.drawParagraph(labelParagraph, new Offset(x, y));
 			y += labelParagraph.height;
+		}
 
+		double favoritesGutter = _timeline.gutterWidth - Timeline.GutterLeft;
+		if(_favorites != null && _favorites.length > 0 && favoritesGutter > 0.0)
+		{
+			double scale = timeline.computeScale(timeline.renderStart, timeline.renderEnd);
+			double fullMargin = 50.0;
+			double favoritesRadius = 20.0;
+			double fullMarginOffset = fullMargin + favoritesRadius + 11.0;
+			double x = offset.dx - fullMargin + favoritesGutter/(Timeline.GutterLeftExpanded-Timeline.GutterLeft) * fullMarginOffset;
+
+			double padFavorites = 20.0;
+
+			// Order favorites by distance from mid.
+			List<TimelineEntry> nearbyFavorites = new List<TimelineEntry>.from(_favorites);
+			double mid = timeline.renderStart + (timeline.renderEnd-timeline.renderStart)/2.0;
+			nearbyFavorites.sort((TimelineEntry a, TimelineEntry b)
+			{
+				return (a.start-mid).abs().compareTo((b.start-mid).abs());
+			});
+
+			// layout favorites.
+			for(int i = 0; i < nearbyFavorites.length; i++)
+			{
+				TimelineEntry favorite = nearbyFavorites[i];
+				double y = ((favorite.start-timeline.renderStart)*scale).clamp(offset.dy + topOverlap + favoritesRadius + padFavorites, offset.dy + size.height - favoritesRadius - padFavorites);
+				favorite.favoriteY = y;
+				//print("F ${favorite.label} $y");
+
+				// Check all closer events to see if this one is occluded by a previous closer one.
+				// Works because we sorted by distance.
+				favorite.isFavoriteOccluded = false;
+				for(int j = 0; j < i; j++)
+				{	
+					TimelineEntry closer = nearbyFavorites[j];
+					if((favorite.favoriteY - closer.favoriteY).abs() <= 1.0)
+					{
+						favorite.isFavoriteOccluded = true;
+						break;
+					}
+				}
+			}
+			
+			for(TimelineEntry favorite in nearbyFavorites.reversed)
+			{
+				if(favorite.isFavoriteOccluded)
+				{
+					continue;
+				}
+				double y = favorite.favoriteY;//((favorite.start-timeline.renderStart)*scale).clamp(offset.dy + topOverlap + favoritesRadius + padFavorites, offset.dy + size.height - favoritesRadius - padFavorites);
+
+				canvas.drawCircle(new Offset(x, y), favoritesRadius, new Paint()..color=Colors.white..style=PaintingStyle.fill);
+				canvas.drawCircle(new Offset(x, y), favoritesRadius, new Paint()..color=favoritesGutterAccent..style=PaintingStyle.stroke..strokeWidth=2.0);
+
+				TimelineAsset asset = favorite.asset;
+				double assetSize = 40.0;
+				Size renderSize = new Size(assetSize, assetSize);
+				Offset renderOffset = new Offset(x - assetSize/2.0, y - assetSize/2.0);
+
+				Alignment alignment = Alignment.center;
+				BoxFit fit = BoxFit.cover;
+
+				if(asset is TimelineNima && asset.actorStatic != null)
+				{
+					nima.AABB bounds = asset.setupAABB;
+					
+					double contentHeight = bounds[3] - bounds[1];
+					double contentWidth = bounds[2] - bounds[0];
+					double x = -bounds[0] - contentWidth/2.0 - (alignment.x * contentWidth/2.0) + asset.offset;
+					double y =  -bounds[1] - contentHeight/2.0 + (alignment.y * contentHeight/2.0);
+
+					
+					double scaleX = 1.0, scaleY = 1.0;
+
+					canvas.save();		
+					canvas.clipRRect(RRect.fromRectAndRadius(renderOffset & renderSize, Radius.circular(favoritesRadius)));
+
+					switch(fit)
+					{
+						case BoxFit.fill:
+							scaleX = renderSize.width/contentWidth;
+							scaleY = renderSize.height/contentHeight;
+							break;
+						case BoxFit.contain:
+							double minScale = min(renderSize.width/contentWidth, renderSize.height/contentHeight);
+							scaleX = scaleY = minScale;
+							break;
+						case BoxFit.cover:
+							double maxScale = max(renderSize.width/contentWidth, renderSize.height/contentHeight);
+							scaleX = scaleY = maxScale;
+							break;
+						case BoxFit.fitHeight:
+							double minScale = renderSize.height/contentHeight;
+							scaleX = scaleY = minScale;
+							break;
+						case BoxFit.fitWidth:
+							double minScale = renderSize.width/contentWidth;
+							scaleX = scaleY = minScale;
+							break;
+						case BoxFit.none:
+							scaleX = scaleY = 1.0;
+							break;
+						case BoxFit.scaleDown:
+							double minScale = min(renderSize.width/contentWidth, renderSize.height/contentHeight);
+							scaleX = scaleY = minScale < 1.0 ? minScale : 1.0;
+							break;
+					}
+					
+					canvas.translate(renderOffset.dx + renderSize.width/2.0 + (alignment.x * renderSize.width/2.0), renderOffset.dy + renderSize.height/2.0 + (alignment.y * renderSize.height/2.0));
+					canvas.scale(scaleX, -scaleY);
+					canvas.translate(x, y);
+					
+					asset.actorStatic.draw(canvas);
+					canvas.restore();
+					_tapTargets.add(new TapTarget()..entry=asset.entry..rect=renderOffset & renderSize..zoom=true);
+				}
+				else if(asset is TimelineFlare && asset.actorStatic != null)
+				{
+					flare.AABB bounds = asset.setupAABB;
+					double contentWidth = bounds[2] - bounds[0];
+					double contentHeight = bounds[3] - bounds[1];
+					double x = -bounds[0] - contentWidth/2.0 - (alignment.x * contentWidth/2.0) + asset.offset;
+					double y =  -bounds[1] - contentHeight/2.0 + (alignment.y * contentHeight/2.0);
+
+					double scaleX = 1.0, scaleY = 1.0;
+
+					canvas.save();		
+					canvas.clipRRect(RRect.fromRectAndRadius(renderOffset & renderSize, Radius.circular(favoritesRadius)));
+
+					switch(fit)
+					{
+						case BoxFit.fill:
+							scaleX = renderSize.width/contentWidth;
+							scaleY = renderSize.height/contentHeight;
+							break;
+						case BoxFit.contain:
+							double minScale = min(renderSize.width/contentWidth, renderSize.height/contentHeight);
+							scaleX = scaleY = minScale;
+							break;
+						case BoxFit.cover:
+							double maxScale = max(renderSize.width/contentWidth, renderSize.height/contentHeight);
+							scaleX = scaleY = maxScale;
+							break;
+						case BoxFit.fitHeight:
+							double minScale = renderSize.height/contentHeight;
+							scaleX = scaleY = minScale;
+							break;
+						case BoxFit.fitWidth:
+							double minScale = renderSize.width/contentWidth;
+							scaleX = scaleY = minScale;
+							break;
+						case BoxFit.none:
+							scaleX = scaleY = 1.0;
+							break;
+						case BoxFit.scaleDown:
+							double minScale = min(renderSize.width/contentWidth, renderSize.height/contentHeight);
+							scaleX = scaleY = minScale < 1.0 ? minScale : 1.0;
+							break;
+					}
+					
+					canvas.translate(renderOffset.dx + renderSize.width/2.0 + (alignment.x * renderSize.width/2.0), renderOffset.dy + renderSize.height/2.0 + (alignment.y * renderSize.height/2.0));
+					canvas.scale(scaleX, scaleY);
+					canvas.translate(x, y);
+
+					asset.actorStatic.draw(canvas);
+					canvas.restore();
+					_tapTargets.add(new TapTarget()..entry=asset.entry..rect=renderOffset & renderSize..zoom=true);
+				}	
+			}
 		}
 	}
 

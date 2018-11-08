@@ -106,6 +106,14 @@ class TickColors
 	double screenY;
 }
 
+class HeaderColors
+{
+	Color background;
+	Color text;
+	double start;
+	double screenY;
+}
+
 class Timeline
 {
 	double _start = 0.0;
@@ -116,7 +124,8 @@ class Timeline
 	double _height = 0.0;
 	List<TimelineBackgroundColor> _backgroundColors;
 	List<TickColors> _tickColors;
-	TickColors _headerColors;
+	List<HeaderColors> _headerColors;
+	HeaderColors _currentHeaderColors;
 	Color _headerTextColor;
 	Color _headerBackgroundColor;
 	List<TimelineEntry> _entries;
@@ -144,7 +153,7 @@ class Timeline
 	List<TimelineEntry> get entries => _entries;
 	List<TimelineBackgroundColor> get backgroundColors => _backgroundColors;
 	List<TickColors> get tickColors => _tickColors;
-	TickColors get headerColors => _headerColors;
+	HeaderColors get currentHeaderColors => _currentHeaderColors;
 	Color get headerTextColor => _headerTextColor;
 	Color get headerBackgroundColor => _headerBackgroundColor;
 	double get renderOffsetDepth => _renderOffsetDepth;
@@ -294,6 +303,7 @@ class Timeline
 
 		_backgroundColors = new List<TimelineBackgroundColor>();
 		_tickColors = new List<TickColors>();
+		_headerColors = new List<HeaderColors>();
 		for(dynamic entry in jsonEntries)
 		{
 			Map map = entry as Map;
@@ -368,6 +378,35 @@ class Timeline
 								..background = bgColor
 								..long = longColor
 								..short = shortColor
+								..text = textColor
+								..start = timelineEntry.start
+								..screenY = 0.0
+						);
+					}
+				}
+
+				if(map.containsKey("header"))
+				{
+					dynamic header = map["header"];
+					if(header is Map)
+					{
+						Color bgColor = Colors.black;
+						Color textColor = Colors.black;
+
+						dynamic bg = header["background"];
+						if(bg is List && bg.length >= 3)
+						{
+							bgColor = new Color.fromARGB(bg.length > 3 ? bg[3] as int : 255, bg[0] as int, bg[1] as int, bg[2] as int);
+						}
+						dynamic text = header["text"];
+						if(text is List && text.length >= 3)
+						{
+							textColor = new Color.fromARGB(text.length > 3 ? text[3] as int : 255, text[0] as int, text[1] as int, text[2] as int);
+						}
+						
+						_headerColors.add(
+							new HeaderColors()
+								..background = bgColor
 								..text = textColor
 								..start = timelineEntry.start
 								..screenY = 0.0
@@ -785,6 +824,23 @@ class Timeline
 		return screen < _tickColors.first.screenY ? _tickColors.first : _tickColors.last;
 	}
 
+	HeaderColors findHeaderColors(double screen)
+	{
+		if(_headerColors == null)
+		{
+			return null;
+		}
+		for(HeaderColors color in _headerColors.reversed)
+		{
+			if(screen >= color.screenY)
+			{
+				return color;
+			}
+		}
+
+		return screen < _headerColors.first.screenY ? _headerColors.first : _headerColors.last;
+	}
+
 	bool advance(double elapsed, bool animate)
 	{
 		double scale = _height/(_renderEnd-_renderStart);
@@ -860,20 +916,29 @@ class Timeline
 				lastStart = color.start;
 			}
 		}
+		if(_headerColors != null && _headerColors.length > 0)
+		{
+			double lastStart = _headerColors.first.start;
+			for(HeaderColors color in _headerColors)
+			{
+				color.screenY = (lastStart+(color.start-lastStart/2.0)-_renderStart)*scale;
+				lastStart = color.start;
+			}
+		}
 
-		_headerColors = findTickColors(0.0);
+		_currentHeaderColors = findHeaderColors(0.0);
 
-		if(_headerColors != null)
+		if(_currentHeaderColors != null)
 		{
 			if(_headerTextColor == null)
 			{
-				_headerTextColor = _headerColors.text;
-				_headerBackgroundColor = _headerColors.background;
+				_headerTextColor = _currentHeaderColors.text;
+				_headerBackgroundColor = _currentHeaderColors.background;
 			}
 			else
 			{
 				bool stillColoring = false;
-				Color headerTextColor = interpolateColor(_headerTextColor, _headerColors.text, elapsed);
+				Color headerTextColor = interpolateColor(_headerTextColor, _currentHeaderColors.text, elapsed);
 				
 				if(headerTextColor != _headerTextColor)
 				{
@@ -881,7 +946,7 @@ class Timeline
 					stillColoring = true;
 					doneRendering = false;
 				}
-				Color headerBackgroundColor = interpolateColor(_headerBackgroundColor, _headerColors.background, elapsed);
+				Color headerBackgroundColor = interpolateColor(_headerBackgroundColor, _currentHeaderColors.background, elapsed);
 				if(headerBackgroundColor != _headerBackgroundColor)
 				{
 					_headerBackgroundColor = headerBackgroundColor;

@@ -22,6 +22,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		2A191E352193C66000F02DD6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2A93994F218F941C00D9CBDB /* Pods.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 6BCB7B1643E5880DBEAFE13D6E93BE88;
+			remoteInfo = url_launcher;
+		};
 		2A939955218F941C00D9CBDB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 2A93994F218F941C00D9CBDB /* Pods.xcodeproj */;
@@ -101,6 +108,7 @@
 				2A939956218F941C00D9CBDB /* libPods-Runner.a */,
 				2A939958218F941C00D9CBDB /* libshare.a */,
 				2A93995A218F941C00D9CBDB /* libshared_preferences.a */,
+				2A191E362193C66000F02DD6 /* liburl_launcher.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -243,6 +251,13 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
+		2A191E362193C66000F02DD6 /* liburl_launcher.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = liburl_launcher.a;
+			remoteRef = 2A191E352193C66000F02DD6 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		2A939956218F941C00D9CBDB /* libPods-Runner.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;

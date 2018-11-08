@@ -3,13 +3,13 @@
 		"date": -13800000000,
 		"label": "Big Bang",
 		"article":"big_bang.txt",
-		"background": [13, 36, 55],
+		"background": [8, 49, 88],
 		"ticks": 
 		{
-			"background": [3, 26, 45],
-			"long": [255, 255, 255],
-			"short": [255, 255, 255],
-			"text": [255, 255, 255]
+			"background": [32, 69, 104, 240],
+			"long": [255, 255, 255, 75],
+			"short": [255, 255, 255, 51],
+			"text": [255, 255, 255, 157]
 		},
 		"asset": 
 		{
@@ -74,13 +74,13 @@
 		"start": -4000000000,
 		"label": "Life on Earth",
 		"article": "life_on_earth.txt",
-		"background": [77, 111, 131],
+		"background": [31, 89, 143],
 		"ticks": 
 		{
-			"background": [67, 101, 121],
-			"long": [255, 255, 255],
-			"short": [255, 255, 255],
-			"text": [255, 255, 255]
+			"background": [27, 79, 128, 240],
+			"long": [255, 255, 255, 75],
+			"short": [255, 255, 255, 51],
+			"text": [255, 255, 255, 157]
 		},
 
 		"asset": 
@@ -108,13 +108,13 @@
 		"start": -600000000,
 		"label": "Animals",
 		"article":"animals.txt",
-		"background": [132, 162, 164],
+		"background": [132, 175, 214],
 		"ticks": 
 		{
-			"background": [67, 101, 121],
-			"long": [255, 255, 255],
-			"short": [255, 255, 255],
-			"text": [255, 255, 255]
+			"background": [113, 152, 188, 240],
+			"long": [255, 255, 255, 75],
+			"short": [255, 255, 255, 51],
+			"text": [255, 255, 255, 157]
 		}
 	},
 	{
@@ -198,10 +198,10 @@
 		"background": [255, 255, 255],
 		"ticks": 
 		{
-			"background": [245, 245, 245],
-			"long": [0, 0, 0],
-			"short": [0, 0, 0],
-			"text": [0, 0, 0]
+			"background": [245, 245, 245, 240],
+			"long": [0, 0, 0, 60],
+			"short": [0, 0, 0, 35],
+			"text": [0, 0, 0, 110]
 		}
 	},
 	{

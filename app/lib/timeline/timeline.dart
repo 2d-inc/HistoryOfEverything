@@ -132,6 +132,7 @@ class Timeline
 	List<TimelineEntry> _entries;
 	Map<String, TimelineEntry> _entriesById = new Map<String, TimelineEntry>();
 	List<TimelineAsset> _renderAssets;
+	double _firstOnScreenEntryY = 0.0;
 	double _lastEntryY = 0.0;
 	double _lastOnScreenEntryY = 0.0;
 	double _offsetDepth = 0.0;
@@ -142,12 +143,18 @@ class Timeline
 	bool _isInteracting = false;
 	double _lastAssetY = 0.0;
 	bool _isActive = false;
-	TimelineEntry _nextEntry;
-	TimelineEntry _renderNextEntry;
 	TimelineEntry _currentEra;
 	TimelineEntry _lastEra;
+
+	TimelineEntry _nextEntry;
+	TimelineEntry _renderNextEntry;
 	double _nextEntryOpacity = 0.0;
 	double _distanceToNextEntry = 0.0;
+
+	TimelineEntry _prevEntry;
+	TimelineEntry _renderPrevEntry;
+	double _prevEntryOpacity = 0.0;
+	double _distanceToPrevEntry = 0.0;
 
 	TimelineEntry get currentEra => _currentEra;
 
@@ -308,6 +315,8 @@ class Timeline
 
 	TimelineEntry get nextEntry => _renderNextEntry;
 	double get nextEntryOpacity => _nextEntryOpacity;
+	TimelineEntry get prevEntry => _renderPrevEntry;
+	double get prevEntryOpacity => _prevEntryOpacity;
 
 	Future<List<TimelineEntry>> loadFromBundle(String filename) async
 	{
@@ -1039,11 +1048,13 @@ class Timeline
 
 		_lastEntryY = -double.maxFinite;
 		_lastOnScreenEntryY = 0.0;
+		_firstOnScreenEntryY = double.maxFinite;
 		_lastAssetY = -double.maxFinite;
 		_labelX = 0.0;
 		_offsetDepth = 0.0;
 		_currentEra = null;
 		_nextEntry = null;
+		_prevEntry = null;
 		if(_entries != null)
 		{
 			if(advanceItems(_entries, _gutterWidth + LineSpacing, scale, elapsed, animate, 0))
@@ -1075,7 +1086,26 @@ class Timeline
 			doneRendering = false;
 			_nextEntryOpacity += dt * min(1.0, elapsed*10.0);
 		}
+
+
+		if(_prevEntryOpacity == 0.0)
+		{
+			_renderPrevEntry = _prevEntry;
+		}
 	
+		double targetPrevEntryOpacity = _firstOnScreenEntryY < _height/2.0 || !_isSteady || _distanceToPrevEntry < 0.01 || _prevEntry != _renderPrevEntry  ? 0.0 : 1.0;
+		dt = targetPrevEntryOpacity - _prevEntryOpacity;
+
+		if(!animate || dt.abs() < 0.01)
+		{
+			_prevEntryOpacity = targetPrevEntryOpacity;	
+		}
+		else
+		{
+			doneRendering = false;
+			_prevEntryOpacity += dt * min(1.0, elapsed*10.0);
+		}
+
 		double dl = _labelX - _renderLabelX;
 		if(!animate || dl.abs() < 1.0)
 		{
@@ -1241,6 +1271,10 @@ class Timeline
 				if(_lastEntryY < _height && _lastEntryY > 0)
 				{
 					_lastOnScreenEntryY = _lastEntryY;
+					if(_firstOnScreenEntryY == double.maxFinite)
+					{
+						_firstOnScreenEntryY = _lastEntryY;
+					}
 				}
 			}
 
@@ -1268,6 +1302,8 @@ class Timeline
 			else if(endY < -itemBubbleHeight)
 			{
 				item.labelY = y;
+				_prevEntry = item;
+				_distanceToPrevEntry = ((y - _height)/_height).abs();
 			}
 
 			double lx = x + LineSpacing + LineSpacing;

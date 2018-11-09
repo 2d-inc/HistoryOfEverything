@@ -82,7 +82,6 @@ class TimelineRenderObject extends RenderBox
 	Ticks _ticks = new Ticks();
 	Timeline _timeline;
 	MenuItemData _focusItem;
-	Rect _nextEntryRect;
 
 	double topOverlap = 0.0;
 	TouchBubbleCallback touchBubble;
@@ -146,23 +145,16 @@ class TimelineRenderObject extends RenderBox
 	@override
 	bool hitTestSelf(Offset screenOffset)
 	{
-		if(_timeline.nextEntryOpacity > 0.1 && timeline.nextEntry != null && _nextEntryRect != null && _nextEntryRect.contains(screenOffset))
+		touchEntry(null);
+		for(TapTarget bubble in _tapTargets.reversed)
 		{
-			touchEntry(timeline.nextEntry);
-		}
-		else
-		{
-			touchEntry(null);
-			for(TapTarget bubble in _tapTargets.reversed)
+			if(bubble.rect.contains(screenOffset))
 			{
-				if(bubble.rect.contains(screenOffset))
+				if(touchBubble != null)
 				{
-					if(touchBubble != null)
-					{
-						touchBubble(bubble);
-					}
-					return true;
+					touchBubble(bubble);
 				}
+				return true;
 			}
 		}
 		touchBubble(null);
@@ -391,7 +383,6 @@ class TimelineRenderObject extends RenderBox
 			canvas.restore();
 		}
 
-		_nextEntryRect = null;
 		if(_timeline.nextEntry != null && _timeline.nextEntryOpacity > 0.0)
 		{
 			double x = offset.dx + _timeline.gutterWidth - Timeline.GutterLeft;
@@ -416,14 +407,14 @@ class TimelineRenderObject extends RenderBox
 			canvas.drawParagraph(labelParagraph, new Offset(labelX, y));
 			y += labelParagraph.height;
 
-			_nextEntryRect = new Rect.fromLTWH(labelX, y, labelParagraph.maxIntrinsicWidth, offset.dy+size.height-y);
+			Rect nextEntryRect = new Rect.fromLTWH(labelX, y, labelParagraph.maxIntrinsicWidth, offset.dy+size.height-y);
 
 
 			const double radius = 25.0;
 			labelX = x + size.width/2.0;
 			y += 15+radius;
 			canvas.drawCircle(new Offset(labelX, y), radius, new Paint()..color=color..style=PaintingStyle.fill);
-			_nextEntryRect.expandToInclude(Rect.fromLTWH(labelX-radius, y-radius, radius*2.0, radius*2.0));
+			nextEntryRect.expandToInclude(Rect.fromLTWH(labelX-radius, y-radius, radius*2.0, radius*2.0));
 			Path path = new Path();
 			double arrowSize = 6.0;
 			double arrowOffset = 1.0;
@@ -452,6 +443,72 @@ class TimelineRenderObject extends RenderBox
 			labelParagraph.layout(new ui.ParagraphConstraints(width: size.width));			
 			canvas.drawParagraph(labelParagraph, new Offset(x, y));
 			y += labelParagraph.height;
+
+			_tapTargets.add(new TapTarget()..entry=_timeline.nextEntry..rect=nextEntryRect..zoom=true);
+		}
+
+		if(_timeline.prevEntry != null && _timeline.prevEntryOpacity > 0.0)
+		{
+			double x = offset.dx + _timeline.gutterWidth - Timeline.GutterLeft;
+			double opacity = _timeline.prevEntryOpacity;
+			Color color = Color.fromRGBO(69, 211, 197, opacity);
+			double pageSize = (_timeline.renderEnd-_timeline.renderStart);
+			double pageReference = _timeline.renderEnd;//_timeline.renderStart + pageSize/2.0;
+
+			const double MaxLabelWidth = 1200.0;
+			ui.ParagraphBuilder builder = new ui.ParagraphBuilder(new ui.ParagraphStyle(
+				textAlign:TextAlign.start,
+				fontFamily: "Roboto",
+				fontSize: 20.0
+			))..pushStyle(new ui.TextStyle(color:color));
+
+			builder.addText(_timeline.prevEntry.label);
+			ui.Paragraph labelParagraph = builder.build();
+			labelParagraph.layout(new ui.ParagraphConstraints(width: MaxLabelWidth));	
+
+			double y = offset.dy + topOverlap + 20.0;//+ size.height - 200.0;
+			double labelX = x + size.width/2.0 - labelParagraph.maxIntrinsicWidth/2.0;
+			canvas.drawParagraph(labelParagraph, new Offset(labelX, y));
+			y += labelParagraph.height;
+
+			Rect prevEntryRect = new Rect.fromLTWH(labelX, y, labelParagraph.maxIntrinsicWidth, offset.dy+size.height-y);
+
+
+			const double radius = 25.0;
+			labelX = x + size.width/2.0;
+			y += 15+radius;
+			canvas.drawCircle(new Offset(labelX, y), radius, new Paint()..color=color..style=PaintingStyle.fill);
+			prevEntryRect.expandToInclude(Rect.fromLTWH(labelX-radius, y-radius, radius*2.0, radius*2.0));
+			Path path = new Path();
+			double arrowSize = 6.0;
+			double arrowOffset = 1.0;
+			path.moveTo(x + size.width/2.0-arrowSize, y+arrowSize/2.0+arrowOffset);
+			path.lineTo(x + size.width/2.0, y-arrowSize/2.0+arrowOffset);
+			path.lineTo(x + size.width/2.0+arrowSize, y+arrowSize/2.0+arrowOffset);
+			canvas.drawPath(path, new  Paint()..color=Colors.white.withOpacity(opacity)..style=PaintingStyle.stroke..strokeWidth=2.0);
+			y += 15+radius;
+
+
+			builder = new ui.ParagraphBuilder(new ui.ParagraphStyle(
+				textAlign:TextAlign.center,
+				fontFamily: "Roboto",
+				fontSize: 14.0,
+				lineHeight: 1.3
+			))..pushStyle(new ui.TextStyle(color:color));
+
+
+			double timeUntil = _timeline.prevEntry.start - pageReference;
+			double pages = timeUntil/pageSize;
+			NumberFormat formatter = new NumberFormat.compact();
+			String pagesFormatted = formatter.format(pages.abs());
+			String until = TimelineEntry.formatYears(timeUntil).toLowerCase() + " ago\n($pagesFormatted page scrolls)";
+			builder.addText(until);
+			labelParagraph = builder.build();
+			labelParagraph.layout(new ui.ParagraphConstraints(width: size.width));			
+			canvas.drawParagraph(labelParagraph, new Offset(x, y));
+			y += labelParagraph.height;
+
+			_tapTargets.add(new TapTarget()..entry=_timeline.prevEntry..rect=prevEntryRect..zoom=true);
 		}
 
 		double favoritesGutter = _timeline.gutterWidth - Timeline.GutterLeft;

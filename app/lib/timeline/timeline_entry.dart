@@ -83,6 +83,8 @@ class TimelineEntry
 	double labelOpacity = 0.0;
 	double targetLabelOpacity = 0.0;
 	double delayLabel = 0.0;
+	double targetAssetOpacity = 0.0;
+	double delayAsset = 0.0;
 	double legOpacity = 0.0;
 	double labelY = 0.0;
 	double labelVelocity = 0.0;

@@ -110,6 +110,7 @@
 			"height": 1210,
 			"intro":"Transformation",
 			"idle":"Life on Earth",
+			"scale":0.5,
 			"offset":500,
 			"bounds":[-581,-633,629,577]
 		}

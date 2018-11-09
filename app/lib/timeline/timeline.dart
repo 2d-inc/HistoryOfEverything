@@ -513,7 +513,7 @@ class Timeline
 								flareAsset.actor.advance(0.0);
 
 								flareAsset.setupAABB = flareAsset.actor.computeAABB();
-								print("${timelineEntry.label} ${flareAsset.setupAABB}");
+								//print("${timelineEntry.label} ${flareAsset.setupAABB}");
 								flareAsset.animation.apply(flareAsset.animationTime, flareAsset.actor, 1.0);
 								flareAsset.animation.apply(flareAsset.animation.duration, flareAsset.actorStatic, 1.0);
 								flareAsset.actor.advance(0.0);
@@ -537,7 +537,9 @@ class Timeline
 																					bounds[1] is int ? bounds[1].toDouble() : bounds[1],
 																					bounds[2] is int ? bounds[2].toDouble() : bounds[2],
 																					bounds[3] is int ? bounds[3].toDouble() : bounds[3]);
+									//print("UPDATE ${flareAsset.setupAABB}");
 								}
+								
 							}
 							break;
 						case "nma":
@@ -563,7 +565,7 @@ class Timeline
 								nimaAsset.actor.advance(0.0);
 								
 								nimaAsset.setupAABB = nimaAsset.actor.computeAABB();
-								print("${timelineEntry.label} ${nimaAsset.setupAABB}");
+								//print("${timelineEntry.label} ${nimaAsset.setupAABB}");
 								nimaAsset.animation.apply(nimaAsset.animationTime, nimaAsset.actor, 1.0);
 								nimaAsset.animation.apply(nimaAsset.animation.duration, nimaAsset.actorStatic, 1.0);
 								nimaAsset.actor.advance(0.0);
@@ -704,6 +706,10 @@ class Timeline
 
 	clampScroll()
 	{
+		_scrollMetrics = null;
+		_scrollPhysics = null;
+		_scrollSimulation = null;
+		
 		double scale = computeScale(_start, _end);
 		double padTop = (_padding.top + ViewportPaddingTop)/scale;
 		double padBottom = (_padding.bottom + ViewportPaddingBottom)/scale;
@@ -726,6 +732,10 @@ class Timeline
 			{
 				_end = _timeMax + padBottom;
 			}
+		}
+		if(_end < _start)
+		{
+			_end = _start + _height/scale;
 		}
 		// _start = max(_start, _first.start - padTop);
 		// _end = min(_end, _last.end + padBottom);
@@ -916,7 +926,7 @@ class Timeline
 			_end = _start + range;
 			// double velocity = _scrollSimulation.dx(_simulationTime);
 			
-			// double displace = velocity*elapsed * scale;
+			// double displace = velocity*elapsed / scale;
 			
 			// _start -= displace;
 			// _end -= displace;
@@ -1145,6 +1155,7 @@ class Timeline
 			{
 				targetLabelOpacity = 0.0;
 				item.delayLabel -= elapsed;
+				stillAnimating = true;
 			}
 
 			double dt = targetLabelOpacity - item.labelOpacity;
@@ -1276,6 +1287,19 @@ class Timeline
 				double targetAssetY = thresholdAssetY-item.asset.height*AssetScreenScale/2.0; 
 				double targetAssetOpacity = (thresholdAssetY - _lastAssetY < 0 ? 0.0 : 1.0) * item.opacity * item.labelOpacity;
 
+				// Debounce asset becoming visible.
+				if(targetAssetOpacity > 0.0 && item.targetAssetOpacity != 1.0)
+				{
+					item.delayAsset = 0.5;
+				}
+				item.targetAssetOpacity = targetAssetOpacity;
+				if(item.delayAsset > 0.0)
+				{
+					targetAssetOpacity = 0.0;
+					item.delayAsset -= elapsed;
+					stillAnimating = true;
+				}
+				
 				double targetScale = targetAssetOpacity;
 				double targetScaleVelocity = targetScale - item.asset.scale;
 				if(!animate || targetScale == 0)

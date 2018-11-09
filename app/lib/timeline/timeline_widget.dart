@@ -141,6 +141,7 @@ class _TimelineWidgetState extends State<TimelineWidget>
 		{
 			timeline.clampScroll();
 		}
+		timeline.clampScroll();
 		timeline.setViewport(velocity: details.velocity.pixelsPerSecond.dy, animate: true);
 	}
 	

@@ -190,6 +190,20 @@ class _TimelineWidgetState extends State<TimelineWidget>
 		}
 	}
 
+	void _longPress()
+	{
+		EdgeInsets devicePadding = MediaQuery.of(context).padding;
+        if(_touchedBubble != null)
+        {
+			MenuItemData target = MenuItemData.fromEntry(_touchedBubble.entry);
+				
+			double topPadding = timeline.screenPaddingInTime(TopOverlap+devicePadding.top+target.padTop, target.start, target.end);
+			double bottomPadding = timeline.screenPaddingInTime(target.padBottom, target.start, target.end);
+
+			timeline.setViewport(start:target.start-topPadding, end:target.end+bottomPadding, animate: true);
+        }
+	}
+
 	void _tapDown(TapDownDetails details)
 	{
 		timeline.setViewport(velocity: 0.0, animate: true);
@@ -206,6 +220,7 @@ class _TimelineWidgetState extends State<TimelineWidget>
 		return Scaffold(
                 backgroundColor: Colors.white,
                 body: GestureDetector(
+				onLongPress: _longPress,
                 onTapDown: _tapDown,
                 onScaleStart: _scaleStart,
                 onScaleUpdate: _scaleUpdate,

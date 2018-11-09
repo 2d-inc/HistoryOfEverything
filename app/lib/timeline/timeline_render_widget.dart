@@ -689,7 +689,10 @@ class TimelineRenderObject extends RenderBox
 			}
 
 			double legOpacity = item.legOpacity * item.opacity;
-			canvas.drawCircle(new Offset(x + Timeline.LineWidth/2.0, item.y), Timeline.EdgeRadius, new Paint()..color = (item.accent != null ? item.accent : LineColors[depth%LineColors.length]).withOpacity(item.opacity));
+			Offset entryOffset = new Offset(x + Timeline.LineWidth/2.0, item.y);
+			canvas.drawCircle(entryOffset, Timeline.EdgeRadius, new Paint()..color = (item.accent != null ? item.accent : LineColors[depth%LineColors.length]).withOpacity(item.opacity));
+			// Make dots clickable
+			// _tapTargets.add(new TapTarget()..entry=item..rect=new Rect.fromCircle(center:entryOffset, radius:Timeline.EdgeRadius*5.0)..zoom=true);
 			if(legOpacity > 0.0)
 			{
 				Paint legPaint = new Paint()..color = (item.accent != null ? item.accent : LineColors[depth%LineColors.length]).withOpacity(legOpacity);

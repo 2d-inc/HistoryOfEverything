@@ -305,6 +305,9 @@ class TimelineRenderObject extends RenderBox
 						canvas.scale(scaleX, -scaleY);
 						canvas.translate(x, y);
 						
+						// Comment in to see the AABB
+						// canvas.drawRect(new Rect.fromLTRB(bounds[0], bounds[1], bounds[2], bounds[3]), new Paint()..color = (asset.entry.accent != null ? asset.entry.accent : LineColors[depth%LineColors.length]).withOpacity(0.5));
+
 						asset.actor.draw(canvas, asset.opacity);
 						canvas.restore();
 						_tapTargets.add(new TapTarget()..entry=asset.entry..rect=renderOffset & renderSize);
@@ -362,6 +365,9 @@ class TimelineRenderObject extends RenderBox
 						canvas.translate(renderOffset.dx + renderSize.width/2.0 + (alignment.x * renderSize.width/2.0), renderOffset.dy + renderSize.height/2.0 + (alignment.y * renderSize.height/2.0));
 						canvas.scale(scaleX, scaleY);
 						canvas.translate(x, y);
+
+						// Comment in to see the AABB
+						// canvas.drawRect(new Rect.fromLTRB(bounds[0], bounds[1], bounds[2], bounds[3]), new Paint()..color = (asset.entry.accent != null ? asset.entry.accent : LineColors[depth%LineColors.length]).withOpacity(0.5));
 
 						asset.actor.draw(canvas, opacity:asset.opacity);
 						canvas.restore();
@@ -683,10 +689,10 @@ class TimelineRenderObject extends RenderBox
 			}
 
 			double legOpacity = item.legOpacity * item.opacity;
-			canvas.drawCircle(new Offset(x + Timeline.LineWidth/2.0, item.y), Timeline.EdgeRadius, new Paint()..color = LineColors[depth%LineColors.length].withOpacity(item.opacity));
+			canvas.drawCircle(new Offset(x + Timeline.LineWidth/2.0, item.y), Timeline.EdgeRadius, new Paint()..color = (item.accent != null ? item.accent : LineColors[depth%LineColors.length]).withOpacity(item.opacity));
 			if(legOpacity > 0.0)
 			{
-				Paint legPaint = new Paint()..color = LineColors[depth%LineColors.length].withOpacity(legOpacity);
+				Paint legPaint = new Paint()..color = (item.accent != null ? item.accent : LineColors[depth%LineColors.length]).withOpacity(legOpacity);
 				canvas.drawRect(new Offset(x, item.y) & new Size(Timeline.LineWidth, item.length), legPaint);
 				canvas.drawCircle(new Offset(x + Timeline.LineWidth/2.0, item.y+item.length), Timeline.EdgeRadius, legPaint);
 			}
@@ -716,7 +722,7 @@ class TimelineRenderObject extends RenderBox
 			canvas.save();
 			canvas.translate(bubbleX, bubbleY);
 			Path bubble = makeBubblePath(textWidth + BubblePadding*2.0, BubbleHeight);
-			canvas.drawPath(bubble, new Paint()..color = LineColors[depth%LineColors.length].withOpacity(item.opacity*item.labelOpacity));
+			canvas.drawPath(bubble, new Paint()..color = (item.accent != null ? item.accent : LineColors[depth%LineColors.length]).withOpacity(item.opacity*item.labelOpacity));
 			canvas.clipRect(new Rect.fromLTWH(BubblePadding, 0.0, textWidth, BubbleHeight));
 			_tapTargets.add(new TapTarget()..entry=item..rect=Rect.fromLTWH(bubbleX, bubbleY, textWidth + BubblePadding*2.0, BubbleHeight));
 

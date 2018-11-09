@@ -19,11 +19,12 @@
 		"asset": 
 		{
 			"source": "Big_Bang/Big_Bang.flr",
-			"width": 2048,
-			"height": 2048,
-			"offset": 700,
+			"width": 3628,
+			"height": 3620,
+			"offset": 1500,
 			"gap": -1000, 
-			"loop": false
+			"loop": false,
+			"bounds":[-1814, -1810, 1814, 1810]
 		}
 	},
 	{
@@ -31,11 +32,14 @@
 		"label": "Birth of the Milky Way",
 		"id":"milky",
 		"article": "milky_way.txt",
+		"accent": [125, 195, 184, 255],
 		"asset": 
 		{
 			"source": "Milky Way/Milky Way.flr",
-			"width": 800,
-			"height": 800
+			"width": 1293,
+			"height": 1210,
+			"scale": 0.5,
+			"bounds":[-1616.5, -115.0, -323.5, 1095.0]
 		}
 	},
 	{
@@ -49,7 +53,8 @@
 			"height": 800,
 			"offset": -100,
 			"intro":"Sun_in",
-			"idle":"Sun_idle"
+			"idle":"Sun_idle",
+			"bounds":[-400.0, -400.0, 400.0, 400.0]
 		}
 	},
 	{
@@ -58,9 +63,12 @@
 		"article":"earth.txt",
 		"asset": 
 		{
-			"source": "EarthBorn.flr",
-			"width": 500,
-			"height": 500
+			"source": "HeavyBombardment.flr",
+			"width": 1210,
+			"height": 1210,
+			"scale": 0.25,
+			"idle":"Earth_is_born",
+			"bounds":[-581,-633,629,577]
 		}
 	},
 	{
@@ -70,9 +78,11 @@
 		"asset": 
 		{
 			"source": "HeavyBombardment.flr",
-			"width": 800,
-			"height": 800,
-			"idle":"Bombardmnet"
+			"width": 3774,
+			"height": 2675,
+			"scale": 0.25,
+			"idle":"Bombardmnet",
+			"bounds":[-598.0,-2075.5,3176,599.5]
 		}
 	},
 	{
@@ -96,11 +106,12 @@
 		"asset": 
 		{
 			"source": "HeavyBombardment.flr",
-			"width": 1000,
-			"height": 1000,
+			"width": 1210,
+			"height": 1210,
 			"intro":"Transformation",
 			"idle":"Life on Earth",
-			"offset":500
+			"offset":500,
+			"bounds":[-581,-633,629,577]
 		}
 	},
 	{
@@ -140,8 +151,10 @@
 		"asset": 
 		{
 			"source": "Fish_and_Stuff/Fish_and_Stuff.nma",
-			"width": 800,
-			"height": 400
+			"width": 1290,
+			"height": 650,
+			"scale": 0.65,
+			"bounds":[-549,-5,741,645]
 		}
 	},
 	{
@@ -306,7 +319,8 @@
 			"source": "Agricultural_evolution/Agricultural_evolution.nma",
 			"width": 528,
 			"height": 528,
-			"offset": -40
+			"offset": -40,
+			"loop":false
 		}
 	},
 	{
@@ -316,9 +330,11 @@
 		"asset": 
 		{
 			"source": "Writing/Writing.nma",
-			"width": 528,
-			"height": 528,
-			"offset": -40
+			"width": 900,
+			"height": 1200,
+			"scale": 0.5,
+			"offset": -40,
+			"bounds":[-459,4,441,1204]
 		}
 	},
 	{
@@ -340,9 +356,11 @@
 		"asset": 
 		{
 			"source": "Roma/Roma.nma",
-			"width": 528,
-			"height": 528,
-			"offset": -40
+			"width": 2100,
+			"height": 1375,
+			"scale": 0.5,
+			"offset": 0,
+			"bounds":[-1030,-7.5,1070,1367.5]
 		}
 	},
 	{
@@ -460,9 +478,11 @@
 		"asset": 
 		{
 			"source": "Darwin 2/Darwin 2.nma",
-			"width": 528,
-			"height": 528,
-			"offset": -140
+			"width": 1850,
+			"height": 2100,
+			"scale": 0.22,
+			"offset": 0,
+			"bounds":[-934,-859,916,1241]
 		}
 	},
 	{

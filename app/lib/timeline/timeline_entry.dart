@@ -1,4 +1,5 @@
 import "dart:ui" as ui;
+import 'dart:ui';
 import "package:nima/nima.dart" as nima;
 import "package:nima/nima/animation/actor_animation.dart" as nima;
 import "package:nima/nima/math/aabb.dart" as nima;
@@ -67,6 +68,8 @@ class TimelineEntry
 	String label;
 	String articleFilename;
 	String id;
+
+	Color accent;
 
 	TimelineEntry parent;
 	List<TimelineEntry> children;

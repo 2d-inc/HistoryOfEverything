@@ -355,6 +355,12 @@ class Timeline
 					}
 				}
 
+				dynamic accent = map["accent"];
+				if(accent is List && accent.length >= 3)
+				{
+					timelineEntry.accent = new Color.fromARGB(accent.length > 3 ? accent[3] as int : 255, accent[0] as int, accent[1] as int, accent[2] as int);
+				}
+
 				if(map.containsKey("ticks"))
 				{
 					dynamic ticks = map["ticks"];
@@ -507,6 +513,7 @@ class Timeline
 								flareAsset.actor.advance(0.0);
 
 								flareAsset.setupAABB = flareAsset.actor.computeAABB();
+								print("${timelineEntry.label} ${flareAsset.setupAABB}");
 								flareAsset.animation.apply(flareAsset.animationTime, flareAsset.actor, 1.0);
 								flareAsset.animation.apply(flareAsset.animation.duration, flareAsset.actorStatic, 1.0);
 								flareAsset.actor.advance(0.0);
@@ -521,6 +528,16 @@ class Timeline
 								flareAsset.offset = offset == null ? 0.0 : offset is int ? offset.toDouble() : offset;
 								dynamic gap = assetMap["gap"];
 								flareAsset.gap = gap == null ? 0.0 : gap is int ? gap.toDouble() : gap;
+
+								dynamic bounds = assetMap["bounds"];
+								if(bounds is List)
+								{
+									flareAsset.setupAABB = new flare.AABB.fromValues(
+																					bounds[0] is int ? bounds[0].toDouble() : bounds[0],
+																					bounds[1] is int ? bounds[1].toDouble() : bounds[1],
+																					bounds[2] is int ? bounds[2].toDouble() : bounds[2],
+																					bounds[3] is int ? bounds[3].toDouble() : bounds[3]);
+								}
 							}
 							break;
 						case "nma":
@@ -546,6 +563,7 @@ class Timeline
 								nimaAsset.actor.advance(0.0);
 								
 								nimaAsset.setupAABB = nimaAsset.actor.computeAABB();
+								print("${timelineEntry.label} ${nimaAsset.setupAABB}");
 								nimaAsset.animation.apply(nimaAsset.animationTime, nimaAsset.actor, 1.0);
 								nimaAsset.animation.apply(nimaAsset.animation.duration, nimaAsset.actorStatic, 1.0);
 								nimaAsset.actor.advance(0.0);
@@ -560,7 +578,16 @@ class Timeline
 								nimaAsset.offset = offset == null ? 0.0 : offset is int ? offset.toDouble() : offset;
 								dynamic gap = assetMap["gap"];
 								nimaAsset.gap = gap == null ? 0.0 : gap is int ? gap.toDouble() : gap;
-
+								dynamic bounds = assetMap["bounds"];
+								if(bounds is List)
+								{
+									nimaAsset.setupAABB = new nima.AABB.fromValues(
+																					bounds[0] is int ? bounds[0].toDouble() : bounds[0],
+																					bounds[1] is int ? bounds[1].toDouble() : bounds[1],
+																					bounds[2] is int ? bounds[2].toDouble() : bounds[2],
+																					bounds[3] is int ? bounds[3].toDouble() : bounds[3]);
+								}
+								
 							}
 							break;
 							
@@ -577,10 +604,18 @@ class Timeline
 							break;
 					}
 
+					double scale = 1.0;
+					if(assetMap.containsKey("scale"))
+					{
+						dynamic s = assetMap["scale"];
+						scale = s is int ? s.toDouble() : s;	
+					}
+
 					dynamic width = assetMap["width"];
-					asset.width = width is int ? width.toDouble() : width;
+					asset.width = (width is int ? width.toDouble() : width)*scale;
+					
 					dynamic height = assetMap["height"];
-					asset.height = height is int ? height.toDouble() : height;
+					asset.height = (height is int ? height.toDouble() : height)*scale;
 					asset.entry = timelineEntry;
 					//print("ENTRY ${timelineEntry.label} $asset");
 					timelineEntry.asset = asset;
@@ -600,7 +635,6 @@ class Timeline
 		{
 			return a.start.compareTo(b.start);
 		});
-		print("BG $_backgroundColors");
 
 		_timeMin = double.maxFinite;
 		_timeMax = -double.maxFinite;

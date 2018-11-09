@@ -229,7 +229,20 @@
 		}
 	},
 	{
-		"date": -66000000,
+		"date": -68000000,
+		"label": "Tyrannosaurus",
+		"article":"trex.txt",
+		"accent": [235, 155, 75, 255],
+		"asset": 
+		{
+			"source": "Trex.flr",
+			"width": 800,
+			"height": 570,
+			"offset":-200
+		}
+	},
+	{
+		"date": -65000001,
 		"label": "Dinosaur Extinction",
 		"article":"dino_extinction.txt",
 		"accent": [235, 155, 75, 255],

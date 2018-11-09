@@ -623,7 +623,11 @@ class TimelineRenderObject extends RenderBox
 					asset.actorStatic.draw(canvas);
 					canvas.restore();
 					_tapTargets.add(new TapTarget()..entry=asset.entry..rect=renderOffset & renderSize..zoom=true);
-				}	
+				}
+                else
+                {
+                    _tapTargets.add(TapTarget()..entry=favorite..rect=renderOffset & renderSize..zoom=true);
+                }	
 			}
 
 			// do labels

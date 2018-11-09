@@ -20,7 +20,11 @@ class FavoritesBloc
         {
             for(String f in favs)
             {
-                _favorites.add(entriesMap[f]);
+				TimelineEntry entry = entriesMap[f];
+				if(entry != null)
+				{
+                	_favorites.add(entry);
+				}
             }
         }
 		_favorites.sort((TimelineEntry a, TimelineEntry b)

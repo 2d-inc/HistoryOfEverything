@@ -705,8 +705,8 @@ class TimelineRenderObject extends RenderBox
 			}
 
 			const double MaxLabelWidth = 1200.0;
-			const double BubbleHeight = 55.0;
-			const double BubblePadding = 24.0;
+			const double BubblePadding = 20.0;
+			double bubbleHeight = timeline.bubbleHeight(item);
 
 			ui.ParagraphBuilder builder = new ui.ParagraphBuilder(new ui.ParagraphStyle(
 				textAlign:TextAlign.start,
@@ -724,17 +724,17 @@ class TimelineRenderObject extends RenderBox
 			// ctx.save();
 			// let bubbleX = labelX-DepthOffset*renderOffsetDepth;
 			double bubbleX = _timeline.renderLabelX-Timeline.DepthOffset*_timeline.renderOffsetDepth;
-			double bubbleY = item.labelY-BubbleHeight/2.0;
+			double bubbleY = item.labelY-bubbleHeight/2.0;
 			
 			canvas.save();
 			canvas.translate(bubbleX, bubbleY);
-			Path bubble = makeBubblePath(textWidth + BubblePadding*2.0, BubbleHeight);
+			Path bubble = makeBubblePath(textWidth + BubblePadding*2.0, bubbleHeight);
 			canvas.drawPath(bubble, new Paint()..color = (item.accent != null ? item.accent : LineColors[depth%LineColors.length]).withOpacity(item.opacity*item.labelOpacity));
-			canvas.clipRect(new Rect.fromLTWH(BubblePadding, 0.0, textWidth, BubbleHeight));
-			_tapTargets.add(new TapTarget()..entry=item..rect=Rect.fromLTWH(bubbleX, bubbleY, textWidth + BubblePadding*2.0, BubbleHeight));
+			canvas.clipRect(new Rect.fromLTWH(BubblePadding, 0.0, textWidth, bubbleHeight));
+			_tapTargets.add(new TapTarget()..entry=item..rect=Rect.fromLTWH(bubbleX, bubbleY, textWidth + BubblePadding*2.0, bubbleHeight));
 
 			
-			canvas.drawParagraph(labelParagraph, new Offset(BubblePadding, BubbleHeight/2.0-labelParagraph.height/2.0));
+			canvas.drawParagraph(labelParagraph, new Offset(BubblePadding, bubbleHeight/2.0-labelParagraph.height/2.0));
 			canvas.restore();
 			// if(item.asset != null)
 			// {

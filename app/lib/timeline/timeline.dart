@@ -269,6 +269,7 @@ class Timeline
 	static const double BubbleHeight = 50.0;
 	static const double BubbleArrowSize = 19.0;
 	static const double BubblePadding = 20.0;
+	static const double BubbleTextHeight = 20.0;
 	static const double AssetPadding = 30.0;
 	static const double Parallax = 100.0;
 	static const double AssetScreenScale = 0.3;
@@ -277,7 +278,7 @@ class Timeline
 
 	static const double ViewportPaddingTop = 120.0;
 	static const double ViewportPaddingBottom = 100.0;
-	static const double FadeAnimationStart = BubbleHeight + BubblePadding;///2.0 + BubblePadding;
+	//static const double FadeAnimationStart = BubbleHeight + BubblePadding;///2.0 + BubblePadding;
 	Simulation _scrollSimulation;
 	ScrollPhysics _scrollPhysics;
 	ScrollMetrics _scrollMetrics;
@@ -902,6 +903,11 @@ class Timeline
 
 	bool advance(double elapsed, bool animate)
 	{
+		if(_height <= 0)
+		{
+			// Done rendering. Need to wait for height.
+			return true;
+		}
 		double scale = _height/(_renderEnd-_renderStart);
 
 		bool doneRendering = true;
@@ -1107,6 +1113,11 @@ class Timeline
 		return doneRendering;
 	}
 
+	double bubbleHeight(TimelineEntry entry)
+	{
+		return BubblePadding*2.0 + entry.lineCount * BubbleTextHeight;
+	}
+
 	bool advanceItems(List<TimelineEntry> items, double x, double scale, double elapsed, bool animate, int depth)
 	{
 		bool stillAnimating = false;
@@ -1133,17 +1144,18 @@ class Timeline
 
 			item.length = endY - y;
 			double targetLabelY = y;
-
-			if(targetLabelY - _lastEntryY < FadeAnimationStart 
+			double itemBubbleHeight = bubbleHeight(item);
+			double fadeAnimationStart = itemBubbleHeight + BubblePadding/2.0;
+			if(targetLabelY - _lastEntryY < fadeAnimationStart 
 				// The best location for our label is occluded, lets see if we can bump it forward...
 				&& item.type == TimelineEntryType.Era
-				&& _lastEntryY + FadeAnimationStart < endY)
+				&& _lastEntryY + fadeAnimationStart < endY)
 			{
 				
-				targetLabelY = _lastEntryY + FadeAnimationStart + 0.5;
+				targetLabelY = _lastEntryY + fadeAnimationStart + 0.5;
 			}
 
-			double targetLabelOpacity = targetLabelY - _lastEntryY < FadeAnimationStart ? 0.0 : 1.0;
+			double targetLabelOpacity = targetLabelY - _lastEntryY < fadeAnimationStart ? 0.0 : 1.0;
 
 			// Debounce labels becoming visible.
 			if(targetLabelOpacity > 0.0 && item.targetLabelOpacity != 1.0)
@@ -1242,7 +1254,9 @@ class Timeline
 				_currentEra = item;
 			}
 
-			if(y > _height + BubbleHeight)
+			// Check if the bubble is out of view and set the y position to the
+			// target one directly.
+			if(y > _height + itemBubbleHeight)
 			{
 				item.labelY = y;
 				if(_nextEntry == null)
@@ -1250,9 +1264,8 @@ class Timeline
 					_nextEntry = item;
 					_distanceToNextEntry = (y - _height)/_height;
 				}
-				//continue;
 			}
-			else if(endY < -BubbleHeight)
+			else if(endY < -itemBubbleHeight)
 			{
 				item.labelY = y;
 			}
@@ -1290,7 +1303,7 @@ class Timeline
 				// Debounce asset becoming visible.
 				if(targetAssetOpacity > 0.0 && item.targetAssetOpacity != 1.0)
 				{
-					item.delayAsset = 0.5;
+					item.delayAsset = 0.25;
 				}
 				item.targetAssetOpacity = targetAssetOpacity;
 				if(item.delayAsset > 0.0)

@@ -65,7 +65,25 @@ class TimelineEntry
 	TimelineEntryType type;
 	double start;
 	double end;
-	String label;
+	String _label;
+	int lineCount = 1;
+	String get label => _label;
+	set label(String value)
+	{
+		_label = value;
+		int start = 0;
+		lineCount = 1;
+		while(true)
+		{
+			start = _label.indexOf("\n", start);
+			if(start == -1)
+			{
+				break;
+			}
+			lineCount++;
+			start++;
+		}
+	}
 	String articleFilename;
 	String id;
 

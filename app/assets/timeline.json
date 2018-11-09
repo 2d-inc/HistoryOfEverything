@@ -262,7 +262,7 @@
 	},
 	{
 		"date": -4000000,
-		"label": "Last Common Ancestor with Apes",
+		"label": "Last Common\nAncestor with Apes",
 		"article":"last_common_ancestor_apes.txt",
 		"asset": 
 		{
@@ -401,7 +401,7 @@
 	},
 	{
 		"date": 1687,
-		"label": "Newton's Theory of Gravity",
+		"label": "Newton's\nTheory of Gravity",
 		"article":"newton.txt",
 		"asset": 
 		{
@@ -487,7 +487,7 @@
 	},
 	{
 		"date": 1859,
-		"label": "Darwin's Theory of Evolution",
+		"label": "Darwin's\nTheory of Evolution",
 		"article":"darwin.txt",
 		"asset": 
 		{

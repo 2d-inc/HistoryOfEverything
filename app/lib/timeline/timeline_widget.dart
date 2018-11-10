@@ -69,6 +69,16 @@ class _TimelineWidgetState extends State<TimelineWidget>
 			animate: true);
 	}
 
+	deactivate()
+	{
+		super.deactivate();
+		if(timeline != null)
+		{
+			timeline.onHeaderColorsChanged = null;
+			timeline.onEraChanged = null;
+		}
+	}
+
     initState()
     {
         super.initState();

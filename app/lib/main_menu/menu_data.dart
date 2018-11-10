@@ -30,8 +30,13 @@ class MenuItemData
 
 		// Pad the edges of the screen.
 		pad = true;
+		TimelineAsset asset = entry.asset;
 		// Extra padding for the top base don the asset size.
-		padTop = entry.asset == null ? 0.0 : entry.asset.height * Timeline.AssetScreenScale;
+		padTop = asset == null ? 0.0 : asset.height * Timeline.AssetScreenScale;
+		if(asset is TimelineAnimatedAsset)
+		{
+			padTop += asset.gap;
+		}
 
         if(entry.type == TimelineEntryType.Era)
         {

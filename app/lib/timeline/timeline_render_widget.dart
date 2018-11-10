@@ -83,7 +83,20 @@ class TimelineRenderObject extends RenderBox
 	Timeline _timeline;
 	MenuItemData _focusItem;
 
-	double topOverlap = 0.0;
+	double _topOverlap = 0.0;
+	double get topOverlap => _topOverlap;
+	set topOverlap(double value)
+	{
+		if(_topOverlap == value)
+		{
+			return;
+		}
+		_topOverlap = value;
+		updateFocusItem();
+        markNeedsPaint();
+		markNeedsLayout();
+	}
+
 	TouchBubbleCallback touchBubble;
 	TouchEntryCallback touchEntry;
 	
@@ -95,6 +108,7 @@ class TimelineRenderObject extends RenderBox
 			return;
 		}
 		_timeline = value;
+		updateFocusItem();
         _timeline.onNeedPaint = markNeedsPaint;
         markNeedsPaint();
 		markNeedsLayout();
@@ -113,6 +127,31 @@ class TimelineRenderObject extends RenderBox
 		markNeedsLayout();
 	}
 
+	MenuItemData _processedFocusItem;
+	void updateFocusItem()
+	{
+		if(_processedFocusItem == _focusItem)
+		{
+			return;
+		}
+		if(_focusItem == null || timeline == null || topOverlap == 0.0)
+		{
+			return;
+		}
+		
+		if(_focusItem.pad)
+		{
+			timeline.padding = EdgeInsets.only(top:topOverlap + _focusItem.padTop + Timeline.Parallax, bottom: _focusItem.padBottom);
+			timeline.setViewport(start: _focusItem.start, end:_focusItem.end, animate:true, pad:true);
+		}
+		else
+		{
+			timeline.padding = EdgeInsets.zero;
+			timeline.setViewport(start: _focusItem.start, end:_focusItem.end, animate:true);
+		}
+		_processedFocusItem = _focusItem;
+	}
+
 	MenuItemData get focusItem => _focusItem;
 	set focusItem(MenuItemData value)
 	{
@@ -121,22 +160,8 @@ class TimelineRenderObject extends RenderBox
 			return;
 		}
 		_focusItem = value;
-		if(_focusItem == null || timeline == null)
-		{
-			return;
-		}
-		
-		if(value.pad)
-		{
-			double topPadding = timeline.screenPaddingInTime(topOverlap+value.padTop, value.start, value.end);
-			double bottomPadding = timeline.screenPaddingInTime(value.padBottom, value.start, value.end);
-			timeline.setViewport(start: value.start-topPadding, end:value.end+bottomPadding, animate:true);
-		}
-		else
-		{
-			timeline.setViewport(start: value.start, end:value.end, animate:true);
-		}
-		
+		_processedFocusItem = null;
+		updateFocusItem();
 	}
 
 	@override

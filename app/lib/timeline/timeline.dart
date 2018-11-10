@@ -296,16 +296,18 @@ class Timeline
 	double _gutterWidth = GutterLeft;
 	double get gutterWidth => _gutterWidth;
 
+	EdgeInsets padding = EdgeInsets.zero;
+	EdgeInsets devicePadding = EdgeInsets.zero;
+
     final TargetPlatform _platform;
 
 	Timeline(this._platform)
 	{
 		setViewport(start: 1536.0, end: 3072.0);
 	}
-
-	double screenPaddingInTime(double extra, double start, double end)
+	double screenPaddingInTime(double padding, double start, double end)
 	{
-		return (extra+BubbleHeight+InitialViewportPadding)/computeScale(start, end);
+		return padding/computeScale(start, end);
 	}
 
 	double computeScale(double start, double end)
@@ -708,12 +710,6 @@ class Timeline
 		return _entriesById[id];
 	}
 
-	EdgeInsets _padding;
-	setPadding(EdgeInsets padding)
-	{
-		_padding = padding;
-	}
-
 	clampScroll()
 	{
 		_scrollMetrics = null;
@@ -721,8 +717,8 @@ class Timeline
 		_scrollSimulation = null;
 		
 		double scale = computeScale(_start, _end);
-		double padTop = (_padding.top + ViewportPaddingTop)/scale;
-		double padBottom = (_padding.bottom + ViewportPaddingBottom)/scale;
+		double padTop = (devicePadding.top + ViewportPaddingTop)/scale;
+		double padBottom = (devicePadding.bottom + ViewportPaddingBottom)/scale;
 		bool fixStart = _start < _timeMin - padTop;
 		bool fixEnd = _end > _timeMax + padBottom;
 
@@ -732,8 +728,8 @@ class Timeline
 		for(int i = 0; i < 20; i++)
 		{
 			double scale = computeScale(_start, _end);
-			double padTop = (_padding.top + ViewportPaddingTop)/scale;
-			double padBottom = (_padding.bottom + ViewportPaddingBottom)/scale;
+			double padTop = (devicePadding.top + ViewportPaddingTop)/scale;
+			double padBottom = (devicePadding.bottom + ViewportPaddingBottom)/scale;
 			if(fixStart)
 			{
 				_start = _timeMin - padTop;
@@ -764,8 +760,8 @@ class Timeline
 			if(_height == 0.0 && _entries != null && _entries.length > 0)
 			{
 				double scale = height/(_end-_start);
-				_start = _start - (BubbleHeight+InitialViewportPadding)/scale;
-				_end = _end + (BubbleHeight+InitialViewportPadding)/scale;
+				_start = _start - padding.top/scale;
+				_end = _end + padding.bottom/scale;
 			}
 			_height = height;
 		}
@@ -773,11 +769,11 @@ class Timeline
 		{
 			_start = start;
 			_end = end;
-			if(pad)
+			if(pad && _height != 0.0)
 			{
 				double scale = _height/(_end-_start);
-				_start = _start - (BubbleHeight+TravelViewportPaddingTop)/scale;
-				_end = _end + (BubbleHeight+InitialViewportPadding)/scale;
+				_start = _start - padding.top/scale;
+				_end = _end + padding.bottom/scale;
 			}
 		}
 		else
@@ -785,20 +781,20 @@ class Timeline
 			if(start != double.maxFinite)
 			{
 				double scale = height/(_end-_start);
-				_start = pad ? start - (BubbleHeight+InitialViewportPadding)/scale : start;
+				_start = pad ? start - padding.top/scale : start;
 			}
 			if(end != double.maxFinite)
 			{
 				double scale = height/(_end-_start);
-				_end = pad ? end + (BubbleHeight+InitialViewportPadding)/scale : end;
+				_end = pad ? end + padding.bottom/scale : end;
 			}
 		}
 		
 		if(velocity != double.maxFinite)
 		{
 			double scale = computeScale(_start, _end);
-			double padTop = (_padding.top + ViewportPaddingTop)/computeScale(_start, _end);
-			double padBottom = (_padding.bottom + ViewportPaddingBottom)/computeScale(_start, _end);
+			double padTop = (devicePadding.top + ViewportPaddingTop)/computeScale(_start, _end);
+			double padBottom = (devicePadding.bottom + ViewportPaddingBottom)/computeScale(_start, _end);
 			double rangeMin = (_timeMin - padTop) * scale;
 			double rangeMax = (_timeMax + padBottom) * scale - _height;
 			if(rangeMax < rangeMin)
@@ -819,17 +815,17 @@ class Timeline
                 _scrollPhysics = ClampingScrollPhysics();
             }
 			_scrollMetrics = FixedScrollMetrics(
-				// minScrollExtent: double.negativeInfinity,
-				// maxScrollExtent: double.infinity,
-				// pixels: 0.0,
-				minScrollExtent: rangeMin,
-				maxScrollExtent: rangeMax,
-				pixels: position,
+				minScrollExtent: double.negativeInfinity,
+				maxScrollExtent: double.infinity,
+				pixels: 0.0,
+				// minScrollExtent: rangeMin,
+				// maxScrollExtent: rangeMax,
+				// pixels: position,
 				viewportDimension: _height,
 				axisDirection: AxisDirection.down
 			);
 			
-			_scrollSimulation = _scrollPhysics.createBallisticSimulation(_scrollMetrics, -velocity);
+			_scrollSimulation = _scrollPhysics.createBallisticSimulation(_scrollMetrics, velocity);
 		}
 		if(!animate)
 		{
@@ -932,19 +928,17 @@ class Timeline
 			doneRendering = false;
 			_simulationTime += elapsed;
 			double scale = _height/(_end-_start);
-			double range = _end-_start;
-			double value = _scrollSimulation.x(_simulationTime);
+			// double range = _end-_start;
+			// double value = _scrollSimulation.x(_simulationTime);
+			// double overScroll = _scrollPhysics.applyBoundaryConditions(_scrollMetrics, value);
+			// _start = (value-overScroll)/scale;
+			// _end = _start + range;
+			double velocity = _scrollSimulation.dx(_simulationTime);
 			
-
-			double overScroll = _scrollPhysics.applyBoundaryConditions(_scrollMetrics, value);
-			_start = (value-overScroll)/scale;
-			_end = _start + range;
-			// double velocity = _scrollSimulation.dx(_simulationTime);
+			double displace = velocity*elapsed / scale;
 			
-			// double displace = velocity*elapsed / scale;
-			
-			// _start -= displace;
-			// _end -= displace;
+			_start -= displace;
+			_end -= displace;
 
 			if(_scrollSimulation.isDone(_simulationTime))
 			{
@@ -1268,7 +1262,7 @@ class Timeline
 			if(item.targetLabelOpacity > 0.0)
 			{
 				_lastEntryY = targetLabelY;
-				if(_lastEntryY < _height && _lastEntryY > 0)
+				if(_lastEntryY < _height && _lastEntryY > devicePadding.top)
 				{
 					_lastOnScreenEntryY = _lastEntryY;
 					if(_firstOnScreenEntryY == double.maxFinite)
@@ -1299,11 +1293,14 @@ class Timeline
 					_distanceToNextEntry = (y - _height)/_height;
 				}
 			}
+			else if(endY < devicePadding.top)
+			{
+				_prevEntry = item;
+				_distanceToPrevEntry = ((y - _height)/_height).abs();
+			}
 			else if(endY < -itemBubbleHeight)
 			{
 				item.labelY = y;
-				_prevEntry = item;
-				_distanceToPrevEntry = ((y - _height)/_height).abs();
 			}
 
 			double lx = x + LineSpacing + LineSpacing;

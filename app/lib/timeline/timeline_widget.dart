@@ -163,10 +163,8 @@ class _TimelineWidgetState extends State<TimelineWidget>
 			{
 				MenuItemData target = MenuItemData.fromEntry(_touchedBubble.entry);
 				
-				double topPadding = timeline.screenPaddingInTime(TopOverlap+devicePadding.top+target.padTop, target.start, target.end);
-				double bottomPadding = timeline.screenPaddingInTime(target.padBottom, target.start, target.end);
-
-				timeline.setViewport(start:target.start-topPadding, end:target.end+bottomPadding, animate: true);
+				timeline.padding = EdgeInsets.only(top:TopOverlap + devicePadding.top + target.padTop + Timeline.Parallax, bottom: target.padBottom);
+				timeline.setViewport(start:target.start, end:target.end, animate: true, pad:true);
 			}
 			else
 			{
@@ -183,10 +181,8 @@ class _TimelineWidgetState extends State<TimelineWidget>
 		{	
 			MenuItemData target = MenuItemData.fromEntry(_touchedEntry);
 			
-			double topPadding = timeline.screenPaddingInTime(TopOverlap+devicePadding.top+target.padTop, target.start, target.end);
-			double bottomPadding = timeline.screenPaddingInTime(target.padBottom, target.start, target.end);
-
-			timeline.setViewport(start:target.start-topPadding, end:target.end+bottomPadding, animate: true);
+			timeline.padding = EdgeInsets.only(top:TopOverlap + devicePadding.top + target.padTop + Timeline.Parallax, bottom: target.padBottom);
+			timeline.setViewport(start:target.start, end:target.end, animate: true, pad: true);
 		}
 	}
 
@@ -197,10 +193,8 @@ class _TimelineWidgetState extends State<TimelineWidget>
         {
 			MenuItemData target = MenuItemData.fromEntry(_touchedBubble.entry);
 				
-			double topPadding = timeline.screenPaddingInTime(TopOverlap+devicePadding.top+target.padTop, target.start, target.end);
-			double bottomPadding = timeline.screenPaddingInTime(target.padBottom, target.start, target.end);
-
-			timeline.setViewport(start:target.start-topPadding, end:target.end+bottomPadding, animate: true);
+			timeline.padding = EdgeInsets.only(top:TopOverlap + devicePadding.top + target.padTop + Timeline.Parallax, bottom: target.padBottom);
+			timeline.setViewport(start:target.start, end:target.end, animate: true, pad: true);
         }
 	}
 
@@ -215,7 +209,7 @@ class _TimelineWidgetState extends State<TimelineWidget>
 		EdgeInsets devicePadding = MediaQuery.of(context).padding;
 		if(timeline != null)
 		{
-			timeline.setPadding(devicePadding);
+			timeline.devicePadding = devicePadding;
 		}
 		return Scaffold(
                 backgroundColor: Colors.white,

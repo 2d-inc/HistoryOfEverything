@@ -52,7 +52,7 @@ class _MainMenuWidgetState extends State<MainMenuWidget> with SingleTickerProvid
     {
         _pauseSection();                                                                
         Navigator.of(context).push(
-            CupertinoPageRoute(
+            MaterialPageRoute(
                 builder: (BuildContext context) => new TimelineWidget(item, BlocProvider.getTimeline(context)),
             )
         ).then(_restoreSection);
@@ -170,7 +170,7 @@ class _MainMenuWidgetState extends State<MainMenuWidget> with SingleTickerProvid
                         onPressed: () {
                             _pauseSection();
                             Navigator.of(context).push(
-                                CupertinoPageRoute(
+                                MaterialPageRoute(
                                     builder: (BuildContext context) => new FavoritesPage()
                                 )
                             ).then(_restoreSection);
@@ -237,7 +237,7 @@ class _MainMenuWidgetState extends State<MainMenuWidget> with SingleTickerProvid
                             onPressed: () {
                                 _pauseSection();
                                 Navigator.of(context).push(
-                                    CupertinoPageRoute(
+                                    MaterialPageRoute(
                                         builder: (BuildContext context) => new AboutPage()
                                     )
                                 ).then(_restoreSection);

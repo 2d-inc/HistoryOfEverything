@@ -1,10 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:timeline/bloc_provider.dart';
 import 'package:timeline/main_menu/menu_data.dart';
 import "package:flare/flare_actor.dart" as flare;
 import 'package:timeline/main_menu/menu_vignette.dart';
-import 'package:timeline/timeline/timeline_widget.dart';
 
 typedef NavigateTo(MenuItemData item);
 

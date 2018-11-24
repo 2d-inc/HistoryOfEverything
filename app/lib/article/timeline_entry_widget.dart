@@ -51,7 +51,7 @@ class VignetteRenderObject extends RenderBox
 	bool _isActive = false;
 	bool _firstUpdate = true;
 	nima.FlutterActor _nimaActor;
-	flare.FlutterActor _flareActor;
+	flare.FlutterActorArtboard _flareActor;
 	
 	TimelineEntry get timelineEntry => _timelineEntry;
 	set timelineEntry(TimelineEntry value)

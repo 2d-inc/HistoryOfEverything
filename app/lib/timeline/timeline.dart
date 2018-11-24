@@ -498,9 +498,9 @@ class Timeline
 							}
 							if(actor != null)
 							{
-								flareAsset.actorStatic = actor;
-								flareAsset.actor = actor.makeInstance();
-								flareAsset.animation = actor.animations[0];
+								flareAsset.actorStatic = actor.artboard;
+								flareAsset.actor = actor.artboard.makeInstance();
+								flareAsset.animation = actor.artboard.animations[0];
 								
 
 								dynamic name = assetMap["idle"];

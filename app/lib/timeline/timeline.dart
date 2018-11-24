@@ -234,7 +234,7 @@ class Timeline
 
 		if(isIt)
 		{
-			_steadyTimer = new Timer(new Duration(seconds: 1), ()
+			_steadyTimer = new Timer(new Duration(seconds: SteadySeconds), ()
 			{
 				_steadyTimer = null;
 				_isSteady = true;
@@ -285,6 +285,7 @@ class Timeline
 
 	static const double ViewportPaddingTop = 120.0;
 	static const double ViewportPaddingBottom = 100.0;
+	static const double SteadySeconds = 0.5;
 	//static const double FadeAnimationStart = BubbleHeight + BubblePadding;///2.0 + BubblePadding;
 	Simulation _scrollSimulation;
 	ScrollPhysics _scrollPhysics;
@@ -509,6 +510,22 @@ class Timeline
 									if((flareAsset.idle = flareAsset.actor.getAnimation(name)) != null)
 									{
 										flareAsset.animation = flareAsset.idle;
+									}
+								}
+								else if(name is List)
+								{
+									for(String animationName in name)
+									{
+										flare.ActorAnimation animation = flareAsset.actor.getAnimation(animationName);
+										if(animation != null)
+										{
+											if(flareAsset.idleAnimations == null)
+											{
+												flareAsset.idleAnimations = new List<flare.ActorAnimation>();
+											}
+											flareAsset.idleAnimations.add(animation);
+											flareAsset.animation = animation;
+										}
 									}
 								}
 
@@ -1456,16 +1473,28 @@ class Timeline
 						else if(asset is TimelineFlare && isActive)
 						{
 							asset.animationTime += elapsed;
-							if(asset.intro == asset.animation && asset.animationTime >= asset.animation.duration)
+							if(asset.idleAnimations != null)
 							{
-								asset.animationTime -= asset.animation.duration;
-								asset.animation = asset.idle;
+								double phase = 0.0;
+								for(flare.ActorAnimation animation in asset.idleAnimations)
+								{
+									animation.apply((asset.animationTime+phase)%animation.duration, asset.actor, 1.0);
+									phase += 0.16;
+								}
 							}
-							if(asset.loop && asset.animationTime > 0)
+							else
 							{
-								asset.animationTime %= asset.animation.duration;
+								if(asset.intro == asset.animation && asset.animationTime >= asset.animation.duration)
+								{
+									asset.animationTime -= asset.animation.duration;
+									asset.animation = asset.idle;
+								}
+								if(asset.loop && asset.animationTime > 0)
+								{
+									asset.animationTime %= asset.animation.duration;
+								}
+								asset.animation.apply(asset.animationTime, asset.actor, 1.0);
 							}
-							asset.animation.apply(asset.animationTime, asset.actor, 1.0);
 							asset.actor.advance(elapsed);
 							stillAnimating = true;
 						}

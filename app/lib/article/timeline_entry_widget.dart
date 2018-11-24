@@ -306,6 +306,7 @@ class VignetteRenderObject extends RenderBox
 			if(asset is TimelineNima && _nimaActor != null)
 			{
 				asset.animationTime += elapsed;
+		
 				if(asset.loop)
 				{
 					asset.animationTime %= asset.animation.duration;
@@ -325,16 +326,29 @@ class VignetteRenderObject extends RenderBox
 					_firstUpdate = false;
 				}
 				asset.animationTime += elapsed;
-				if(asset.intro == asset.animation && asset.animationTime >= asset.animation.duration)
+				if(asset.idleAnimations != null)
 				{
-					asset.animationTime -= asset.animation.duration;
-					asset.animation = asset.idle;
+					
+					double phase = 0.0;
+					for(flare.ActorAnimation animation in asset.idleAnimations)
+					{
+						animation.apply((asset.animationTime+phase)%animation.duration, _flareActor, 1.0);
+						phase += 0.16;
+					}
 				}
-				if(asset.loop && asset.animationTime >= 0)
+				else
 				{
-					asset.animationTime %= asset.animation.duration;
+					if(asset.intro == asset.animation && asset.animationTime >= asset.animation.duration)
+					{
+						asset.animationTime -= asset.animation.duration;
+						asset.animation = asset.idle;
+					}
+					if(asset.loop && asset.animationTime >= 0)
+					{
+						asset.animationTime %= asset.animation.duration;
+					}
+					asset.animation.apply(asset.animationTime, _flareActor, 1.0);
 				}
-				asset.animation.apply(asset.animationTime, _flareActor, 1.0);
 				_flareActor.advance(elapsed);
 			}
 		} 

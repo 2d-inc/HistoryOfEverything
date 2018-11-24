@@ -132,6 +132,14 @@
 		"start": -600000000,
 		"label": "Animals",
 		"article":"animals.txt",
+		"asset": 
+		{
+			"source": "Animals.flr",
+			"width": 814,
+			"height": 564,
+			"offset": -100,
+			"bounds":[0.0, 0.0, 814.0, 664.0]
+		},
 		"background": [132, 175, 214],
 		"accent": [55, 134, 222, 255],
 		"ticks": 
@@ -260,6 +268,15 @@
 		"article":"humans.txt",
 		"background": [255, 255, 255],
 		"accent": [202, 79, 63, 255],
+		"asset": 
+		{
+			"source": "humans.flr",
+			"width": 1068,
+			"height": 670,
+			"offset": 0,
+			"bounds":[-534,-670,1602,670],
+			"idle":["human_1", "human_2", "human_3", "human_4", "human_5"]
+		},
 		"ticks": 
 		{
 			"background": [245, 245, 245, 240],

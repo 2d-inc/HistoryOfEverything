@@ -38,6 +38,7 @@ class TimelineFlare extends TimelineAnimatedAsset
 
 	flare.ActorAnimation intro;
 	flare.ActorAnimation idle;
+	List<flare.ActorAnimation> idleAnimations;
 
 	flare.AABB setupAABB;
 }

@@ -435,9 +435,10 @@
 		"article":"newton.txt",
 		"asset": 
 		{
-			"source": "Newton/Newton.nma",
+			"source": "Newton/Newton_v2.nma",
 			"width": 500,
-			"height": 500
+			"height": 500,
+			"idle":"apple_falls"
 		}
 	},
 	{

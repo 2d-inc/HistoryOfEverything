@@ -234,7 +234,7 @@ class Timeline
 
 		if(isIt)
 		{
-			_steadyTimer = new Timer(new Duration(seconds: SteadySeconds), ()
+			_steadyTimer = new Timer(new Duration(milliseconds: SteadyMilliseconds), ()
 			{
 				_steadyTimer = null;
 				_isSteady = true;
@@ -285,7 +285,7 @@ class Timeline
 
 	static const double ViewportPaddingTop = 120.0;
 	static const double ViewportPaddingBottom = 100.0;
-	static const double SteadySeconds = 0.5;
+	static const int SteadyMilliseconds = 500;
 	//static const double FadeAnimationStart = BubbleHeight + BubblePadding;///2.0 + BubblePadding;
 	Simulation _scrollSimulation;
 	ScrollPhysics _scrollPhysics;
@@ -589,7 +589,16 @@ class Timeline
 							{
 								nimaAsset.actorStatic = actor;
 								nimaAsset.actor = actor.makeInstance();
-								nimaAsset.animation = actor.animations[0];
+
+								dynamic name = assetMap["idle"];
+								if(name is String)
+								{
+									nimaAsset.animation = nimaAsset.actor.getAnimation(name);
+								}
+								else
+								{
+									nimaAsset.animation = actor.animations[0];
+								}
 								nimaAsset.animationTime = 0.0;
 								nimaAsset.actor.advance(0.0);
 								
@@ -648,6 +657,7 @@ class Timeline
 					dynamic height = assetMap["height"];
 					asset.height = (height is int ? height.toDouble() : height)*scale;
 					asset.entry = timelineEntry;
+					asset.filename = filename;
 					//print("ENTRY ${timelineEntry.label} $asset");
 					timelineEntry.asset = asset;
 					

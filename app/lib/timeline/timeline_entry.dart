@@ -45,6 +45,7 @@ class TimelineFlare extends TimelineAnimatedAsset
 	flare.ActorAnimation intro;
 	flare.ActorAnimation idle;
 	List<flare.ActorAnimation> idleAnimations;
+	String mapNode;
 
 	flare.AABB setupAABB;
 }
@@ -130,7 +131,7 @@ class TimelineEntry
     {
 		if(start > 0)
 		{
-			return start.round().toString();
+			return start.floor().toString();
 		}
         return TimelineEntry.formatYears(start) + " Ago";
     }

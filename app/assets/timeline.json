@@ -640,6 +640,7 @@
 		"asset": 
 		{
 			"source": "Filip.flr",
+			"mapNode":"phone",
 			"width": 863,
 			"height": 899,
 			"offset": 0,

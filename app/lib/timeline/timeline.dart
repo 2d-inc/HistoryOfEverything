@@ -543,6 +543,12 @@ class Timeline
 									}
 								}
 
+								name = assetMap["mapNode"];
+								if(name is String)
+								{
+									flareAsset.mapNode = name;
+								}
+
 								flareAsset.animationTime = 0.0;
 								flareAsset.actor.advance(0.0);
 

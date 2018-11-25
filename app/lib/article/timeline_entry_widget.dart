@@ -16,16 +16,19 @@ import 'package:flare/flare/actor_image.dart' as flare;
 import 'package:flare/flare/math/aabb.dart' as flare;
 import 'package:timeline/article/controllers/amelia_controller.dart';
 import 'package:timeline/article/controllers/newton_controller.dart';
+import 'package:timeline/article/controllers/filip_controller.dart';
 import "package:timeline/timeline/timeline_entry.dart";
 import 'controllers/flare_interaction_controller.dart';
 import 'controllers/nima_interaction_controller.dart';
+typedef void UpdateMapNode(flare.Mat2D screenTransform, flare.Mat2D transform);
 
 class TimelineEntryWidget extends LeafRenderObjectWidget
 {
 	final bool isActive;
 	final TimelineEntry timelineEntry;
 	final Offset interactOffset;
-	TimelineEntryWidget({Key key, this.isActive, this.timelineEntry, this.interactOffset}): super(key: key);
+	final UpdateMapNode updateMapNode;
+	TimelineEntryWidget({Key key, this.isActive, this.timelineEntry, this.interactOffset, this.updateMapNode}): super(key: key);
 
 	@override
 	RenderObject createRenderObject(BuildContext context) 
@@ -33,7 +36,8 @@ class TimelineEntryWidget extends LeafRenderObjectWidget
 		return new VignetteRenderObject()
 							..timelineEntry = timelineEntry
 							..isActive = isActive
-							..interactOffset = interactOffset;
+							..interactOffset = interactOffset
+							..updateMapNode = updateMapNode;
 	}
 
 	@override
@@ -42,7 +46,8 @@ class TimelineEntryWidget extends LeafRenderObjectWidget
 		renderObject
 					..timelineEntry = timelineEntry
 					..isActive = isActive
-					..interactOffset = interactOffset;
+					..interactOffset = interactOffset
+						..updateMapNode = updateMapNode;
 	}
 
 	@override
@@ -61,9 +66,12 @@ class VignetteRenderObject extends RenderBox
 	bool _firstUpdate = true;
 	nima.FlutterActor _nimaActor;
 	flare.FlutterActorArtboard _flareActor;
+	flare.ActorNode _mapNode;
 	FlareInteractionController _flareController;
 	NimaInteractionController _nimaController;
 	Offset interactOffset;
+
+	UpdateMapNode updateMapNode;
 
 	TimelineEntry get timelineEntry => _timelineEntry;
 	set timelineEntry(TimelineEntry value)
@@ -104,11 +112,20 @@ class VignetteRenderObject extends RenderBox
 			else if(asset is TimelineFlare && asset.actor != null)
 			{
 				_flareActor = asset.actor.makeInstance();
+				if(asset.mapNode != null)
+				{
+					_mapNode = _flareActor.getNode("phone");
+				}
 				asset.animation.apply(asset.animation.duration, _flareActor, 1.0);
 				_flareActor.advance(0.0);
 				if(asset.filename == "assets/Amelia_Earhart/Amelia_Earhart.flr")
 				{
 					_flareController = new AmeliaController();
+					_flareController.initialize(_flareActor);
+				}
+				else if(asset.filename == "assets/Filip.flr")
+				{
+					_flareController = new FilipController();
 					_flareController.initialize(_flareActor);
 				}
 			}
@@ -170,6 +187,7 @@ class VignetteRenderObject extends RenderBox
 	static const Alignment alignment = Alignment.center;
 	static const BoxFit fit = BoxFit.contain;
 	Offset _renderOffset;
+	flare.Mat2D _viewTransform = new flare.Mat2D();
 	
 	@override
 	void paint(PaintingContext context, Offset offset)
@@ -291,6 +309,17 @@ class VignetteRenderObject extends RenderBox
 					scaleX = scaleY = minScale < 1.0 ? minScale : 1.0;
 					break;
 			}
+
+			flare.Mat2D transform = new flare.Mat2D();
+			Offset globalOffset = this.localToGlobal(renderOffset);
+			//print("GL ${globalOffset}");
+			transform[4] = renderSize.width/2.0 + (alignment.x * renderSize.width/2.0);
+			transform[5] = renderSize.height/2.0 + (alignment.y * renderSize.height/2.0);
+			flare.Mat2D.scale(transform, transform, new flare.Vec2D.fromValues(scaleX, scaleY));
+			flare.Mat2D center = new flare.Mat2D();
+			center[4] = x;
+			center[5] = y;
+			flare.Mat2D.multiply(_viewTransform, transform, center);
 			
 			canvas.translate(renderOffset.dx + renderSize.width/2.0 + (alignment.x * renderSize.width/2.0), renderOffset.dy + renderSize.height/2.0 + (alignment.y * renderSize.height/2.0));
 			canvas.scale(scaleX, scaleY);
@@ -483,6 +512,18 @@ class VignetteRenderObject extends RenderBox
 					_flareController.advance(_flareActor, localTouchPosition, elapsed);
 				}
 				_flareActor.advance(elapsed);
+				if(_mapNode != null && updateMapNode != null)
+				{
+					// flare.Mat2D inverseViewTransform = new flare.Mat2D();
+					// if(!flare.Mat2D.invert(inverseViewTransform, _viewTransform))
+					// {
+					// 	return;
+					// }
+					//flare.Mat2D screenTransform = new flare.Mat2D();
+					//flare.Mat2D.multiply(screenTransform, _viewTransform, _mapNode.worldTransform);
+					
+					updateMapNode(_viewTransform, _mapNode.worldTransform);
+				}
 			}
 		} 
 

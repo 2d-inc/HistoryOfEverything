@@ -118,6 +118,8 @@ class _ArticleWidgetState extends State<ArticleWidget>
 		EdgeInsets devicePadding = MediaQuery.of(context).padding;
         List<TimelineEntry> favs = BlocProvider.favorites(context).favorites;
         bool isFav = favs.any((TimelineEntry te) => te.label.toLowerCase() == _title.toLowerCase());
+		TimelineAsset asset = widget.article?.asset;
+		bool hasMap = asset is TimelineFlare && asset.mapNode != null;
 		return Scaffold(
 			body:Container(
 				color: Color.fromRGBO(255, 255, 255, 1),
@@ -145,6 +147,7 @@ class _ArticleWidgetState extends State<ArticleWidget>
 							Expanded(
 								child: SingleChildScrollView
 								(
+									physics: hasMap ? new NeverScrollableScrollPhysics() : null,
 									padding: EdgeInsets.only(left: 20, right:20, bottom: 30),
 									child: Column
 									(
@@ -152,27 +155,41 @@ class _ArticleWidgetState extends State<ArticleWidget>
 										children: <Widget>
 										[
 											GestureDetector(
-												onPanStart: (DragStartDetails details)
+												onPanStart: hasMap ? null : (DragStartDetails details)
 												{
 													setState(()
 													{
 														_interactOffset = details.globalPosition;
 													});
 												},
-												onPanUpdate: (DragUpdateDetails details)
+												onPanUpdate: hasMap ? null : (DragUpdateDetails details)
 												{
 													setState(()
 													{
 														_interactOffset = details.globalPosition;
 													});
 												},
-												onPanEnd: (DragEndDetails details)
+												onPanEnd: hasMap ? null : (DragEndDetails details)
 												{
 													setState(()
 													{
 														_interactOffset = null;
 													});
 												},
+												onTapDown: hasMap ? (TapDownDetails details)
+												{
+													setState(()
+													{
+														_interactOffset = details.globalPosition;
+													});
+												} : null,
+												onTapUp: hasMap ? (TapUpDetails details)
+												{
+													setState(()
+													{
+														_interactOffset = null;
+													});
+												} : null,
 												child:new Container(
                                                 	height:280,
                                                 	child:ArticleVignette(article: widget.article, interactOffset: _interactOffset)

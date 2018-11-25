@@ -132,6 +132,7 @@ class _SectionState extends State<MenuSection> with SingleTickerProviderStateMix
 													(item) 
 													{
 														return GestureDetector(
+															behavior: HitTestBehavior.opaque,
                                                             onTap: () => widget.navigateTo(item),
 															child: Row(
 																	crossAxisAlignment: CrossAxisAlignment.start,

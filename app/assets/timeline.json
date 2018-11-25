@@ -630,5 +630,19 @@
 			"height": 528,
 			"offset": -140
 		}
+	},
+	{
+		"date": 2018,
+		"label": "Flutter Live Event",
+		"accent": [115, 132, 205, 255],
+		"article":"flutter.txt",
+		"asset": 
+		{
+			"source": "Filip.flr",
+			"width": 863,
+			"height": 899,
+			"offset": -140,
+			"bounds":[0, -224, 863, 674]
+		}
 	}
 ]

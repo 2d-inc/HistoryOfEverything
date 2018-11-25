@@ -641,8 +641,9 @@
 			"source": "Filip.flr",
 			"width": 863,
 			"height": 899,
-			"offset": -140,
-			"bounds":[0, -224, 863, 674]
+			"offset": 0,
+			"bounds":[0, -224, 863, 674],
+			"idle":"idle"
 		}
 	}
 ]

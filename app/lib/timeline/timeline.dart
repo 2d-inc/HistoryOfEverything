@@ -464,6 +464,11 @@ class Timeline
 				{
 					timelineEntry.label = map["label"] as String;
 				}
+				if(map.containsKey("minScale"))
+				{
+					dynamic minScale = map["minScale"];
+					timelineEntry.minScale = minScale is int ? minScale.toDouble() : minScale;
+				}
 				if(map.containsKey("id"))
 				{
 					timelineEntry.id = map["id"] as String;
@@ -666,6 +671,12 @@ class Timeline
 			}
 		}
 
+		TimelineEntry watchPartyEntry = new TimelineEntry()
+							..type = TimelineEntryType.Incident
+							..start = 2018.9
+							..end = 2018.9
+							..label = "Flutter Live Event";
+		allEntries.add(watchPartyEntry);
 		// sort the full list so they are in order of oldest to newest
 		allEntries.sort((TimelineEntry a, TimelineEntry b)
 		{
@@ -1184,7 +1195,10 @@ class Timeline
 			// double pad = EdgePadding;//(length/EdgePadding).clamp(0.0, 1.0)*EdgePadding;
 
 			//item.length = length = max(0.0, (end-start)*scale-pad*2.0);
-
+			// if(item.label == "Lost Filip")
+			// {
+			// 	print("SCALE $scale");
+			// }
 			double y = start*scale;//+pad;
 			if(i > 0 && y - lastEnd < EdgePadding)
 			{
@@ -1207,7 +1221,10 @@ class Timeline
 			}
 
 			double targetLabelOpacity = targetLabelY - _lastEntryY < fadeAnimationStart ? 0.0 : 1.0;
-
+			if(item.minScale != null && scale < item.minScale)
+			{
+				targetLabelOpacity = 0.0;
+			}
 			// Debounce labels becoming visible.
 			if(targetLabelOpacity > 0.0 && item.targetLabelOpacity != 1.0)
 			{

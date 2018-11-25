@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import "package:flutter/services.dart" show rootBundle;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:timeline/article/article_vignette.dart';
 
 import "../bloc_provider.dart";
 import "../colors.dart";
@@ -174,7 +175,7 @@ class _ArticleWidgetState extends State<ArticleWidget>
 												},
 												child:new Container(
                                                 	height:280,
-                                                	child:TimelineEntryWidget(isActive: true, timelineEntry: widget.article, interactOffset: _interactOffset)
+                                                	child:ArticleVignette(article: widget.article, interactOffset: _interactOffset)
 												)
                                             ),
                                             Padding(

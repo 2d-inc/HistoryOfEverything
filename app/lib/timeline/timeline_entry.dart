@@ -29,6 +29,12 @@ class TimelineNima extends TimelineAnimatedAsset
 	nima.AABB setupAABB;
 }
 
+class TimelineWatchParty extends TimelineAnimatedAsset
+{
+	ui.Image tv;
+	ui.Image viewers;
+}
+
 
 class TimelineFlare extends TimelineAnimatedAsset
 {
@@ -67,6 +73,7 @@ class TimelineEntry
 	TimelineEntryType type;
 	double start;
 	double end;
+	double minScale;
 	String _label;
 	int lineCount = 1;
 	String get label => _label;

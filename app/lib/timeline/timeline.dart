@@ -453,7 +453,7 @@ class Timeline
 				}
 				else if(timelineEntry.type == TimelineEntryType.Era)
 				{
-					timelineEntry.end = DateTime.now().year.toDouble();
+					timelineEntry.end = DateTime.now().year.toDouble()*10.0;
 				}
 				else
 				{

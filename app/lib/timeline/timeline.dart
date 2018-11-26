@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:collection';
 import "dart:convert";
 import "dart:math";
 import "dart:typed_data";
@@ -115,6 +116,19 @@ class HeaderColors
 	double screenY;
 }
 
+class Heart extends LinkedListEntry<Heart>
+{
+	double start, end;
+	double x;
+	double elapsed;
+	double phase;
+	double opacity;
+
+  int layer;
+
+  double duration;
+}
+
 class Timeline
 {
 	double _start = 0.0;
@@ -127,6 +141,8 @@ class Timeline
 	double get width => _width;
 	double get height => _height;
 	bool _showFavorites = false;
+	LinkedList<Heart> hearts = new LinkedList<Heart>();
+	bool addHearts = false;
 	List<TimelineBackgroundColor> _backgroundColors;
 	List<TickColors> _tickColors;
 	List<HeaderColors> _headerColors;
@@ -1219,6 +1235,68 @@ class Timeline
 				doneRendering = false;
 				_renderOffsetDepth += dd*min(1.0, elapsed*12.0);
 			}
+		}
+		
+		int heartCount = 0;
+		const int MaxHearts = 140;
+		const int MaxHeartsPerFrame = 2;
+		const double HeartTime = 1.5;
+		const double HeartSize = 22.0;
+		const double HeartFade = 0.5;
+
+		if(hearts.isNotEmpty)
+		{
+			Heart heart = hearts.first;
+			while(heart != null)
+			{
+				double heartTime = heart.duration;
+				double heartFadeOut = heartTime-HeartFade;
+
+				heart.elapsed += elapsed;
+				heart.opacity = heart.elapsed > heartFadeOut ? 
+									// Fading out
+									1.0-(heart.elapsed - heartFadeOut).clamp(0.0, 1.0) : 
+									// Fading in
+									(heart.elapsed/0.5).clamp(0.0, 1.0);
+
+				Heart next = heart.next;
+				if(heart.elapsed > heartTime)
+				{
+					hearts.remove(heart);
+				}
+				else
+				{
+					heartCount++;
+				}
+				heart = next;
+			}
+		}
+		if(addHearts && heartCount < MaxHearts)
+		{
+			Random random = new Random();
+			
+			for(int i = 0; i < MaxHeartsPerFrame && heartCount < MaxHearts; i++)
+			{
+				int layer = random.nextInt(4);
+				
+				double heartTimeRange = (HeartSize + (HeartSize*layer / 4.0)) / computeScale(renderStart, renderEnd);
+				double start = renderStart + (renderEnd-renderStart) * random.nextDouble();
+				Heart heart = new Heart()
+								..start = start
+								..end = start + heartTimeRange
+								..x = random.nextDouble()
+								..elapsed = 0
+								..duration = HeartTime + random.nextDouble()
+								..phase = random.nextDouble()
+								..layer = layer
+								..opacity = 0;
+				hearts.add(heart);
+				heartCount++;
+			}
+		}
+		if(heartCount > 0)
+		{
+			doneRendering = false;
 		}
 
 		return doneRendering;

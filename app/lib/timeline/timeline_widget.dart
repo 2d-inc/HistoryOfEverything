@@ -280,6 +280,10 @@ class _TimelineWidgetState extends State<TimelineWidget>
                                                           color: Colors.white.withOpacity(0.0),
                                                           child: FlareActor("assets/Favorite.flr", animation: _showFavorites ? "Favorite" : "Unfavorite", shouldClip: false, color:_headerTextColor != null ? _headerTextColor : darkText.withOpacity(darkText.opacity * 0.75), alignment: Alignment.centerRight),
                                                         )),
+														onLongPress: ()
+														{
+															timeline.addHearts = !timeline.addHearts;
+														},
                                                         onTap:()
                                                         {
 															timeline.showFavorites = !timeline.showFavorites;

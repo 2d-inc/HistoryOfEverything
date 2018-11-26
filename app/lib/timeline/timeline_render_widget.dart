@@ -1,6 +1,7 @@
 import 'dart:math';
-import 'dart:ui';
+import 'dart:typed_data';
 import "dart:ui" as ui;
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -13,6 +14,8 @@ import 'package:timeline/main_menu/menu_data.dart';
 import 'package:timeline/timeline/ticks.dart';
 import 'package:timeline/timeline/timeline.dart';
 import 'package:timeline/timeline/timeline_entry.dart';
+import 'dart:async';
+import 'package:fast_noise/fast_noise.dart';
 
 typedef TouchBubbleCallback(TapTarget bubble);
 typedef TouchEntryCallback(TimelineEntry entry);
@@ -70,6 +73,22 @@ class TapTarget
 
 class TimelineRenderObject extends RenderBox
 {
+	ui.Image heart;
+	double heartPhase = 0.0;
+	TimelineRenderObject()
+	{
+		loadImage();
+	}
+	
+	Future loadImage() async 
+	{
+		ByteData data = await rootBundle.load("assets/heart.png");
+		Uint8List list = new Uint8List.view(data.buffer);
+		ui.Codec codec = await ui.instantiateImageCodec(list);
+		ui.FrameInfo frame = await codec.getNextFrame();
+		heart = frame.image;
+	}
+
 	static const List<Color> LineColors =
 	[
 		const Color.fromARGB(255, 125, 195, 184),
@@ -464,6 +483,7 @@ class TimelineRenderObject extends RenderBox
 				}
 			}
 			canvas.restore();
+
 		}
 
 		canvas.save();
@@ -832,6 +852,73 @@ class TimelineRenderObject extends RenderBox
 				previous = favorite;
 			}
 		}
+
+		if(heart != null)
+		{
+			const double heartWidth = 150.0;
+			const double heartHeight = 135.0;
+			const double heartParallax = 55.0;
+
+			double timelineScale = timeline.computeScale(timeline.renderStart, timeline.renderEnd);
+			double timelineHeight = timeline.height;
+			for(Heart h in timeline.hearts)
+			{
+				ui.Paint heartPaint = new ui.Paint()..isAntiAlias=true..filterQuality=ui.FilterQuality.low..color = Colors.white.withOpacity(h.opacity);
+				double scale = h.opacity * sin(h.phase+h.elapsed*(1.0+h.phase)).abs();
+				double heartSize = (h.end-h.start) * timelineScale * scale;
+
+				double x = offset.dx + timeline.width * h.x - heartSize/2.0;
+				double y = offset.dy + (h.start-timeline.renderStart) * timelineScale - heartSize/2.0;
+				y += ((y-timelineHeight/2.0).abs()/timelineHeight) * heartParallax * h.layer;
+				//print("$x $y $heartSize ${h.opacity}");
+				canvas.drawImageRect(heart, 
+									Rect.fromLTWH(0.0, 0.0, heartWidth, heartHeight), 
+									Rect.fromLTWH(x, y, heartSize, heartSize), 
+									heartPaint);
+			}
+			// double start = timeline.renderStart;
+			// double end = timeline.renderEnd;
+			// double range = end-start;
+			
+
+			// double heartScale = 0.2;
+			// double heartWidth = 150.0;
+			// double heartHeight = 135.0;
+			// double heartSpace = heartHeight * heartScale + 20.0;
+
+			// double rangeFitsHearts = (timeline.height/heartSpace);
+			// double phase = (start % range)/range;
+			// double scrollOffset = phase*timeline.height; 
+			// heartPhase += 0.03;
+			
+
+			// List<List<double>> noise = noise2(1, (rangeFitsHearts*2).round(),
+			// 	noiseType: NoiseType.Perlin,
+			// 	octaves: 4,
+			// 	frequency: phase);
+			// //List<double> phase = <double>[10.0, 3.0, 90.0, 70.0, 40.0];
+			// for(int j = 0; j < noise.length; j++)
+			// {
+			// 	List<double> ph = noise[j];
+			// 	for(int i = 0; i < ph.length; i++)
+			// 	{
+			// 		double f = 0.0;//ph[i];
+			// 		double v = f*100.0;//ff * sin((i * heartSpace - scrollOffset)/timeline.height*ph/13.0);//*sin(ph+(i * heartSpace - scrollOffset)/timeline.height*0.1);
+			// 		double y = offset.dy+150.0 + i * heartSpace - scrollOffset;
+			// 		double sy = y/timeline.height;
+			// 		double s = (v + 1.0)/2.0 * (0.5 + sin(heartPhase+sy*2.0).abs()*0.5);
+			// 		ui.Paint heartPaint = new ui.Paint()..isAntiAlias=true..filterQuality=ui.FilterQuality.low..color = Colors.white.withOpacity(s*0.8+0.2);
+					
+					
+			// 		canvas.drawImageRect(heart, 
+			// 							Rect.fromLTWH(0.0, 0.0, heartWidth, heartHeight), 
+			// 							Rect.fromLTWH(offset.dx+150.0+ph[i]*199.0, y, heartWidth*heartScale*s, heartHeight*heartScale*s), 
+			// 							heartPaint);
+			// 	}
+			// }
+		}
+
+		//double scale = timeline.computeScale(start, end);
 	}
 
 	void drawItems(PaintingContext context, Offset offset, List<TimelineEntry> entries, double x, double scale, int depth)

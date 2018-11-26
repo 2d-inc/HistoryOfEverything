@@ -16,6 +16,7 @@ import 'package:timeline/timeline/timeline_entry.dart';
 
 typedef TouchBubbleCallback(TapTarget bubble);
 typedef TouchEntryCallback(TimelineEntry entry);
+typedef PaintCallback();
 
 class TimelineRenderWidget extends LeafRenderObjectWidget
 {
@@ -84,6 +85,7 @@ class TimelineRenderObject extends RenderBox
 	MenuItemData _focusItem;
 
 	double _topOverlap = 0.0;
+
 	double get topOverlap => _topOverlap;
 	set topOverlap(double value)
 	{
@@ -199,7 +201,7 @@ class TimelineRenderObject extends RenderBox
 	{
 		if(_timeline != null)
 		{
-			_timeline.setViewport(height:size.height, animate:true);
+			_timeline.setViewport(width:size.width, height:size.height, animate:true);
 		}
 	}
 
@@ -390,6 +392,75 @@ class TimelineRenderObject extends RenderBox
 						canvas.restore();
 						_tapTargets.add(new TapTarget()..entry=asset.entry..rect=renderOffset & renderSize);
 					}
+					// else if(asset is TimelineWatchParty)
+					// {
+					// 	Alignment alignment = Alignment.center;
+					// 	BoxFit fit = BoxFit.cover;
+
+					// 	double contentWidth = asset.width;
+					// 	double contentHeight = asset.height;
+					// 	double x = -contentWidth/2.0 - (alignment.x * contentWidth/2.0);
+					// 	double y = -contentHeight/2.0 + (alignment.y * contentHeight/2.0);
+
+					// 	Offset renderOffset = new Offset(offset.dx + size.width - w, asset.y);
+					// 	Size renderSize = new Size(w*rs, h*rs);
+
+					// 	double scaleX = 1.0, scaleY = 1.0;
+
+					// 	canvas.save();		
+					// 	//canvas.clipRect(renderOffset & renderSize);
+
+					// 	switch(fit)
+					// 	{
+					// 		case BoxFit.fill:
+					// 			scaleX = renderSize.width/contentWidth;
+					// 			scaleY = renderSize.height/contentHeight;
+					// 			break;
+					// 		case BoxFit.contain:
+					// 			double minScale = min(renderSize.width/contentWidth, renderSize.height/contentHeight);
+					// 			scaleX = scaleY = minScale;
+					// 			break;
+					// 		case BoxFit.cover:
+					// 			double maxScale = max(renderSize.width/contentWidth, renderSize.height/contentHeight);
+					// 			scaleX = scaleY = maxScale;
+					// 			break;
+					// 		case BoxFit.fitHeight:
+					// 			double minScale = renderSize.height/contentHeight;
+					// 			scaleX = scaleY = minScale;
+					// 			break;
+					// 		case BoxFit.fitWidth:
+					// 			double minScale = renderSize.width/contentWidth;
+					// 			scaleX = scaleY = minScale;
+					// 			break;
+					// 		case BoxFit.none:
+					// 			scaleX = scaleY = 1.0;
+					// 			break;
+					// 		case BoxFit.scaleDown:
+					// 			double minScale = min(renderSize.width/contentWidth, renderSize.height/contentHeight);
+					// 			scaleX = scaleY = minScale < 1.0 ? minScale : 1.0;
+					// 			break;
+					// 	}
+						
+					// 	canvas.translate(renderOffset.dx + renderSize.width/2.0 + (alignment.x * renderSize.width/2.0), renderOffset.dy + renderSize.height/2.0 + (alignment.y * renderSize.height/2.0));
+					// 	canvas.scale(scaleX, scaleY);
+					// 	canvas.translate(x, y);
+
+					// 	// Comment in to see the AABB
+					// 	canvas.drawRect(new Rect.fromLTRB(0.0, 0.0, asset.width, asset.height), new Paint()..color = (asset.entry.accent != null ? asset.entry.accent : LineColors[depth%LineColors.length]).withOpacity(0.5));
+						
+					// 	if(asset.playerController.textureId != null)
+					// 	{
+							
+					// 		TextureLayer()..
+					// 		// context.addLayer(TextureLayer(
+					// 		// 	rect: Rect.fromLTWH(offset.dx, offset.dy, size.width, size.height),
+					// 		// 	textureId: asset.playerController.textureId,
+					// 		// ));
+					// 	}
+					// 	//asset.actor.draw(canvas, opacity:asset.opacity);
+					// 	canvas.restore();
+					// 	_tapTargets.add(new TapTarget()..entry=asset.entry..rect=renderOffset & renderSize);
+					// }
 				}
 			}
 			canvas.restore();

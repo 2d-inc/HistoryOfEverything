@@ -7,6 +7,7 @@ import "package:flare/flare.dart" as flare;
 import "package:flare/flare/animation/actor_animation.dart" as flare;
 import "package:flare/flare/math/aabb.dart" as flare;
 import "package:flare/flare/math/vec2d.dart" as flare;
+import 'package:video_player/video_player.dart';
 
 class TimelineImage extends TimelineAsset
 {
@@ -29,10 +30,11 @@ class TimelineNima extends TimelineAnimatedAsset
 	nima.AABB setupAABB;
 }
 
-class TimelineWatchParty extends TimelineAnimatedAsset
+class TimelineWatchParty extends TimelineAsset
 {
 	ui.Image tv;
 	ui.Image viewers;
+	VideoPlayerController playerController;
 }
 
 

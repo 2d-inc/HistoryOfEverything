@@ -17,6 +17,7 @@ import "package:flare/flare.dart" as flare;
 import "package:flare/flare/animation/actor_animation.dart" as flare;
 import "package:flare/flare/math/aabb.dart" as flare;
 import "package:flare/flare/math/vec2d.dart" as flare;
+import 'package:video_player/video_player.dart';
 import "timeline_entry.dart";
 
 typedef PaintCallback();
@@ -122,6 +123,9 @@ class Timeline
 	double _renderEnd;
 	double _lastFrameTime = 0.0;
 	double _height = 0.0;
+	double _width = 0.0;
+	double get width => _width;
+	double get height => _height;
 	bool _showFavorites = false;
 	List<TimelineBackgroundColor> _backgroundColors;
 	List<TickColors> _tickColors;
@@ -155,6 +159,8 @@ class Timeline
 	TimelineEntry _renderPrevEntry;
 	double _prevEntryOpacity = 0.0;
 	double _distanceToPrevEntry = 0.0;
+
+	TimelineEntry watchPartyEntry;
 
 	TimelineEntry get currentEra => _currentEra;
 
@@ -677,11 +683,44 @@ class Timeline
 			}
 		}
 
-		TimelineEntry watchPartyEntry = new TimelineEntry()
+
+		// ui.Image tv, viewers;
+		// {
+		// 	ByteData data = await rootBundle.load("assets/WatchParty/watching_event_tv.png");
+		// 	Uint8List list = new Uint8List.view(data.buffer);
+		// 	ui.Codec codec = await ui.instantiateImageCodec(list);
+		// 	ui.FrameInfo frame = await codec.getNextFrame();
+		// 	tv = frame.image;
+		// }
+		// {
+		// 	ByteData data = await rootBundle.load("assets/WatchParty/watching_event_viewers.png");
+		// 	Uint8List list = new Uint8List.view(data.buffer);
+		// 	ui.Codec codec = await ui.instantiateImageCodec(list);
+		// 	ui.FrameInfo frame = await codec.getNextFrame();
+		// 	viewers = frame.image;
+		// }
+		
+		VideoPlayerController controller = VideoPlayerController.network('http://mirrors.standaloneinstaller.com/video-sample/grb_2.mp4');
+		controller.initialize().then((_)
+		{
+			controller.setVolume(0.0);
+			controller.play();
+		});
+											
+		watchPartyEntry = new TimelineEntry()
 							..type = TimelineEntryType.Incident
 							..start = 2018.9
 							..end = 2018.9
-							..label = "Flutter Live Event";
+							..label = "Flutter Live"
+							..asset = 
+							(
+								new TimelineWatchParty()
+									..width = 624
+									..height = 354
+									..playerController = controller
+							);
+		watchPartyEntry.asset.entry = watchPartyEntry;	
+
 		allEntries.add(watchPartyEntry);
 		// sort the full list so they are in order of oldest to newest
 		allEntries.sort((TimelineEntry a, TimelineEntry b)
@@ -797,7 +836,7 @@ class Timeline
 		}
 	}
 
-	void setViewport({double start = double.maxFinite, bool pad = false, double end = double.maxFinite, double height = double.maxFinite, double velocity = double.maxFinite, bool animate = false})
+	void setViewport({double start = double.maxFinite, bool pad = false, double end = double.maxFinite, double height = double.maxFinite, double width = double.maxFinite, double velocity = double.maxFinite, bool animate = false})
 	{
 		if(height != double.maxFinite)
 		{
@@ -808,6 +847,10 @@ class Timeline
 				_end = _end + padding.bottom/scale;
 			}
 			_height = height;
+		}
+		if(width != double.maxFinite)
+		{
+			_width = width;
 		}
 		if(start != double.maxFinite && end != double.maxFinite)
 		{

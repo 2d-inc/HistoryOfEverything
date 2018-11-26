@@ -10,6 +10,7 @@ import 'package:timeline/timeline/timeline_entry.dart';
 import 'package:timeline/timeline/timeline_render_widget.dart';
 import "package:timeline/colors.dart";
 import 'package:flare/flare_actor.dart';
+import 'package:timeline/timeline/timeline_video_widget.dart';
 
 typedef ShowMenuCallback();
 typedef SelectItemCallback(TimelineEntry item);
@@ -233,6 +234,7 @@ class _TimelineWidgetState extends State<TimelineWidget>
                 child: Stack(
                     children:<Widget>
                     [
+						TimelineVideoWidget(timeline),
                         TimelineRenderWidget(timeline: timeline, favorites:BlocProvider.favorites(context).favorites, topOverlap:TopOverlap+devicePadding.top, focusItem:widget.focusItem, touchBubble:onTouchBubble, touchEntry:onTouchEntry),
                         BackdropFilter(
                             filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),

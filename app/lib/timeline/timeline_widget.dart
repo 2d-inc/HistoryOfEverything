@@ -276,7 +276,7 @@ class _TimelineWidgetState extends State<TimelineWidget>
                                                           width: 60.0,
                                                           padding: EdgeInsets.all(18.0),
                                                           color: Colors.white.withOpacity(0.0),
-                                                          child: FlareActor("assets/Favorite.flr", animation: _showFavorites ? "Favorite" : "Unfavorite", shouldClip: false, color:_headerTextColor != null ? _headerTextColor : darkText.withOpacity(darkText.opacity * 0.75), alignment: Alignment.centerRight),
+                                                          child: FlareActor("assets/heart_toolbar.flr", animation: _showFavorites ? "On" : "Off", shouldClip: false, color:_headerTextColor != null ? _headerTextColor : darkText.withOpacity(darkText.opacity * 0.75), alignment: Alignment.centerRight),
                                                         )),
                                                         onTap:()
                                                         {

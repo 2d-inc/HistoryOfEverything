@@ -147,10 +147,10 @@ class _TimelineWidgetState extends State<TimelineWidget>
 	{
 		//double scale = (timeline.end-timeline.start)/context.size.height;
 		timeline.isInteracting = false;
-		if(_didScale)
-		{
-			timeline.clampScroll();
-		}
+		// if(_didScale)
+		// {
+		// 	timeline.clampScroll();
+		// }
 		timeline.setViewport(velocity: details.velocity.pixelsPerSecond.dy, animate: true);
 	}
 	
@@ -181,7 +181,7 @@ class _TimelineWidgetState extends State<TimelineWidget>
 				widget.timeline.isActive = false;
 				
 				Navigator.of(context).push(
-					CupertinoPageRoute(
+					MaterialPageRoute(
 						builder: (BuildContext context) => ArticleWidget(article: _touchedBubble.entry)
 					)
 				).then((v) => widget.timeline.isActive = true);

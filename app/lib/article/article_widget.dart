@@ -27,25 +27,12 @@ class _ArticleWidgetState extends State<ArticleWidget>
   String _title = "";
   String _subTitle = "";
   MarkdownStyleSheet _markdownStyleSheet;
-  AnimationController _controller;
   bool _isFavorite = false;
 
-  static final Animatable<Offset> _slideTween = Tween<Offset>(
-    begin: const Offset(0.0, 0.0),
-    end: const Offset(1.0, 0.0),
-  ).chain(CurveTween(
-    curve: Curves.fastOutSlowIn,
-  ));
-  Animation<Offset> _articleOffset;
+  Offset _interactOffset;
 
   initState() {
     super.initState();
-
-		_controller = AnimationController(
-			vsync: this,
-			duration: const Duration(milliseconds: 200),
-		);
-		_articleOffset = _controller.drive(_slideTween);
 
 		TextStyle style = new TextStyle(
 			color: darkText.withOpacity(darkText.opacity*0.68),
@@ -163,9 +150,32 @@ class _ArticleWidgetState extends State<ArticleWidget>
 										crossAxisAlignment: CrossAxisAlignment.start,
 										children: <Widget>
 										[
-											new Container(
-                                                height:280,
-                                                child: TimelineEntryWidget(isActive: true, timelineEntry: widget.article)
+											GestureDetector(
+												onPanStart: (DragStartDetails details)
+												{
+													setState(()
+													{
+														_interactOffset = details.globalPosition;
+													});
+												},
+												onPanUpdate: (DragUpdateDetails details)
+												{
+													setState(()
+													{
+														_interactOffset = details.globalPosition;
+													});
+												},
+												onPanEnd: (DragEndDetails details)
+												{
+													setState(()
+													{
+														_interactOffset = null;
+													});
+												},
+												child:new Container(
+                                                	height:280,
+                                                	child:TimelineEntryWidget(isActive: true, timelineEntry: widget.article, interactOffset: _interactOffset)
+												)
                                             ),
                                             Padding(
                                               padding: EdgeInsets.only(top:30.0),

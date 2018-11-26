@@ -52,7 +52,7 @@ class _MainMenuWidgetState extends State<MainMenuWidget> with SingleTickerProvid
     {
         _pauseSection();                                                                
         Navigator.of(context).push(
-            CupertinoPageRoute(
+            MaterialPageRoute(
                 builder: (BuildContext context) => new TimelineWidget(item, BlocProvider.getTimeline(context)),
             )
         ).then(_restoreSection);
@@ -170,7 +170,7 @@ class _MainMenuWidgetState extends State<MainMenuWidget> with SingleTickerProvid
                         onPressed: () {
                             _pauseSection();
                             Navigator.of(context).push(
-                                CupertinoPageRoute(
+                                MaterialPageRoute(
                                     builder: (BuildContext context) => new FavoritesPage()
                                 )
                             ).then(_restoreSection);
@@ -203,7 +203,7 @@ class _MainMenuWidgetState extends State<MainMenuWidget> with SingleTickerProvid
                 )
                 ..add(
                     FlatButton(
-                        onPressed: () => Share.share("Build your own animations at www.2dimensions.com"),
+                        onPressed: () => Share.share("Check out The History of Everything! itms://itunes.apple.com/us/app/apple-store/id1441257460?mt=8"),
                         color: Colors.transparent,
                         child: Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
@@ -237,7 +237,7 @@ class _MainMenuWidgetState extends State<MainMenuWidget> with SingleTickerProvid
                             onPressed: () {
                                 _pauseSection();
                                 Navigator.of(context).push(
-                                    CupertinoPageRoute(
+                                    MaterialPageRoute(
                                         builder: (BuildContext context) => new AboutPage()
                                     )
                                 ).then(_restoreSection);
@@ -287,28 +287,8 @@ class _MainMenuWidgetState extends State<MainMenuWidget> with SingleTickerProvid
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children:<Widget>[
                                             Padding(
-                                                padding: const EdgeInsets.only(bottom:18.0),
-                                                child: Row(
-                                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                                    children: <Widget>[
-                                                        Image.asset("assets/flutter_logo.png",
-                                                            color: Colors.black.withOpacity(0.62),
-                                                            height: 22.0,
-                                                            width: 22.0
-                                                        ),
-                                                        Container(
-                                                            margin: EdgeInsets.only(left: 10.0),
-                                                            child: Text(
-                                                                "Flutter Presents",
-                                                                style: TextStyle(
-                                                                    color: darkText.withOpacity(darkText.opacity*0.75),
-                                                                    fontSize: 16.0,
-                                                                    fontFamily: "Roboto"
-                                                                    )
-                                                            )
-                                                        )
-                                                    ],
-                                                ),
+                                                padding: const EdgeInsets.only(top:20.0, bottom:12.0),
+                                                child: Opacity(opacity:0.85, child:Image.asset("assets/twoDimensions_logo.png", height: 10.0))
                                             ),
                                             Text(
                                                 "The History of Everything",

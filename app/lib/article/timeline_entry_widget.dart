@@ -3,7 +3,10 @@ import 'dart:ui';
 import "dart:ui" as ui;
 
 import 'package:flare/flare.dart' as flare;
+import 'package:flare/flare/math/mat2d.dart' as flare;
+import 'package:flare/flare/math/vec2d.dart' as flare;
 import 'package:nima/nima.dart' as nima;
+import 'package:nima/nima/math/vec2d.dart' as nima;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import "package:flutter/scheduler.dart";
@@ -11,21 +14,26 @@ import 'package:nima/nima/actor_image.dart' as nima;
 import 'package:nima/nima/math/aabb.dart' as nima;
 import 'package:flare/flare/actor_image.dart' as flare;
 import 'package:flare/flare/math/aabb.dart' as flare;
+import 'package:timeline/article/controllers/amelia_controller.dart';
+import 'package:timeline/article/controllers/newton_controller.dart';
 import "package:timeline/timeline/timeline_entry.dart";
-
+import 'controllers/flare_interaction_controller.dart';
+import 'controllers/nima_interaction_controller.dart';
 
 class TimelineEntryWidget extends LeafRenderObjectWidget
 {
 	final bool isActive;
 	final TimelineEntry timelineEntry;
-	TimelineEntryWidget({Key key, this.isActive, this.timelineEntry}): super(key: key);
+	final Offset interactOffset;
+	TimelineEntryWidget({Key key, this.isActive, this.timelineEntry, this.interactOffset}): super(key: key);
 
 	@override
 	RenderObject createRenderObject(BuildContext context) 
 	{
 		return new VignetteRenderObject()
 							..timelineEntry = timelineEntry
-							..isActive = isActive;
+							..isActive = isActive
+							..interactOffset = interactOffset;
 	}
 
 	@override
@@ -33,7 +41,8 @@ class TimelineEntryWidget extends LeafRenderObjectWidget
 	{
 		renderObject
 					..timelineEntry = timelineEntry
-					..isActive = isActive;
+					..isActive = isActive
+					..interactOffset = interactOffset;
 	}
 
 	@override
@@ -51,8 +60,11 @@ class VignetteRenderObject extends RenderBox
 	bool _isActive = false;
 	bool _firstUpdate = true;
 	nima.FlutterActor _nimaActor;
-	flare.FlutterActor _flareActor;
-	
+	flare.FlutterActorArtboard _flareActor;
+	FlareInteractionController _flareController;
+	NimaInteractionController _nimaController;
+	Offset interactOffset;
+
 	TimelineEntry get timelineEntry => _timelineEntry;
 	set timelineEntry(TimelineEntry value)
 	{
@@ -83,12 +95,22 @@ class VignetteRenderObject extends RenderBox
 				_nimaActor = asset.actor.makeInstance();
 				asset.animation.apply(asset.animation.duration, _nimaActor, 1.0);
 				_nimaActor.advance(0.0);
+				if(asset.filename == "assets/Newton/Newton_v2.nma")
+				{
+					_nimaController = new NewtonController();
+					_nimaController.initialize(_nimaActor);
+				}
 			}
 			else if(asset is TimelineFlare && asset.actor != null)
 			{
 				_flareActor = asset.actor.makeInstance();
 				asset.animation.apply(asset.animation.duration, _flareActor, 1.0);
 				_flareActor.advance(0.0);
+				if(asset.filename == "assets/Amelia_Earhart/Amelia_Earhart.flr")
+				{
+					_flareController = new AmeliaController();
+					_flareController.initialize(_flareActor);
+				}
 			}
 		}
 	}
@@ -145,12 +167,17 @@ class VignetteRenderObject extends RenderBox
 		size = constraints.biggest;
 	}
 
+	static const Alignment alignment = Alignment.center;
+	static const BoxFit fit = BoxFit.contain;
+	Offset _renderOffset;
+	
 	@override
 	void paint(PaintingContext context, Offset offset)
 	{
 		final Canvas canvas = context.canvas;
 		TimelineAsset asset = _timelineEntry?.asset;
-		
+		_renderOffset = offset;
+
         if(_timelineEntry == null || asset == null)
 		{
 			return;
@@ -167,11 +194,7 @@ class VignetteRenderObject extends RenderBox
 		}
 		else if(asset is TimelineNima && _nimaActor != null)
 		{
-			Alignment alignment = Alignment.center;
-			BoxFit fit = BoxFit.contain;
-
 			nima.AABB bounds = asset.setupAABB;
-			
 			
 			double contentHeight = bounds[3] - bounds[1];
 			double contentWidth = bounds[2] - bounds[0];
@@ -225,9 +248,6 @@ class VignetteRenderObject extends RenderBox
 		}
 		else if(asset is TimelineFlare && _flareActor != null)
 		{
-			Alignment alignment = Alignment.center;
-			BoxFit fit = BoxFit.contain;
-
 			flare.AABB bounds = asset.setupAABB;
 			double contentWidth = bounds[2] - bounds[0];
 			double contentHeight = bounds[3] - bounds[1];
@@ -277,6 +297,13 @@ class VignetteRenderObject extends RenderBox
 			canvas.translate(x, y);
 
 			_flareActor.draw(canvas);
+			// for(flare.ActorNode node in _flareActor.nodes)
+			// {
+			// 	if(node.name == "ctrl_face")
+			// 	{
+			// 		canvas.drawCircle(new Offset(node.worldTransform[4], node.worldTransform[5]), 50.0, new Paint()..color = Colors.red);
+			// 	}
+			// }
 			canvas.restore();
 		}
 		canvas.restore();
@@ -306,11 +333,65 @@ class VignetteRenderObject extends RenderBox
 			if(asset is TimelineNima && _nimaActor != null)
 			{
 				asset.animationTime += elapsed;
+		
 				if(asset.loop)
 				{
 					asset.animationTime %= asset.animation.duration;
 				}
 				asset.animation.apply(asset.animationTime, _nimaActor, 1.0);
+				if(_nimaController != null)
+				{
+					nima.Vec2D localTouchPosition;
+					if(interactOffset != null)
+					{
+						nima.AABB bounds = asset.setupAABB;
+						double contentHeight = bounds[3] - bounds[1];
+						double contentWidth = bounds[2] - bounds[0];
+						double x = -bounds[0] - contentWidth/2.0 - (alignment.x * contentWidth/2.0);
+						double y =  -bounds[1] - contentHeight/2.0 + (alignment.y * contentHeight/2.0);
+
+						double scaleX = 1.0, scaleY = 1.0;
+
+						switch(fit)
+						{
+							case BoxFit.fill:
+								scaleX = size.width/contentWidth;
+								scaleY = size.height/contentHeight;
+								break;
+							case BoxFit.contain:
+								double minScale = min(size.width/contentWidth, size.height/contentHeight);
+								scaleX = scaleY = minScale;
+								break;
+							case BoxFit.cover:
+								double maxScale = max(size.width/contentWidth, size.height/contentHeight);
+								scaleX = scaleY = maxScale;
+								break;
+							case BoxFit.fitHeight:
+								double minScale = size.height/contentHeight;
+								scaleX = scaleY = minScale;
+								break;
+							case BoxFit.fitWidth:
+								double minScale = size.width/contentWidth;
+								scaleX = scaleY = minScale;
+								break;
+							case BoxFit.none:
+								scaleX = scaleY = 1.0;
+								break;
+							case BoxFit.scaleDown:
+								double minScale = min(size.width/contentWidth, size.height/contentHeight);
+								scaleX = scaleY = minScale < 1.0 ? minScale : 1.0;
+								break;
+						}
+						double dx = interactOffset.dx - (_renderOffset.dx + size.width/2.0 + (alignment.x * size.width/2.0));
+						double dy = interactOffset.dy - (_renderOffset.dy + size.height/2.0 + (alignment.y * size.height/2.0));
+						dx /= scaleX;
+						dy /= -scaleY;
+						dx -= x;
+						dy -= y;
+						localTouchPosition = new nima.Vec2D.fromValues(dx, dy);
+					}
+					_nimaController.advance(_nimaActor, localTouchPosition, elapsed);
+				}
 				_nimaActor.advance(elapsed);
 			}
 			else if(asset is TimelineFlare && _flareActor != null)
@@ -325,16 +406,82 @@ class VignetteRenderObject extends RenderBox
 					_firstUpdate = false;
 				}
 				asset.animationTime += elapsed;
-				if(asset.intro == asset.animation && asset.animationTime >= asset.animation.duration)
+				if(asset.idleAnimations != null)
 				{
-					asset.animationTime -= asset.animation.duration;
-					asset.animation = asset.idle;
+					
+					double phase = 0.0;
+					for(flare.ActorAnimation animation in asset.idleAnimations)
+					{
+						animation.apply((asset.animationTime+phase)%animation.duration, _flareActor, 1.0);
+						phase += 0.16;
+					}
 				}
-				if(asset.loop && asset.animationTime >= 0)
+				else
 				{
-					asset.animationTime %= asset.animation.duration;
+					if(asset.intro == asset.animation && asset.animationTime >= asset.animation.duration)
+					{
+						asset.animationTime -= asset.animation.duration;
+						asset.animation = asset.idle;
+					}
+					if(asset.loop && asset.animationTime >= 0)
+					{
+						asset.animationTime %= asset.animation.duration;
+					}
+					asset.animation.apply(asset.animationTime, _flareActor, 1.0);
 				}
-				asset.animation.apply(asset.animationTime, _flareActor, 1.0);
+				if(_flareController != null)
+				{
+					flare.Vec2D localTouchPosition;
+					if(interactOffset != null)
+					{
+						flare.AABB bounds = asset.setupAABB;
+						double contentWidth = bounds[2] - bounds[0];
+						double contentHeight = bounds[3] - bounds[1];
+						double x = -bounds[0] - contentWidth/2.0 - (alignment.x * contentWidth/2.0);
+						double y =  -bounds[1] - contentHeight/2.0 + (alignment.y * contentHeight/2.0);
+
+						double scaleX = 1.0, scaleY = 1.0;
+
+						switch(fit)
+						{
+							case BoxFit.fill:
+								scaleX = size.width/contentWidth;
+								scaleY = size.height/contentHeight;
+								break;
+							case BoxFit.contain:
+								double minScale = min(size.width/contentWidth, size.height/contentHeight);
+								scaleX = scaleY = minScale;
+								break;
+							case BoxFit.cover:
+								double maxScale = max(size.width/contentWidth, size.height/contentHeight);
+								scaleX = scaleY = maxScale;
+								break;
+							case BoxFit.fitHeight:
+								double minScale = size.height/contentHeight;
+								scaleX = scaleY = minScale;
+								break;
+							case BoxFit.fitWidth:
+								double minScale = size.width/contentWidth;
+								scaleX = scaleY = minScale;
+								break;
+							case BoxFit.none:
+								scaleX = scaleY = 1.0;
+								break;
+							case BoxFit.scaleDown:
+								double minScale = min(size.width/contentWidth, size.height/contentHeight);
+								scaleX = scaleY = minScale < 1.0 ? minScale : 1.0;
+								break;
+						}
+						double dx = interactOffset.dx - (_renderOffset.dx + size.width/2.0 + (alignment.x * size.width/2.0));
+						double dy = interactOffset.dy - (_renderOffset.dy + size.height/2.0 + (alignment.y * size.height/2.0));
+						dx /= scaleX;
+						dy /= scaleY;
+						dx -= x;
+						dy -= y;
+						localTouchPosition = new flare.Vec2D.fromValues(dx, dy);
+					}
+					_flareController.advance(_flareActor, localTouchPosition, elapsed);
+				}
 				_flareActor.advance(elapsed);
 			}
 		} 

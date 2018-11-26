@@ -23,7 +23,7 @@ class FavoritesPage extends StatelessWidget
             favorites.add(ThumbnailDetailWidget(entry, hasDivider: i != 0, tapSearchResult: (TimelineEntry entry){
                 MenuItemData item = MenuItemData.fromEntry(entry);
                 Navigator.of(context).push(
-                CupertinoPageRoute(
+                MaterialPageRoute(
                     builder: (BuildContext context) => TimelineWidget(item, BlocProvider.getTimeline(context))
                     )
                 );

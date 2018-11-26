@@ -32,12 +32,13 @@ class TimelineNima extends TimelineAnimatedAsset
 
 class TimelineFlare extends TimelineAnimatedAsset
 {
-	flare.FlutterActor actorStatic;
-	flare.FlutterActor actor;
+	flare.FlutterActorArtboard actorStatic;
+	flare.FlutterActorArtboard actor;
 	flare.ActorAnimation animation;
 
 	flare.ActorAnimation intro;
 	flare.ActorAnimation idle;
+	List<flare.ActorAnimation> idleAnimations;
 
 	flare.AABB setupAABB;
 }
@@ -51,6 +52,7 @@ class TimelineAsset
 	double scaleVelocity = 0.0;
 	double y = 0.0;
 	double velocity = 0.0;
+	String filename;
 	TimelineEntry entry;
 }
 

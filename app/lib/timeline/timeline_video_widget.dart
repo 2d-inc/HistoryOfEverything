@@ -55,7 +55,7 @@ class _TimelineVideoWidgetState extends State<TimelineVideoWidget>
             child: Stack(children:<Widget>[
 				Positioned.fill(bottom:60.0*fitScale, left:10.0*fitScale, right: 10.0*fitScale, child:Image.asset("assets/WatchParty/watching_event_tv.png")),
 				Positioned.fill(bottom:60.0*fitScale, left:10.0*fitScale, right: 10.0*fitScale, child:
-					new Container(child:
+					new Container(child: asset.playerController.value.size == null ? null :
 						new Center(
 							child:AspectRatio(
 								aspectRatio:asset.playerController.value.aspectRatio,

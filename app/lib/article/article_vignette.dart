@@ -29,10 +29,11 @@ class _ArticleVignetteState extends State<ArticleVignette>
 	GoogleMapController mapController;
 	Rect mapRect;
 	Matrix4 mapTransform;
+	static const double MapPixelDensity = 3.0;
 
 	initState() {
     	super.initState();
-		mapRect = Rect.fromLTWH(0.0, 0.0, 44.0*2.0, 94.0*2.0);
+		mapRect = Rect.fromLTWH(0.0, 0.0, 44.0*MapPixelDensity, 94.0*MapPixelDensity);
 		mapTransform = new Matrix4.translationValues(-1000.0, -1000.0, 0.0);
 	}
 
@@ -56,8 +57,8 @@ class _ArticleVignetteState extends State<ArticleVignette>
 						//ffset(20.0, 78.3)
 						// 40, 80
 						Mat2D scale = new Mat2D();
-						scale[0] = 0.5;
-						scale[3] = 0.5;
+						scale[0] = 1.0/MapPixelDensity;
+						scale[3] = 1.0/MapPixelDensity;
 
 						mapTransform =  Matrix4.fromFloat64List(screenTransform.mat4)
 										* Matrix4.fromFloat64List(transform.mat4)

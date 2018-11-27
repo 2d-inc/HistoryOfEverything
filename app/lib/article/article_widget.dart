@@ -238,7 +238,8 @@ class _ArticleWidgetState extends State<ArticleWidget>
                                               ),
                                             ),
 											Container(margin:EdgeInsets.only(top:20, bottom:20), height:1, color:Colors.black.withOpacity(0.11)),
-                                            MarkdownBody(data: _articleMarkdown, styleSheet: _markdownStyleSheet)
+                                            MarkdownBody(data: _articleMarkdown, styleSheet: _markdownStyleSheet),
+											SizedBox(height: 100),
 										],
 									)
 								)

@@ -2,14 +2,8 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:timeline/article/article_widget.dart';
-import 'package:timeline/bloc_provider.dart';
-import 'package:timeline/main_menu/menu_data.dart';
 import 'package:timeline/timeline/timeline.dart';
 import 'package:timeline/timeline/timeline_entry.dart';
-import 'package:timeline/timeline/timeline_render_widget.dart';
-import "package:timeline/colors.dart";
-import 'package:flare/flare_actor.dart';
 import 'package:video_player/video_player.dart';
 
 class TimelineVideoWidget extends StatefulWidget {
@@ -27,6 +21,7 @@ class _TimelineVideoWidgetState extends State<TimelineVideoWidget>
 
   initState() {
     super.initState();
+	// hack to get this to update continuously for ludicrous
     controller = AnimationController(
         duration: const Duration(milliseconds: 2000), vsync: this);
     animation = Tween(begin: 0.0, end: 300.0).animate(controller)
@@ -48,21 +43,29 @@ class _TimelineVideoWidgetState extends State<TimelineVideoWidget>
 	double w = asset.width * Timeline.AssetScreenScale*fitScale;
 	double h = asset.height * Timeline.AssetScreenScale*fitScale;
 	double edgePadding = -20.0*fitScale;
+	double tvMargin = 10.0 * Timeline.AssetScreenScale*fitScale;
     return entry != null && asset.opacity > 0
         ? Positioned.fromRect(
             rect: Rect.fromLTWH(widget.timeline.width - w - edgePadding, asset.y,
                 w * rs, h * rs),
             child: Stack(children:<Widget>[
-				Positioned.fill(bottom:60.0*fitScale, left:10.0*fitScale, right: 10.0*fitScale, child:Image.asset("assets/WatchParty/watching_event_tv.png")),
+				//Positioned.fill(bottom:60.0*fitScale, left:10.0*fitScale, right: 10.0*fitScale, child:Image.asset("assets/WatchParty/watching_event_tv.png")),
 				Positioned.fill(bottom:60.0*fitScale, left:10.0*fitScale, right: 10.0*fitScale, child:
 					new Container(child: asset.playerController.value.size == null ? null :
 						new Center(
-							child:AspectRatio(
-								aspectRatio:asset.playerController.value.aspectRatio,
-								child: VideoPlayer(asset.playerController)
+								child:AspectRatio(
+										aspectRatio:asset.playerController.value.aspectRatio,
+										child: 
+										Container(
+											decoration: BoxDecoration(
+												borderRadius: BorderRadius.all(Radius.circular(tvMargin)),
+												color: Colors.black,
+											),
+											child: Padding(padding:EdgeInsets.all(tvMargin),child:ClipRRect(borderRadius:BorderRadius.circular(tvMargin), child:VideoPlayer(asset.playerController)))
+										)
+								)
 							)
 						)
-					)
 				),
 				Positioned.fill(top:30.0*fitScale, child:Image.asset("assets/WatchParty/watching_event_viewers.png"))
 			]))

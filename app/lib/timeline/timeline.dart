@@ -25,6 +25,8 @@ typedef PaintCallback();
 typedef ChangeEraCallback(TimelineEntry era);
 typedef ChangeHeaderColorCallback(Color background, Color text);
 
+const String videoStreamUrl = 'http://mirrors.standaloneinstaller.com/video-sample/grb_2.mp4';
+
 Color interpolateColor(Color from, Color to, double elapsed)
 {
 	double r, g, b, a;
@@ -699,24 +701,7 @@ class Timeline
 			}
 		}
 
-
-		// ui.Image tv, viewers;
-		// {
-		// 	ByteData data = await rootBundle.load("assets/WatchParty/watching_event_tv.png");
-		// 	Uint8List list = new Uint8List.view(data.buffer);
-		// 	ui.Codec codec = await ui.instantiateImageCodec(list);
-		// 	ui.FrameInfo frame = await codec.getNextFrame();
-		// 	tv = frame.image;
-		// }
-		// {
-		// 	ByteData data = await rootBundle.load("assets/WatchParty/watching_event_viewers.png");
-		// 	Uint8List list = new Uint8List.view(data.buffer);
-		// 	ui.Codec codec = await ui.instantiateImageCodec(list);
-		// 	ui.FrameInfo frame = await codec.getNextFrame();
-		// 	viewers = frame.image;
-		// }
-		
-		VideoPlayerController controller = VideoPlayerController.network('http://mirrors.standaloneinstaller.com/video-sample/grb_2.mp4');
+		VideoPlayerController controller = VideoPlayerController.network(videoStreamUrl);
 		controller.initialize().then((_)
 		{
 			controller.setVolume(0.0);

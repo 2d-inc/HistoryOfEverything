@@ -10,27 +10,20 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     return BlocProvider(
-            child: MaterialApp(
-                title: 'History & Future of Everything',
-                theme: new ThemeData(
-                    backgroundColor: background,
-                    scaffoldBackgroundColor: background
-                ),
-                home: MenuPage(),
-            ),
-            platform: Theme.of(context).platform,
-        );
-    }
+      child: MaterialApp(
+        title: 'History & Future of Everything',
+        theme: ThemeData(
+            backgroundColor: background, scaffoldBackgroundColor: background),
+        home: MenuPage(),
+      ),
+      platform: Theme.of(context).platform,
+    );
+  }
 }
 
-class MenuPage extends StatelessWidget
-{
-    @override
-    Widget build(BuildContext context)
-    {
-        return Scaffold(
-            appBar: null,
-            body: MainMenuWidget()
-        );
-    }
+class MenuPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(appBar: null, body: MainMenuWidget());
+  }
 }

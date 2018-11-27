@@ -17,7 +17,7 @@ class TimelineVideoWidget extends StatefulWidget {
   TimelineVideoWidget(this.timeline, {Key key}) : super(key: key);
 
   @override
-  _TimelineVideoWidgetState createState() => new _TimelineVideoWidgetState();
+  _TimelineVideoWidgetState createState() => _TimelineVideoWidgetState();
 }
 
 class _TimelineVideoWidgetState extends State<TimelineVideoWidget>
@@ -43,31 +43,42 @@ class _TimelineVideoWidgetState extends State<TimelineVideoWidget>
     TimelineEntry entry = widget.timeline.watchPartyEntry;
     TimelineWatchParty asset = entry?.asset;
 
-	double rs = 0.2+asset.scale*0.8;
-	double fitScale = 1.85;
-	double w = asset.width * Timeline.AssetScreenScale*fitScale;
-	double h = asset.height * Timeline.AssetScreenScale*fitScale;
-	double edgePadding = -20.0*fitScale;
+    double rs = 0.2 + asset.scale * 0.8;
+    double fitScale = 1.85;
+    double w = asset.width * Timeline.AssetScreenScale * fitScale;
+    double h = asset.height * Timeline.AssetScreenScale * fitScale;
+    double edgePadding = -20.0 * fitScale;
     return entry != null && asset.opacity > 0
         ? Positioned.fromRect(
-            rect: Rect.fromLTWH(widget.timeline.width - w - edgePadding, asset.y,
-                w * rs, h * rs),
-            child: Stack(children:<Widget>[
-				Positioned.fill(bottom:60.0*fitScale, left:10.0*fitScale, right: 10.0*fitScale, child:Image.asset("assets/WatchParty/watching_event_tv.png")),
-				Positioned.fill(bottom:60.0*fitScale, left:10.0*fitScale, right: 10.0*fitScale, child:
-					new Container(child: asset.playerController.value.size == null ? null :
-						new Center(
-							child:AspectRatio(
-								aspectRatio:asset.playerController.value.aspectRatio,
-								child: VideoPlayer(asset.playerController)
-							)
-						)
-					)
-				),
-				Positioned.fill(top:30.0*fitScale, child:Image.asset("assets/WatchParty/watching_event_viewers.png"))
-			]))
-			
-			//Container(color: Colors.red.withOpacity(asset.opacity)))
-        : new Container();
+            rect: Rect.fromLTWH(widget.timeline.width - w - edgePadding,
+                asset.y, w * rs, h * rs),
+            child: Stack(children: <Widget>[
+              Positioned.fill(
+                  bottom: 60.0 * fitScale,
+                  left: 10.0 * fitScale,
+                  right: 10.0 * fitScale,
+                  child:
+                      Image.asset("assets/WatchParty/watching_event_tv.png")),
+              Positioned.fill(
+                  bottom: 60.0 * fitScale,
+                  left: 10.0 * fitScale,
+                  right: 10.0 * fitScale,
+                  child: Container(
+                      child: asset.playerController.value.size == null
+                          ? null
+                          : Center(
+                              child: AspectRatio(
+                                  aspectRatio:
+                                      asset.playerController.value.aspectRatio,
+                                  child:
+                                      VideoPlayer(asset.playerController))))),
+              Positioned.fill(
+                  top: 30.0 * fitScale,
+                  child: Image.asset(
+                      "assets/WatchParty/watching_event_viewers.png"))
+            ]))
+
+        //Container(color: Colors.red.withOpacity(asset.opacity)))
+        : Container();
   }
 }

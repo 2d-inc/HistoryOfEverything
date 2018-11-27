@@ -14,81 +14,91 @@ import "../colors.dart";
 import '../article/timeline_entry_widget.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-class ArticleVignette extends StatefulWidget  
-{
-	final TimelineEntry article;
-	final Offset interactOffset;
-	ArticleVignette({this.article, this.interactOffset, Key key}) : super(key: key);
+class ArticleVignette extends StatefulWidget {
+  final TimelineEntry article;
+  final Offset interactOffset;
+  ArticleVignette({this.article, this.interactOffset, Key key})
+      : super(key: key);
 
   @override
-  _ArticleVignetteState createState() => new _ArticleVignetteState();
+  _ArticleVignetteState createState() => _ArticleVignetteState();
 }
 
-class _ArticleVignetteState extends State<ArticleVignette>
-{
-	GoogleMapController mapController;
-	Rect mapRect;
-	Matrix4 mapTransform;
-	static const double MapPixelDensity = 3.0;
+class _ArticleVignetteState extends State<ArticleVignette> {
+  GoogleMapController mapController;
+  Rect mapRect;
+  Matrix4 mapTransform;
+  static const double MapPixelDensity = 3.0;
 
-	initState() {
-    	super.initState();
-		mapRect = Rect.fromLTWH(0.0, 0.0, 44.0*MapPixelDensity, 94.0*MapPixelDensity);
-		mapTransform = new Matrix4.translationValues(-1000.0, -1000.0, 0.0);
-	}
+  initState() {
+    super.initState();
+    mapRect =
+        Rect.fromLTWH(0.0, 0.0, 44.0 * MapPixelDensity, 94.0 * MapPixelDensity);
+    mapTransform = Matrix4.translationValues(-1000.0, -1000.0, 0.0);
+  }
 
-	@override
-    Widget build(BuildContext context) 
-	{
-		TimelineAsset asset = widget.article?.asset;
-		if(asset is TimelineFlare && asset.mapNode != null)
-		{
-			return Stack(children:<Widget>[
-				Positioned.fill(child:TimelineEntryWidget(isActive: true, timelineEntry: widget.article, interactOffset: widget.interactOffset, updateMapNode:(Mat2D screenTransform, Mat2D transform)
-				{
-					TransformComponents components = new TransformComponents();
-					Mat2D.decompose(transform, components);
-					setState(()
-					{
-						// final RenderBox renderBox = context.findRenderObject();
-    					// final position = renderBox.localToGlobal(Offset.zero);
-						//mapTransform = Matrix4.fromFloat64List(transform.mat4);
-						//* Matrix4.translationValues(-mapRect.width/2.0, -mapRect.height/2.0, 0.0)
-						//ffset(20.0, 78.3)
-						// 40, 80
-						Mat2D scale = new Mat2D();
-						scale[0] = 1.0/MapPixelDensity;
-						scale[3] = 1.0/MapPixelDensity;
+  @override
+  Widget build(BuildContext context) {
+    TimelineAsset asset = widget.article?.asset;
+    if (asset is TimelineFlare && asset.mapNode != null) {
+      return Stack(children: <Widget>[
+        Positioned.fill(
+            child: TimelineEntryWidget(
+                isActive: true,
+                timelineEntry: widget.article,
+                interactOffset: widget.interactOffset,
+                updateMapNode: (Mat2D screenTransform, Mat2D transform) {
+                  TransformComponents components = TransformComponents();
+                  Mat2D.decompose(transform, components);
+                  setState(() {
+                    // final RenderBox renderBox = context.findRenderObject();
+                    // final position = renderBox.localToGlobal(Offset.zero);
+                    //mapTransform = Matrix4.fromFloat64List(transform.mat4);
+                    //* Matrix4.translationValues(-mapRect.width/2.0, -mapRect.height/2.0, 0.0)
+                    //ffset(20.0, 78.3)
+                    // 40, 80
+                    Mat2D scale = Mat2D();
+                    scale[0] = 1.0 / MapPixelDensity;
+                    scale[3] = 1.0 / MapPixelDensity;
 
-						mapTransform =  Matrix4.fromFloat64List(screenTransform.mat4)
-										* Matrix4.fromFloat64List(transform.mat4)
-										* Matrix4.translationValues(-22.0, -45, 0.0)
-										* Matrix4.fromFloat64List(scale.mat4)
-										* Matrix4.translationValues(mapRect.width/2.0, mapRect.height/2.0, 0.0)
-										* Matrix4.rotationZ(pi/2.0-0.015) 
-										* Matrix4.translationValues(-mapRect.width/2.0, -mapRect.height/2.0, 0.0);
-					});
-				})),
-				Positioned.fromRect(rect:mapRect, child:Transform(
-						alignment: Alignment.topLeft,
-    					transform: mapTransform,//Matrix4.skewY(0.3)..rotateZ(-math.pi / 12.0),
-						child:ClipRRect(borderRadius:BorderRadius.circular(5.0),child:GoogleMap(onMapCreated:(GoogleMapController controller)
-						{
-							setState(() 
-							{ 
-								mapController = controller; 
-								mapController.animateCamera(CameraUpdate.newCameraPosition(
-									const CameraPosition(
-									bearing: 270.0,
-									target: LatLng(51.5160895, -0.1294527),
-									tilt: 30.0,
-									zoom: 17.0,
-									)
-								));
-							});
-						}))))
-			]);
-		}
-		return TimelineEntryWidget(isActive: true, timelineEntry: widget.article, interactOffset: widget.interactOffset);
-	}
+                    mapTransform = Matrix4.fromFloat64List(
+                            screenTransform.mat4) *
+                        Matrix4.fromFloat64List(transform.mat4) *
+                        Matrix4.translationValues(-22.0, -45, 0.0) *
+                        Matrix4.fromFloat64List(scale.mat4) *
+                        Matrix4.translationValues(
+                            mapRect.width / 2.0, mapRect.height / 2.0, 0.0) *
+                        Matrix4.rotationZ(pi / 2.0 - 0.015) *
+                        Matrix4.translationValues(
+                            -mapRect.width / 2.0, -mapRect.height / 2.0, 0.0);
+                  });
+                })),
+        Positioned.fromRect(
+            rect: mapRect,
+            child: Transform(
+                alignment: Alignment.topLeft,
+                transform:
+                    mapTransform, //Matrix4.skewY(0.3)..rotateZ(-math.pi / 12.0),
+                child: ClipRRect(
+                    borderRadius: BorderRadius.circular(5.0),
+                    child: GoogleMap(
+                        onMapCreated: (GoogleMapController controller) {
+                      setState(() {
+                        mapController = controller;
+                        mapController.animateCamera(
+                            CameraUpdate.newCameraPosition(const CameraPosition(
+                          bearing: 270.0,
+                          target: LatLng(51.5160895, -0.1294527),
+                          tilt: 30.0,
+                          zoom: 17.0,
+                        )));
+                      });
+                    }))))
+      ]);
+    }
+    return TimelineEntryWidget(
+        isActive: true,
+        timelineEntry: widget.article,
+        interactOffset: widget.interactOffset);
+  }
 }

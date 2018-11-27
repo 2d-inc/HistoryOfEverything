@@ -2,17 +2,12 @@ import 'dart:math';
 
 import 'package:flare/flare/math/mat2d.dart';
 import 'package:flare/flare/math/transform_components.dart';
-import 'package:flare/flare_actor.dart';
 import 'package:flutter/material.dart';
-import "package:flutter/services.dart" show rootBundle;
 import 'package:flutter/widgets.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:timeline/timeline/timeline_entry.dart';
 
-import "../bloc_provider.dart";
-import "../colors.dart";
 import '../article/timeline_entry_widget.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class ArticleVignette extends StatefulWidget {
   final TimelineEntry article;
@@ -82,18 +77,18 @@ class _ArticleVignetteState extends State<ArticleVignette> {
                 child: ClipRRect(
                     borderRadius: BorderRadius.circular(5.0),
                     child: GoogleMap(
-                        onMapCreated: (GoogleMapController controller) {
-                      setState(() {
-                        mapController = controller;
-                        mapController.animateCamera(
-                            CameraUpdate.newCameraPosition(const CameraPosition(
+                      options: GoogleMapOptions(
+                        cameraPosition: const CameraPosition(
                           bearing: 270.0,
                           target: LatLng(51.5160895, -0.1294527),
                           tilt: 30.0,
-                          zoom: 17.0,
-                        )));
-                      });
-                    }))))
+                          zoom: 7.0,
+                        ),
+                      ),
+                      onMapCreated: (GoogleMapController controller) {
+                        mapController = controller;
+                      },
+                    ))))
       ]);
     }
     return TimelineEntryWidget(

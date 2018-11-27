@@ -531,7 +531,7 @@
 		}
 	},
 	{
-		"date": 1918,
+		"date": 1952,
 		"label": "Nelson Mandela",
 		"article":"nelson_mandela.txt",
 		"asset": 
@@ -540,31 +540,6 @@
 			"width": 528,
 			"height": 528,
 			"offset": -40
-		}
-	},
-	{
-		"date": 1897,
-		"label": "Amelia Earhart",
-		"id":"amelia",
-		"article":"amelia_earhart.txt",
-		"asset": 
-		{
-			"source": "Amelia_Earhart/Amelia_Earhart.flr",
-			"width": 528,
-			"height": 528,
-			"offset": -140
-		}
-	},
-	{
-		"date": 1912,
-		"label": "Alan Turing",
-		"article":"alan_turing.txt",
-		"asset": 
-		{
-			"source": "Alan_Turing/Alan_Turing.nma",
-			"width": 528,
-			"height": 528,
-			"offset": -140
 		}
 	},
 	{
@@ -592,13 +567,13 @@
 		}
 	},
 	{
-		"date": 1929,
-		"label": "Martin Luther King, Jr.",
-		"article":"martin_luther_king.txt",
-		"id":"mlk",
-		"asset": 
+		"date": 1932,
+		"label": "Amelia Earhart",
+		"id":"amelia",
+		"article":"amelia_earhart.txt",
+		"asset":
 		{
-			"source": "Martin Luther king/Martin Luther king.nma",
+			"source": "Amelia_Earhart/Amelia_Earhart.flr",
 			"width": 528,
 			"height": 528,
 			"offset": -140
@@ -613,6 +588,31 @@
 		"asset": 
 		{
 			"source": "World_War_II/World_War_II.nma",
+			"width": 528,
+			"height": 528,
+			"offset": -140
+		}
+	},
+	{
+		"date": 1939,
+		"label": "Alan Turing",
+		"article":"alan_turing.txt",
+		"asset":
+		{
+			"source": "Alan_Turing/Alan_Turing.nma",
+			"width": 528,
+			"height": 528,
+			"offset": -140
+		}
+	},
+	{
+		"date": 1963,
+		"label": "Martin Luther King, Jr.",
+		"article":"martin_luther_king.txt",
+		"id":"mlk",
+		"asset":
+		{
+			"source": "Martin Luther king/Martin Luther king.nma",
 			"width": 528,
 			"height": 528,
 			"offset": -140

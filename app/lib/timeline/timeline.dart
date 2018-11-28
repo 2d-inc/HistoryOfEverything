@@ -1298,7 +1298,7 @@ class Timeline {
               }
             }
           } else {
-            if (asset is TimelineNima && isActive) {
+            if (asset is TimelineNima && isActive && !isInteracting && _scrollSimulation == null) {
               asset.animationTime += elapsed;
               if (asset.loop) {
                 asset.animationTime %= asset.animation.duration;
@@ -1306,7 +1306,7 @@ class Timeline {
               asset.animation.apply(asset.animationTime, asset.actor, 1.0);
               asset.actor.advance(elapsed);
               stillAnimating = true;
-            } else if (asset is TimelineFlare && isActive) {
+            } else if (asset is TimelineFlare && isActive && !isInteracting && _scrollSimulation == null) {
               asset.animationTime += elapsed;
               if (asset.idleAnimations != null) {
                 double phase = 0.0;

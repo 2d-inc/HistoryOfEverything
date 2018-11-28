@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:flare/flare/math/mat2d.dart';
@@ -24,12 +25,25 @@ class _ArticleVignetteState extends State<ArticleVignette> {
   Rect mapRect;
   Matrix4 mapTransform;
   static const double MapPixelDensity = 3.0;
+  Timer mapTimer;
+  bool showMap = false;
 
   initState() {
     super.initState();
     mapRect =
         Rect.fromLTWH(0.0, 0.0, 44.0 * MapPixelDensity, 94.0 * MapPixelDensity);
     mapTransform = Matrix4.translationValues(-1000.0, -1000.0, 0.0);
+    mapTimer = new Timer(Duration(seconds: 3), () {
+      setState(() {
+        showMap = true;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    mapTimer?.cancel();
+    super.dispose();
   }
 
   @override
@@ -76,19 +90,21 @@ class _ArticleVignetteState extends State<ArticleVignette> {
                     mapTransform, //Matrix4.skewY(0.3)..rotateZ(-math.pi / 12.0),
                 child: ClipRRect(
                     borderRadius: BorderRadius.circular(5.0),
-                    child: GoogleMap(
-                      options: GoogleMapOptions(
-                        cameraPosition: const CameraPosition(
-                          bearing: 270.0,
-                          target: LatLng(51.5160895, -0.1294527),
-                          tilt: 30.0,
-                          zoom: 7.0,
-                        ),
-                      ),
-                      onMapCreated: (GoogleMapController controller) {
-                        mapController = controller;
-                      },
-                    ))))
+                    child: showMap
+                        ? GoogleMap(
+                            options: GoogleMapOptions(
+                              cameraPosition: const CameraPosition(
+                                bearing: 270.0,
+                                target: LatLng(51.5160895, -0.1294527),
+                                tilt: 30.0,
+                                zoom: 7.0,
+                              ),
+                            ),
+                            onMapCreated: (GoogleMapController controller) {
+                              mapController = controller;
+                            },
+                          )
+                        : new Container())))
       ]);
     }
     return TimelineEntryWidget(

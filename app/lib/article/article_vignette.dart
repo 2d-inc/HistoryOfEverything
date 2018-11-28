@@ -36,7 +36,7 @@ class _ArticleVignetteState extends State<ArticleVignette> {
   Widget build(BuildContext context) {
     TimelineAsset asset = widget.article?.asset;
     if (asset is TimelineFlare && asset.mapNode != null) {
-      return Stack(children: <Widget>[
+      return Stack(overflow: Overflow.visible, children: <Widget>[
         Positioned.fill(
             child: TimelineEntryWidget(
                 isActive: true,

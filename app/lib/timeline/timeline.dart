@@ -632,7 +632,6 @@ class Timeline {
         VideoPlayerController.network(videoStreamUrl);
     controller.initialize().then((_) {
       controller.setVolume(0.0);
-      controller.play();
     });
 
     watchPartyEntry = TimelineEntry()

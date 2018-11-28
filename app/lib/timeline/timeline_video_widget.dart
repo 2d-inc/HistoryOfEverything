@@ -18,6 +18,7 @@ class _TimelineVideoWidgetState extends State<TimelineVideoWidget>
     with SingleTickerProviderStateMixin {
   Animation<double> animation;
   AnimationController controller;
+  bool _didPlay = false;
 
   initState() {
     super.initState();
@@ -44,6 +45,11 @@ class _TimelineVideoWidgetState extends State<TimelineVideoWidget>
     double h = asset.height * Timeline.AssetScreenScale * fitScale;
     double edgePadding = -20.0 * fitScale;
     double tvMargin = 10.0 * Timeline.AssetScreenScale * fitScale;
+	if(asset != null && asset.opacity > 0 && !_didPlay)
+	{
+		asset.playerController.play();
+		_didPlay = true;
+	}
     return entry != null && asset.opacity > 0
         ? Positioned.fromRect(
             rect: Rect.fromLTWH(widget.timeline.width - w - edgePadding,

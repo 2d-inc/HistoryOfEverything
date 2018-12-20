@@ -59,7 +59,6 @@ class MenuItemData {
         }
       }
       double range = min(rangeBefore, rangeAfter) / 2.0;
-//			print("RANGE? $range $padTop");
       start = entry.start;
       end = entry.end + range;
     }

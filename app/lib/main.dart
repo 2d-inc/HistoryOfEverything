@@ -2,4 +2,4 @@ import "package:flutter/material.dart";
 
 import "package:timeline/home_page.dart";
 
-void main() => runApp(MyApp());
+void main() => runApp(TimelineApp());

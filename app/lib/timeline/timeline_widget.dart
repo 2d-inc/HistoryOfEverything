@@ -128,12 +128,7 @@ class _TimelineWidgetState extends State<TimelineWidget> {
   }
 
   void _scaleEnd(ScaleEndDetails details) {
-    //double scale = (timeline.end-timeline.start)/context.size.height;
     timeline.isInteracting = false;
-    // if(_didScale)
-    // {
-    // 	timeline.clampScroll();
-    // }
     timeline.setViewport(
         velocity: details.velocity.pixelsPerSecond.dy, animate: true);
   }
@@ -301,16 +296,7 @@ class _TimelineWidgetState extends State<TimelineWidget> {
                                           setState(() {
                                             _showFavorites =
                                                 timeline.showFavorites;
-                                            //   _isFavorite = !_isFavorite;
                                           });
-                                          // if(_isFavorite)
-                                          // {
-                                          //   BlocProvider.favorites(context).addFavorite(widget.article);
-                                          // }
-                                          // else
-                                          // {
-                                          //   BlocProvider.favorites(context).removeFavorite(widget.article);
-                                          // }
                                         })),
                               ]))
                     ]))

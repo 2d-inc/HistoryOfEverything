@@ -5,7 +5,7 @@ import "package:timeline/bloc_provider.dart";
 import 'package:timeline/colors.dart';
 import "package:timeline/main_menu/main_menu.dart";
 
-class MyApp extends StatelessWidget {
+class TimelineApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);

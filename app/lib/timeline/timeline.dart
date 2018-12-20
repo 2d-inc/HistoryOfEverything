@@ -4,6 +4,10 @@ import "dart:math";
 import "dart:typed_data";
 import "dart:ui" as ui;
 
+import "package:flare/flare.dart" as flare;
+import "package:flare/flare/animation/actor_animation.dart" as flare;
+import "package:flare/flare/math/aabb.dart" as flare;
+import "package:flare/flare/math/vec2d.dart" as flare;
 import 'package:flutter/material.dart';
 import "package:flutter/scheduler.dart";
 import "package:flutter/services.dart" show rootBundle;
@@ -13,11 +17,8 @@ import "package:nima/nima/actor_image.dart" as nima;
 import "package:nima/nima/animation/actor_animation.dart" as nima;
 import "package:nima/nima/math/aabb.dart" as nima;
 import "package:nima/nima/math/vec2d.dart" as nima;
-import "package:flare/flare.dart" as flare;
-import "package:flare/flare/animation/actor_animation.dart" as flare;
-import "package:flare/flare/math/aabb.dart" as flare;
-import "package:flare/flare/math/vec2d.dart" as flare;
 import 'package:timeline/timeline/timeline_utils.dart';
+
 import "timeline_entry.dart";
 
 typedef PaintCallback();

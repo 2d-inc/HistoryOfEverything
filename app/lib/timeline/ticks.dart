@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:intl/intl.dart';
 import 'package:timeline/timeline/timeline.dart';
+import 'package:timeline/timeline/timeline_utils.dart';
 
 class Ticks {
   static const double Margin = 20.0;
@@ -53,12 +54,6 @@ class Ticks {
     // Move back by one tick.
     tickOffset -= scaledTickDistance;
     startingTickMarkValue -= tickDistance;
-
-    //canvas.save();
-
-    // final Paint tickPaint = new Paint()..color = Color.fromRGBO(0, 0, 0, 0.3);
-    // final Paint smallTickPaint = new Paint()..color = Color.fromRGBO(0, 0, 0, 0.1);
-
     List<TickColors> tickColors = timeline.tickColors;
     if (tickColors != null && tickColors.length > 0) {
       double rangeStart = tickColors.first.start;
@@ -95,7 +90,6 @@ class Ticks {
       canvas.drawRect(
           Rect.fromLTWH(offset.dx, y1, gutterWidth, y2 - y1), paint);
 
-      //print("SIZE ${new Rect.fromLTWH(offset.dx, y1, size.width, y2-y1)}");
     } else {
       canvas.drawRect(Rect.fromLTWH(offset.dx, offset.dy, gutterWidth, height),
           Paint()..color = Color.fromRGBO(246, 246, 246, 0.95));
@@ -118,7 +112,7 @@ class Ticks {
         ui.ParagraphBuilder builder = ui.ParagraphBuilder(ui.ParagraphStyle(
             textAlign: TextAlign.end, fontFamily: "Roboto", fontSize: 10.0))
           ..pushStyle(ui.TextStyle(
-              color: colors.text)); //const Color.fromRGBO(0, 0, 0, 0.6)));
+              color: colors.text));
 
         int value = tt.round().abs();
         String label;
@@ -134,27 +128,6 @@ class Ticks {
           }
         }
         usedValues.add(label);
-        // int valueAbs = tt.round().abs();
-        // if(valueAbs > 1000000000)
-        // {
-        // 	double v = (valueAbs/100000000.0).floorToDouble()/10.0;
-
-        // 	label = (valueAbs/1000000000).toStringAsFixed(v == v.floorToDouble() ? 0 : 1) + "B";
-        // }
-        // else if(valueAbs > 1000000)
-        // {
-        // 	double v = (valueAbs/100000.0).floorToDouble()/10.0;
-        // 	label = (valueAbs/1000000).toStringAsFixed(v == v.floorToDouble() ? 0 : 1) + "M";
-        // }
-        // else if(valueAbs > 10000) // N.B. < 10,000
-        // {
-        // 	double v = (valueAbs/100.0).floorToDouble()/10.0;
-        // 	label = (valueAbs/1000).toStringAsFixed(v == v.floorToDouble() ? 0 : 1) + "k";
-        // }
-        // else
-        // {
-        // 	label = valueAbs.toStringAsFixed(0);
-        // }
         builder.addText(label);
         ui.Paragraph tickParagraph = builder.build();
         tickParagraph.layout(ui.ParagraphConstraints(

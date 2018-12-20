@@ -67,7 +67,7 @@ class _MainMenuWidgetState extends State<MainMenuWidget> {
   }
 
   /// Helper function which sets the [MenuItemData] for the [TimelineWidget].
-  /// This'll trigger a transition from the current menu to the Timeline,
+  /// This will trigger a transition from the current menu to the Timeline,
   /// thus the push on the [Navigator], and by providing the [item] as
   /// a parameter to the [TimelineWidget] constructor, this widget will know 
   /// where to scroll to.

@@ -13,6 +13,7 @@ import 'package:timeline/main_menu/menu_data.dart';
 import 'package:timeline/timeline/ticks.dart';
 import 'package:timeline/timeline/timeline.dart';
 import 'package:timeline/timeline/timeline_entry.dart';
+import 'package:timeline/timeline/timeline_utils.dart';
 
 typedef TouchBubbleCallback(TapTarget bubble);
 typedef TouchEntryCallback(TimelineEntry entry);
@@ -62,12 +63,6 @@ class TimelineRenderWidget extends LeafRenderObjectWidget {
   didUnmountRenderObject(covariant TimelineRenderObject renderObject) {
     renderObject.timeline.isActive = false;
   }
-}
-
-class TapTarget {
-  TimelineEntry entry;
-  Rect rect;
-  bool zoom = false;
 }
 
 class TimelineRenderObject extends RenderBox {

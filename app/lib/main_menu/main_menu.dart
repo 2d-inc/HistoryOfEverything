@@ -120,8 +120,10 @@ class _MainMenuWidgetState extends State<MainMenuWidget>
     List<Widget> tail = [];
     if (_isSearching) {
       for (int i = 0; i < _searchResults.length; i++) {
-        tail.add(ThumbnailDetailWidget(_searchResults[i],
-            hasDivider: i != 0, tapSearchResult: _tapSearchResult));
+        tail.add(RepaintBoundary(child:
+            ThumbnailDetailWidget(_searchResults[i],
+            hasDivider: i != 0, tapSearchResult: _tapSearchResult)
+        ));
       }
     } else {
       tail

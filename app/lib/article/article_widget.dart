@@ -203,6 +203,8 @@ class _ArticleWidgetState extends State<ArticleWidget> {
                                           width: 60.0,
                                           padding: EdgeInsets.all(15.0),
                                           color: Colors.white,
+                                          /// Check out the widget at:
+                                          /// https://www.2dimensions.com/a/pollux/files/flare/heart-simple/
                                           child: FlareActor(
                                               "assets/Favorite.flr",
                                               animation: isFav

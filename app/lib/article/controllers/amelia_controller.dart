@@ -5,7 +5,7 @@ import 'flare_interaction_controller.dart';
 
 // "Amelia Earhart" Article Page contains a custom controller.
 /// Since Amelias Earhart's animation was built in Flare, it'll interface with the Flare library (https://github.com/2d-inc/Flare-Flutter).
-/// Take a look at the character at https://www.2dimensions.com/a/JuanCarlos/files/flare/amelia-earhart_v2
+/// Take a look at the character at https://www.2dimensions.com/a/JuanCarlos/files/flare/amelia-earhart_v2/preview
 class AmeliaController extends FlareInteractionController {
   /// The character has been set up so that the actor node with name "ctrl_face"
   /// is the target for the Translation Constraint set on the plane node and the face elements.

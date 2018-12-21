@@ -41,7 +41,7 @@ class FavoritesPage extends StatelessWidget {
     /// the app back to the [MainMenuWidget].
     /// If no entry has been added to the favorites yet, a placeholder [Column] is shown with a 
     /// a few lines of text and a [FlareActor] animation of a broken heart.
-    /// Check it out at: https://www.2dimensions.com/a/pollux/files/flare/broken-heart
+    /// Check it out at: https://www.2dimensions.com/a/pollux/files/flare/broken-heart/preview
     return Scaffold(
         appBar: AppBar(
           backgroundColor: lightGrey,

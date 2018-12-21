@@ -6,7 +6,7 @@ import 'nima_interaction_controller.dart';
 
 /// "Newton's Theory of Gravity" Article Page contains a custom controller.
 /// Since Newton's animation was built in Nima, it'll interface with the Nima library (https://github.com/2d-inc/Nima-Flutter).
-/// Take a look at the character at https://www.2dimensions.com/a/JuanCarlos/files/nima/newton_v2
+/// Take a look at the character at https://www.2dimensions.com/a/JuanCarlos/files/nima/newton_v2/preview
 class NewtonController extends NimaInteractionController {
   /// The character has been set up so that the actor node with name "ctrl_move_tree"
   /// is the target for the Inverse Kinematic (IK) Constraint set on the tree trunk.

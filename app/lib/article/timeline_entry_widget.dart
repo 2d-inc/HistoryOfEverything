@@ -59,9 +59,11 @@ class TimelineEntryWidget extends LeafRenderObjectWidget {
   }
 }
 
+
 /// When extending a [RenderBox] we provide a custom set of instructions for the widget being rendered.
-/// This in particular means overriding the [paint()] and [hitTestSelf()] methods to perform operations 
-/// with the [FlareActor]/[NimaActor] being rendered.
+/// 
+/// In particular this means overriding the [paint()] and [hitTestSelf()] methods to render the loaded
+/// Flare/Nima [FlutterActor] where the widget is being placed.
 class VignetteRenderObject extends RenderBox {
   static const Alignment alignment = Alignment.center;
   static const BoxFit fit = BoxFit.contain;
@@ -172,7 +174,7 @@ class VignetteRenderObject extends RenderBox {
   }
 
   /// This overridden method is where we can implement our custom logic, for
-  /// laying out the FlareActor, and drawing it to [canvas].
+  /// laying out the [FlutterActor], and drawing it to [canvas].
   @override
   void paint(PaintingContext context, Offset offset) {
     final Canvas canvas = context.canvas;
@@ -201,7 +203,7 @@ class VignetteRenderObject extends RenderBox {
             ..color = Colors.white.withOpacity(asset.opacity));
     } else if (asset is TimelineNima && _nimaActor != null) {
       /// If we have a [TimelineNima] actor set it up properly and paint it.
-      
+      /// 
       /// 1. Calculate the bounds for the current object.
       /// An Axis-Aligned Bounding Box (AABB) is already set up when the asset is first loaded.
       /// We rely on this AABB to perform screen-space calculations.
@@ -277,7 +279,7 @@ class VignetteRenderObject extends RenderBox {
       canvas.restore();
     } else if (asset is TimelineFlare && _flareActor != null) {
       /// If we have a [TimelineFlare]  actor set it up properly and paint it.
-      
+      /// 
       /// 1. Calculate the bounds for the current object.
       /// An Axis-Aligned Bounding Box (AABB) is already set up when the asset is first loaded.
       /// We rely on this AABB to perform screen-space calculations.
@@ -554,7 +556,7 @@ class VignetteRenderObject extends RenderBox {
 
     /// Invalidate the current widget visual state and let Flutter paint it again.
     markNeedsPaint();
-    /// Schedule a new frame to update again.
+    /// Schedule a new frame to update again - but only if needed.
     if (isActive && !_isFrameScheduled) {
       _isFrameScheduled = true;
       SchedulerBinding.instance.scheduleFrameCallback(beginFrame);

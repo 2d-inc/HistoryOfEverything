@@ -1,6 +1,6 @@
 # The History of Everything
 
-<img align="right" src="https://cdn.2dimensions.com/1_Start.gif" height="500">
+<img align="right" src="https://cdn.2dimensions.com/1_Start.gif" height="400">
 
 The History of Everything is a vertical timeline that allows you to navigate, explore, and compare events from the Big Bang to the birth of the Internet. Events are beautifully illustrated and animated.
 
@@ -18,7 +18,8 @@ flutter run
 ```
 
 ## Overview
-<img align="right" src="https://cdn.2dimensions.com/2_Scroll.gif" height="500">
+<img align="right" src="https://cdn.2dimensions.com/2_Scroll.gif" height="400">
+
 The app consists of three main views:
 
 1. **Main Menu** - /app/lib/main_menu<br />
@@ -32,7 +33,7 @@ When an event is in view, a bubble will be shown on screen with a custom animate
 The ArticlePage displays the event animation, together with a full description of the event.<br/>
 
 ## Animated Widgets
-<img align="right" src="https://cdn.2dimensions.com/3_Amelia.gif" height="500">
+<img align="right" src="https://cdn.2dimensions.com/3_Amelia.gif" height="400">
 This relies heavily on the animations built on [2dimensions](https://www.2dimensions.com) and they are seamlessly integrated with Flutter by using the [Flare](https://pub.dartlang.org/packages/flare_flutter) and [Nima](https://pub.dartlang.org/packages/nima) libraries.
 
 One of Flutter's biggest strengths is its flexibility, because it exposes the architecture of its components, which can be built entirely from scratch: it's possible to create custom widgets out of the SDK's most basic elements. 

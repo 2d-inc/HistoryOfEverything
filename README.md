@@ -1,5 +1,7 @@
 # The History of Everything
 
+<img align="right" src="https://cdn.2dimensions.com/1_Start.gif" height="500">
+
 The History of Everything is a vertical timeline that allows you to navigate, explore, and compare events from the Big Bang to the birth of the Internet. Events are beautifully illustrated and animated.
 
 The concept for this app was inspired by the Kurzgesagt video, [Time: The History & Future of Everything](https://www.youtube.com/watch?v=5TbUxGZtwGI).
@@ -16,28 +18,21 @@ flutter run
 ```
 
 ## Overview
-
+<img align="right" src="https://cdn.2dimensions.com/2_Scroll.gif" height="500">
 The app consists of three main views:
 
 1. **Main Menu** - /app/lib/main_menu<br />
 This is the initial view for the app when it opens up. It shows a search bar on top, three menu sections for each major time era, and three buttons on the bottom for accessing favorites, sharing a link to the store, and the about page.<br />
 
-![The History of Everything main menu and timeline](https://cdn.2dimensions.com/1_Start.gif)
-
-
 2. **Timeline** - /app/lib/timeline<br />
 This view is displayed when an item from the menu is selected: the user is presented with a vertical timeline. It can be scrolled up and down, zoomed in and out. <br/>
 When an event is in view, a bubble will be shown on screen with a custom animated widget right next to it. By tapping on either, the user can access the ArticlePage.
 
-![The History of Everything timeline scroll](https://cdn.2dimensions.com/2_Scroll.gif)
-
 3. **ArticlePage** - /app/lib/article<br />
 The ArticlePage displays the event animation, together with a full description of the event.<br/>
 
-![The History of Everything Amelia Earhart](https://cdn.2dimensions.com/3_Amelia.gif)
-
 ## Animated Widgets
-
+<img align="right" src="https://cdn.2dimensions.com/3_Amelia.gif" height="500">
 This relies heavily on the animations built on [2dimensions](https://www.2dimensions.com) and they are seamlessly integrated with Flutter by using the [Flare](https://pub.dartlang.org/packages/flare_flutter) and [Nima](https://pub.dartlang.org/packages/nima) libraries.
 
 One of Flutter's biggest strengths is its flexibility, because it exposes the architecture of its components, which can be built entirely from scratch: it's possible to create custom widgets out of the SDK's most basic elements. 

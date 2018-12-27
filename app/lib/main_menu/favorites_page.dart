@@ -1,20 +1,30 @@
 import 'package:flare/flare_actor.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:timeline/bloc_provider.dart';
+import 'package:timeline/colors.dart';
 import 'package:timeline/main_menu/menu_data.dart';
 import 'package:timeline/main_menu/thumbnail_detail_widget.dart';
-
-import "package:timeline/colors.dart";
-import "package:timeline/bloc_provider.dart";
-import "package:timeline/timeline/timeline_entry.dart";
+import 'package:timeline/timeline/timeline_entry.dart';
 import 'package:timeline/timeline/timeline_widget.dart';
 
+/// This widget is displayed when tapping on the Favorites button in the [MainMenuWidget].
+/// 
+/// It displays the list of favorites kept by the [BlocProvider], and moves into the timeline
+/// when tapping on one of them.
+/// 
+/// To add any item as favorite, go to the [ArticleWidget] and tap on the heart button.
 class FavoritesPage extends StatelessWidget {
+  
+  /// This widget displays a [ListView] for all the elements in the favorites.
   @override
   Widget build(BuildContext context) {
     List<Widget> favorites = [];
+    /// Access the favorites list from the [BlocProvider], which is available as a root
+    /// element of the app.
     List<TimelineEntry> entries = BlocProvider.favorites(context).favorites;
 
+    /// Add all the elements into a [List<Widget>] so that we can pass it to the [ListView] in the [Scaffold] body.
     for (int i = 0; i < entries.length; i++) {
       TimelineEntry entry = entries[i];
       favorites.add(ThumbnailDetailWidget(entry, hasDivider: i != 0,
@@ -25,6 +35,13 @@ class FavoritesPage extends StatelessWidget {
                 TimelineWidget(item, BlocProvider.getTimeline(context))));
       }));
     }
+
+    /// Use the same style for the top bar, with the usual colors and the correct icons.
+    /// By pressing the back arrow, [Navigator.pop()] smoothly closes this view and returns 
+    /// the app back to the [MainMenuWidget].
+    /// If no entry has been added to the favorites yet, a placeholder [Column] is shown with a 
+    /// a few lines of text and a [FlareActor] animation of a broken heart.
+    /// Check it out at: https://www.2dimensions.com/a/pollux/files/flare/broken-heart/preview
     return Scaffold(
         appBar: AppBar(
           backgroundColor: lightGrey,
@@ -43,7 +60,7 @@ class FavoritesPage extends StatelessWidget {
             },
           ),
           titleSpacing:
-              9.0, // Note that the icon has 20 on the right due to its padding, so we add 10 to get our desired 29
+              9.0, /// Note that the icon has 20 on the right due to its padding, so we add 10 to get our desired 29
           title: Text("Your Favorites",
               style: TextStyle(
                   fontFamily: "RobotoMedium",
@@ -95,52 +112,3 @@ class FavoritesPage extends StatelessWidget {
                 : ListView(children: favorites)));
   }
 }
-
-/*
-class FavoriteDetailWidget extends ThumbnailDetailWidget {
-  final VoidCallback _onTap;
-
-  FavoriteDetailWidget(TimelineEntry timelineEntry, this._onTap, {Key key})
-      : super(timelineEntry, key: key);
-
-  @override
-  onTap() {
-    this._onTap();
-  }
-}
-
-class FavoritesPage extends StatelessWidget {
-  final SelectItemCallback _onItemSelected;
-
-  FavoritesPage(this._onItemSelected, {Key key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          backgroundColor: lightGrey,
-          iconTheme: IconThemeData(color: Colors.black.withOpacity(0.54)),
-          elevation: 0.0,
-          centerTitle: false,
-          title: Text("Your Favorites",
-              style: TextStyle(
-                  fontFamily: "RobotoMedium",
-                  fontSize: 20.0,
-                  color: darkText.withOpacity(darkText.opacity * 0.75))),
-        ),
-        body: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-          child: ListView(
-              children: BlocProvider.of(context)
-                  .favorites
-                  .map((TimelineEntry timelineEntry) {
-            return FavoriteDetailWidget(timelineEntry, () {
-              Navigator.of(context)
-                  .pop(); // Remove the favorites page from here.
-              _onItemSelected(MenuItemData.fromEntry(timelineEntry));
-            });
-          }).toList()),
-        ));
-  }
-}
-*/

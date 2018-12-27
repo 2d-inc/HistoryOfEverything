@@ -1,17 +1,15 @@
 import 'package:flare/flare_actor.dart';
 import 'package:flutter/material.dart';
-import "package:flutter/services.dart" show rootBundle;
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:timeline/article/timeline_entry_widget.dart';
+import 'package:timeline/bloc_provider.dart';
+import 'package:timeline/colors.dart';
+import 'package:timeline/timeline/timeline_entry.dart';
 
-import "../bloc_provider.dart";
-import "../colors.dart";
-import '../article/timeline_entry_widget.dart';
-import '../timeline/timeline_entry.dart';
-
-typedef GoBackCallback();
-typedef ArticleVisibilityChanged(bool isVisible);
-
+/// This widget will paint the article page.
+/// It stores a reference to the [TimelineEntry] that contains the relevant information.
 class ArticleWidget extends StatefulWidget {
   final TimelineEntry article;
   ArticleWidget({this.article, Key key}) : super(key: key);
@@ -20,16 +18,30 @@ class ArticleWidget extends StatefulWidget {
   _ArticleWidgetState createState() => _ArticleWidgetState();
 }
 
-class _ArticleWidgetState extends State<ArticleWidget>
-    with SingleTickerProviderStateMixin {
+/// The [State] for the [ArticleWidget] will change based on the [article]
+/// parameter that's used to build it.
+/// It is stateful because we rely on some information like the title, subtitle, and the article
+/// contents to change when a new article is displayed. Moreover the [FlareWidget]s that are used 
+/// on this page (i.e. the top [TimelineEntryWidget] the favorite button) rely on life-cycle parameters.
+class _ArticleWidgetState extends State<ArticleWidget> {
+  /// The information for the current page.
   String _articleMarkdown = "";
   String _title = "";
   String _subTitle = "";
+  /// This page uses the `flutter_markdown` package, and thus needs its styles to be defined
+  /// with a custom objects. This is created in [initState()].
   MarkdownStyleSheet _markdownStyleSheet;
+
+  /// Whether the [FlareActor] favorite button is active or not. 
+  /// Triggers a Flare animation upon change.
   bool _isFavorite = false;
 
+  /// This parameter helps control the Amelia Earhart and the Newton animations.
+  /// Test it out yourself! =)
   Offset _interactOffset;
 
+  /// Set up the markdown style and the local field variables for this page.
+  @override
   initState() {
     super.initState();
 
@@ -78,10 +90,6 @@ class _ArticleWidgetState extends State<ArticleWidget>
       blockSpacing: 20.0,
       listIndent: 20.0,
       blockquotePadding: 20.0,
-      //blockquoteDecoration: blockquoteDecoration ?? this.blockquoteDecoration,
-      //codeblockPadding: codeblockPadding ?? this.codeblockPadding,
-      //codeblockDecoration: codeblockDecoration ?? this.codeblockDecoration,
-      //horizontalRuleDecoration: horizontalRuleDecoration ?? this.horizontalRuleDecoration,
     );
     setState(() {
       _title = widget.article.label;
@@ -93,6 +101,7 @@ class _ArticleWidgetState extends State<ArticleWidget>
     });
   }
 
+  /// Load the markdown file from the assets and set the contents of the page to its value.
   void loadMarkdown(String filename) async {
     rootBundle.loadString("assets/Articles/" + filename).then((String data) {
       setState(() {
@@ -101,6 +110,11 @@ class _ArticleWidgetState extends State<ArticleWidget>
     });
   }
 
+  /// This widget is wrapped in a [Scaffold] to have the classic Material Design visual layout structure.
+  /// It uses the [BlocProvider] to find out if this element is part of the favorites, to have the icon properly set up.
+  /// A [SingleChildScrollView] contains a [Column] that lays out the [TimelineEntryWidget] on top, and the [MarkdownBody] 
+  /// right below it. 
+  /// A [GestureDetector] is used to control the [TimelineEntryWidget], if it allows it (...try Amelia Earhart or Newton!)
   @override
   Widget build(BuildContext context) {
     EdgeInsets devicePadding = MediaQuery.of(context).padding;
@@ -189,6 +203,8 @@ class _ArticleWidgetState extends State<ArticleWidget>
                                           width: 60.0,
                                           padding: EdgeInsets.all(15.0),
                                           color: Colors.white,
+                                          /// Check out the widget at:
+                                          /// https://www.2dimensions.com/a/pollux/files/flare/heart-simple/preview
                                           child: FlareActor(
                                               "assets/Favorite.flr",
                                               animation: isFav

@@ -5,6 +5,7 @@ import "package:flutter/services.dart" show rootBundle;
 import 'package:timeline/timeline/timeline.dart';
 import 'package:timeline/timeline/timeline_entry.dart';
 
+/// Data container for the Section loaded in [MenuData.loadFromBundle()].
 class MenuSectionData {
   String label;
   Color textColor;
@@ -13,6 +14,7 @@ class MenuSectionData {
   List<MenuItemData> items = List<MenuItemData>();
 }
 
+/// Data container for all the sub-elements of the [MenuSection].
 class MenuItemData {
   String label;
   double start;
@@ -22,13 +24,17 @@ class MenuItemData {
   double padBottom = 0.0;
 
   MenuItemData();
+  /// When initializing this object from a [TimelineEntry], fill in the
+  /// fields according to the [entry] provided. The entry in fact specifies
+  /// a [label], a [start] and [end] times.
+  /// Padding is built depending on the type of the [entry] provided.
   MenuItemData.fromEntry(TimelineEntry entry) {
     label = entry.label;
 
-    // Pad the edges of the screen.
+    /// Pad the edges of the screen.
     pad = true;
     TimelineAsset asset = entry.asset;
-    // Extra padding for the top base don the asset size.
+    /// Extra padding for the top base don the asset size.
     padTop = asset == null ? 0.0 : asset.height * Timeline.AssetScreenScale;
     if (asset is TimelineAnimatedAsset) {
       padTop += asset.gap;
@@ -38,7 +44,7 @@ class MenuItemData {
       start = entry.start;
       end = entry.end;
     } else {
-      // No need to pad here as we are centering on a single item.
+      /// No need to pad here as we are centering on a single item.
       double rangeBefore = double.maxFinite;
       for (TimelineEntry prev = entry.previous;
           prev != null;
@@ -59,13 +65,22 @@ class MenuItemData {
         }
       }
       double range = min(rangeBefore, rangeAfter) / 2.0;
-//			print("RANGE? $range $padTop");
       start = entry.start;
       end = entry.end + range;
     }
   }
 }
 
+/// This class has the sole purpose of loading the resources from storage and 
+/// de-serializing the JSON file appropriately. 
+/// 
+/// `menu.json` contains an array of objects, each with:
+/// * label - the title for the section
+/// * background - the color on the section background
+/// * color - the accent color for the menu section
+/// * asset - the background Flare/Nima asset id that will play the section background
+/// * items - an array of elements providing each the start and end times for that link
+/// as well as the label to display in the [MenuSection].
 class MenuData {
   List<MenuSectionData> sections = [];
   Future<bool> loadFromBundle(String filename) async {

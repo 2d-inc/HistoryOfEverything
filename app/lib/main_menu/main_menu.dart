@@ -1,4 +1,5 @@
 import "dart:async";
+import "dart:io";
 
 import 'package:flutter/cupertino.dart';
 import "package:flutter/material.dart";
@@ -18,6 +19,12 @@ import "package:timeline/colors.dart";
 import "package:timeline/timeline/timeline_entry.dart";
 import 'package:timeline/timeline/timeline_widget.dart';
 
+/// The Main Page of the Timeline App. 
+/// 
+/// This Widget lays out the search bar at the top of the page, 
+/// the three card-sections for accessing the main events on the Timeline,
+/// and it'll provide on the bottom three links for quick access to your Favorites,
+/// a Share Menu and the About Page.
 class MainMenuWidget extends StatefulWidget {
   MainMenuWidget({Key key}) : super(key: key);
 
@@ -25,26 +32,45 @@ class MainMenuWidget extends StatefulWidget {
   _MainMenuWidgetState createState() => _MainMenuWidgetState();
 }
 
-class _MainMenuWidgetState extends State<MainMenuWidget>
-    with SingleTickerProviderStateMixin {
+class _MainMenuWidgetState extends State<MainMenuWidget> {
+  /// State is maintained for two reasons:
+  /// 
+  /// 1. Search Functionality:
+  /// When the search bar is tapped, the Widget view is filled with all the 
+  /// search info -- i.e. the [ListView] containing all the results.
   bool _isSearching = false;
+  
+  /// 2. Section Animations:
+  /// Each card section contains a Flare animation that's playing in the background.
+  /// These animations are paused when they're not visible anymore (e.g. when search is visible instead),
+  /// and are played again once they're back in view.
   bool _isSectionActive = true;
+
+  /// The [List] of search results that is displayed when searching.
   List<TimelineEntry> _searchResults = List<TimelineEntry>();
+
+  /// [MenuData] is a wrapper object for the data of each Card section.
+  /// This data is loaded from the asset bundle during [initState()]
   final MenuData _menu = MenuData();
 
-  // This is passed to the SearchWidget so we can handle text edits and display the search results on the main menu.
+  /// This is passed to the SearchWidget so we can handle text edits and display the search results on the main menu.
   final TextEditingController _searchTextController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
   Timer _searchTimer;
 
   cancelSearch() {
     if (_searchTimer != null && _searchTimer.isActive) {
-      // Remove old timer.
+      /// Remove old timer.
       _searchTimer.cancel();
       _searchTimer = null;
     }
   }
 
+  /// Helper function which sets the [MenuItemData] for the [TimelineWidget].
+  /// This will trigger a transition from the current menu to the Timeline,
+  /// thus the push on the [Navigator], and by providing the [item] as
+  /// a parameter to the [TimelineWidget] constructor, this widget will know 
+  /// where to scroll to.
   navigateToTimeline(MenuItemData item) {
     _pauseSection();
     Navigator.of(context)
@@ -58,6 +84,8 @@ class _MainMenuWidgetState extends State<MainMenuWidget>
   _restoreSection(v) => setState(() => _isSectionActive = true);
   _pauseSection() => setState(() => _isSectionActive = false);
 
+  /// Used by the [_searchTextController] to properly update the state of this widget,
+  /// and consequently the layout of the current view.
   updateSearch() {
     cancelSearch();
     if (!_isSearching) {
@@ -66,8 +94,10 @@ class _MainMenuWidgetState extends State<MainMenuWidget>
       });
       return;
     }
-    // Perform search.
     String txt = _searchTextController.text.trim();
+    /// Perform search.
+    /// 
+    /// A [Timer] is used to prevent unnecessary searches while the user is typing.
     _searchTimer = Timer(Duration(milliseconds: txt.isEmpty ? 0 : 350), () {
       Set<TimelineEntry> res = SearchManager.init().performSearch(txt);
       setState(() {
@@ -79,6 +109,10 @@ class _MainMenuWidgetState extends State<MainMenuWidget>
   initState() {
     super.initState();
 
+    /// The [_menu] loads a JSON file that's stored in the assets folder.
+    /// This asset provides all the necessary information for the cards,
+    /// such as labels, background colors, the background Flare animation asset,
+    /// and for each element in the expanded card, the relative position on the [Timeline]. 
     _menu.loadFromBundle("assets/menu.json").then((bool success) {
       if (success) setState(() {}); // Load the menu.
     });
@@ -95,6 +129,8 @@ class _MainMenuWidgetState extends State<MainMenuWidget>
     });
   }
 
+  /// A [WillPopScope] widget wraps the menu, so that before dismissing the whole app,
+  /// search will be popped first. Otherwise the app will proceed as usual.
   Future<bool> _popSearch() {
     if (_isSearching) {
       setState(() {
@@ -118,10 +154,16 @@ class _MainMenuWidgetState extends State<MainMenuWidget>
     EdgeInsets devicePadding = MediaQuery.of(context).padding;
 
     List<Widget> tail = [];
+    /// Check the current state before creating the layout for the menu (i.e. [tail]).
+    /// 
+    /// If the app is searching, lay out the results.
+    /// Otherwise, insert the menu information with all the various sections.
     if (_isSearching) {
       for (int i = 0; i < _searchResults.length; i++) {
-        tail.add(ThumbnailDetailWidget(_searchResults[i],
-            hasDivider: i != 0, tapSearchResult: _tapSearchResult));
+        tail.add(RepaintBoundary(child: 
+            ThumbnailDetailWidget(_searchResults[i],
+            hasDivider: i != 0, tapSearchResult: _tapSearchResult)
+        ));
       }
     } else {
       tail
@@ -171,7 +213,7 @@ class _MainMenuWidgetState extends State<MainMenuWidget>
             ])))
         ..add(FlatButton(
             onPressed: () => Share.share(
-                "Check out The History of Everything! itms://itunes.apple.com/us/app/apple-store/id1441257460?mt=8"),
+                "Check out The History of Everything! " + (Platform.isAndroid ? "https://play.google.com/store/apps/details?id=com.twodimensions.timeline" : "itms://itunes.apple.com/us/app/apple-store/id1441257460?mt=8")),
             color: Colors.transparent,
             child:
                 Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
@@ -220,6 +262,11 @@ class _MainMenuWidgetState extends State<MainMenuWidget>
               ])),
         ));
     }
+
+    /// Wrap the menu in a [WillPopScope] to properly handle a pop event while searching.
+    /// A [SingleChildScrollView] is used to create a scrollable view for the main menu.
+    /// This will contain a [Column] with a [Collapsible] header on top, and a [tail]
+    /// that's built according with the state of this widget.
     return WillPopScope(
       onWillPop: _popSearch,
       child: Container(

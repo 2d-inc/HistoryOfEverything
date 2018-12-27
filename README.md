@@ -33,7 +33,9 @@ When an event is in view, a bubble will be shown on screen with a custom animate
 The ArticlePage displays the event animation, together with a full description of the event.<br/>
 
 ## Animated Widgets
+
 <img align="right" src="https://cdn.2dimensions.com/3_Amelia.gif" height="400">
+
 This relies heavily on the animations built on [2dimensions](https://www.2dimensions.com) and they are seamlessly integrated with Flutter by using the [Flare](https://pub.dartlang.org/packages/flare_flutter) and [Nima](https://pub.dartlang.org/packages/nima) libraries.
 
 One of Flutter's biggest strengths is its flexibility, because it exposes the architecture of its components, which can be built entirely from scratch: it's possible to create custom widgets out of the SDK's most basic elements. 

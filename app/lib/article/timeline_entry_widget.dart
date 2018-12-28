@@ -202,7 +202,7 @@ class VignetteRenderObject extends RenderBox {
             ..filterQuality = ui.FilterQuality.low
             ..color = Colors.white.withOpacity(asset.opacity));
     } else if (asset is TimelineNima && _nimaActor != null) {
-      /// If we have a [TimelineNima] actor set it up properly and paint it.
+      /// If we have a [TimelineNima] asset, set it up properly and paint it.
       /// 
       /// 1. Calculate the bounds for the current object.
       /// An Axis-Aligned Bounding Box (AABB) is already set up when the asset is first loaded.
@@ -278,7 +278,7 @@ class VignetteRenderObject extends RenderBox {
       /// 6. Restore the canvas' original transform state.
       canvas.restore();
     } else if (asset is TimelineFlare && _flareActor != null) {
-      /// If we have a [TimelineFlare]  actor set it up properly and paint it.
+      /// If we have a [TimelineFlare] asset set it up properly and paint it.
       /// 
       /// 1. Calculate the bounds for the current object.
       /// An Axis-Aligned Bounding Box (AABB) is already set up when the asset is first loaded.

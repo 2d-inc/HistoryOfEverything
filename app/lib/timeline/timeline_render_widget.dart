@@ -1,13 +1,14 @@
 import 'dart:math';
 import 'dart:ui';
 import 'dart:ui' as ui;
-import 'package:intl/intl.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:nima/nima/actor_image.dart' as nima;
-import 'package:nima/nima/math/aabb.dart' as nima;
+
 import 'package:flare/flare/actor_image.dart' as flare;
 import 'package:flare/flare/math/aabb.dart' as flare;
+import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:intl/intl.dart';
+import 'package:nima/nima/actor_image.dart' as nima;
+import 'package:nima/nima/math/aabb.dart' as nima;
 import 'package:timeline/colors.dart';
 import 'package:timeline/main_menu/menu_data.dart';
 import 'package:timeline/timeline/ticks.dart';
@@ -15,16 +16,22 @@ import 'package:timeline/timeline/timeline.dart';
 import 'package:timeline/timeline/timeline_entry.dart';
 import 'package:timeline/timeline/timeline_utils.dart';
 
+/// These two callbacks are used to detect if a bubble or an entry have been tapped.
+/// If that's the case, [ArticlePage] will be pushed onto the [Navigator] stack.
 typedef TouchBubbleCallback(TapTarget bubble);
 typedef TouchEntryCallback(TimelineEntry entry);
 
+/// This couples with [TimelineRenderObject].
+/// 
+/// This widget's fields are accessible from the [RenderBox] so that it can 
+/// be aligned with the current state.
 class TimelineRenderWidget extends LeafRenderObjectWidget {
-  final MenuItemData focusItem;
-  final TouchBubbleCallback touchBubble;
-  final TouchEntryCallback touchEntry;
   final double topOverlap;
   final Timeline timeline;
+  final MenuItemData focusItem;
   final List<TimelineEntry> favorites;
+  final TouchBubbleCallback touchBubble;
+  final TouchEntryCallback touchEntry;
 
   TimelineRenderWidget(
       {Key key,
@@ -65,7 +72,14 @@ class TimelineRenderWidget extends LeafRenderObjectWidget {
   }
 }
 
+
+/// A custom renderer is used for the the timeline object.
+/// The [Timeline] serves as an abstraction layer for the positioning and advancing logic.
+/// 
+/// The core method of this object is [paint()]: this is where all the elements
+/// are actually drawn to screen.
 class TimelineRenderObject extends RenderBox {
+  
   static const List<Color> LineColors = [
     Color.fromARGB(255, 125, 195, 184),
     Color.fromARGB(255, 190, 224, 146),
@@ -74,13 +88,24 @@ class TimelineRenderObject extends RenderBox {
     Color.fromARGB(255, 128, 28, 15)
   ];
 
-  List<TapTarget> _tapTargets = List<TapTarget>();
+  double _topOverlap = 0.0;
   Ticks _ticks = Ticks();
   Timeline _timeline;
   MenuItemData _focusItem;
+  MenuItemData _processedFocusItem;
+  List<TapTarget> _tapTargets = List<TapTarget>();
+  List<TimelineEntry> _favorites;
+  TouchBubbleCallback touchBubble;
+  TouchEntryCallback touchEntry;
 
-  double _topOverlap = 0.0;
+  @override
+  bool get sizedByParent => true;
+
   double get topOverlap => _topOverlap;
+  Timeline get timeline => _timeline;
+  List<TimelineEntry> get favorites => _favorites;
+  MenuItemData get focusItem => _focusItem;
+
   set topOverlap(double value) {
     if (_topOverlap == value) {
       return;
@@ -91,10 +116,6 @@ class TimelineRenderObject extends RenderBox {
     markNeedsLayout();
   }
 
-  TouchBubbleCallback touchBubble;
-  TouchEntryCallback touchEntry;
-
-  Timeline get timeline => _timeline;
   set timeline(Timeline value) {
     if (_timeline == value) {
       return;
@@ -106,8 +127,6 @@ class TimelineRenderObject extends RenderBox {
     markNeedsLayout();
   }
 
-  List<TimelineEntry> _favorites;
-  List<TimelineEntry> get favorites => _favorites;
   set favorites(List<TimelineEntry> value) {
     if (_favorites == value) {
       return;
@@ -117,7 +136,16 @@ class TimelineRenderObject extends RenderBox {
     markNeedsLayout();
   }
 
-  MenuItemData _processedFocusItem;
+  set focusItem(MenuItemData value) {
+    if (_focusItem == value) {
+      return;
+    }
+    _focusItem = value;
+    _processedFocusItem = null;
+    updateFocusItem();
+  }
+
+  /// If [_focusItem] has been updated with a new value, update the current view.
   void updateFocusItem() {
     if (_processedFocusItem == _focusItem) {
       return;
@@ -126,6 +154,7 @@ class TimelineRenderObject extends RenderBox {
       return;
     }
 
+    /// Adjust the current timeline padding and consequentely the viewport.
     if (_focusItem.pad) {
       timeline.padding = EdgeInsets.only(
           top: topOverlap + _focusItem.padTop + Timeline.Parallax,
@@ -143,19 +172,7 @@ class TimelineRenderObject extends RenderBox {
     _processedFocusItem = _focusItem;
   }
 
-  MenuItemData get focusItem => _focusItem;
-  set focusItem(MenuItemData value) {
-    if (_focusItem == value) {
-      return;
-    }
-    _focusItem = value;
-    _processedFocusItem = null;
-    updateFocusItem();
-  }
-
-  @override
-  bool get sizedByParent => true;
-
+  /// Check if the current tap on the screen has hit a bubble.
   @override
   bool hitTestSelf(Offset screenOffset) {
     touchEntry(null);
@@ -177,6 +194,7 @@ class TimelineRenderObject extends RenderBox {
     size = constraints.biggest;
   }
 
+  /// Adjust the viewport when needed.
   @override
   void performLayout() {
     if (_timeline != null) {
@@ -191,6 +209,7 @@ class TimelineRenderObject extends RenderBox {
       return;
     }
 
+    /// Fetch the background colors from the [Timeline] and compute the fill.
     List<TimelineBackgroundColor> backgroundColors = timeline.backgroundColors;
     ui.Paint backgroundPaint;
     if (backgroundColors != null && backgroundColors.length > 0) {
@@ -207,7 +226,7 @@ class TimelineRenderObject extends RenderBox {
       double y1 = (backgroundColors.first.start - timeline.renderStart) * s;
       double y2 = (backgroundColors.last.start - timeline.renderStart) * s;
 
-      // Fill Background.
+      /// Fill Background.
       backgroundPaint = ui.Paint()
         ..shader = ui.Gradient.linear(
             ui.Offset(0.0, y1), ui.Offset(0.0, y2), colors, stops)
@@ -219,15 +238,16 @@ class TimelineRenderObject extends RenderBox {
                 offset.dx, offset.dy, size.width, y1 - offset.dy + 1.0),
             ui.Paint()..color = backgroundColors.first.color);
       }
+      /// Draw the background on the canvas.
       canvas.drawRect(
           Rect.fromLTWH(offset.dx, y1, size.width, y2 - y1), backgroundPaint);
 
     }
+
     _tapTargets.clear();
     double renderStart = _timeline.renderStart;
     double renderEnd = _timeline.renderEnd;
     double scale = size.height / (renderEnd - renderStart);
-
 
     if (timeline.renderAssets != null) {
       canvas.save();
@@ -239,6 +259,7 @@ class TimelineRenderObject extends RenderBox {
           double w = asset.width * Timeline.AssetScreenScale;
           double h = asset.height * Timeline.AssetScreenScale;
 
+          /// Draw the correct asset.
           if (asset is TimelineImage) {
             canvas.drawImageRect(
                 asset.image,
@@ -250,6 +271,11 @@ class TimelineRenderObject extends RenderBox {
                   ..filterQuality = ui.FilterQuality.low
                   ..color = Colors.white.withOpacity(asset.opacity));
           } else if (asset is TimelineNima && asset.actor != null) {
+            /// If we have a [TimelineNima] asset, set it up properly and paint it.
+            /// 
+            /// 1. Calculate the bounds for the current object.
+            /// An Axis-Aligned Bounding Box (AABB) is already set up when the asset is first loaded.
+            /// We rely on this AABB to perform screen-space calculations.
             Alignment alignment = Alignment.center;
             BoxFit fit = BoxFit.cover;
 
@@ -271,7 +297,9 @@ class TimelineRenderObject extends RenderBox {
             double scaleX = 1.0, scaleY = 1.0;
 
             canvas.save();
-
+            /// This widget is always set up to use [BoxFit.cover].
+            /// But this behavior can be customized according to anyone's needs.
+            /// The following switch/case contains all the various alternatives native to Flutter.
             switch (fit) {
               case BoxFit.fill:
                 scaleX = renderSize.width / contentWidth;
@@ -305,6 +333,8 @@ class TimelineRenderObject extends RenderBox {
                 break;
             }
 
+            /// 2. Move the [canvas] to the right position so that the widget's position
+            /// is center-aligned based on its offset, size and alignment position.
             canvas.translate(
                 renderOffset.dx +
                     renderSize.width / 2.0 +
@@ -312,15 +342,25 @@ class TimelineRenderObject extends RenderBox {
                 renderOffset.dy +
                     renderSize.height / 2.0 +
                     (alignment.y * renderSize.height / 2.0));
+            /// 3. Scale depending on the [fit].
             canvas.scale(scaleX, -scaleY);
+            /// 4. Move the canvas to the correct [_nimaActor] position calculated above.
             canvas.translate(x, y);
-
+            /// 5. perform the drawing operations.
             asset.actor.draw(canvas, asset.opacity);
+            /// 6. Restore the canvas' original transform state.
             canvas.restore();
+            /// 7. This asset is also a *tappable* element, add it to the list
+            /// so it can be processed.
             _tapTargets.add(TapTarget()
               ..entry = asset.entry
               ..rect = renderOffset & renderSize);
           } else if (asset is TimelineFlare && asset.actor != null) {
+            /// If we have a [TimelineFlare] asset set it up properly and paint it.
+            /// 
+            /// 1. Calculate the bounds for the current object.
+            /// An Axis-Aligned Bounding Box (AABB) is already set up when the asset is first loaded.
+            /// We rely on this AABB to perform screen-space calculations.
             Alignment alignment = Alignment.center;
             BoxFit fit = BoxFit.cover;
 
@@ -342,6 +382,9 @@ class TimelineRenderObject extends RenderBox {
 
             canvas.save();
 
+            /// This widget is always set up to use [BoxFit.cover].
+            /// But this behavior can be customized according to anyone's needs.
+            /// The following switch/case contains all the various alternatives native to Flutter.
             switch (fit) {
               case BoxFit.fill:
                 scaleX = renderSize.width / contentWidth;
@@ -375,6 +418,8 @@ class TimelineRenderObject extends RenderBox {
                 break;
             }
 
+            /// 2. Move the [canvas] to the right position so that the widget's position
+            /// is center-aligned based on its offset, size and alignment position.
             canvas.translate(
                 renderOffset.dx +
                     renderSize.width / 2.0 +
@@ -382,11 +427,17 @@ class TimelineRenderObject extends RenderBox {
                 renderOffset.dy +
                     renderSize.height / 2.0 +
                     (alignment.y * renderSize.height / 2.0));
+            /// 3. Scale depending on the [fit].
             canvas.scale(scaleX, scaleY);
+            /// 4. Move the canvas to the correct [_flareActor] position calculated above.
             canvas.translate(x, y);
 
+            /// 5. perform the drawing operations.
             asset.actor.draw(canvas, opacity: asset.opacity);
+            /// 6. Restore the canvas' original transform state.
             canvas.restore();
+            /// 7. This asset is also a *tappable* element, add it to the list
+            /// so it can be processed.
             _tapTargets.add(TapTarget()
               ..entry = asset.entry
               ..rect = renderOffset & renderSize);
@@ -396,6 +447,7 @@ class TimelineRenderObject extends RenderBox {
       canvas.restore();
     }
 
+    /// Paint the [Ticks] on the left side of the screen.
     canvas.save();
     canvas.clipRect(Rect.fromLTWH(
         offset.dx, offset.dy + topOverlap, size.width, size.height));
@@ -403,6 +455,7 @@ class TimelineRenderObject extends RenderBox {
         context, offset, -renderStart * scale, scale, size.height, timeline);
     canvas.restore();
 
+    /// And then draw the rest of the timeline.
     if (_timeline.entries != null) {
       canvas.save();
       canvas.clipRect(Rect.fromLTWH(offset.dx + _timeline.gutterWidth,
@@ -419,14 +472,22 @@ class TimelineRenderObject extends RenderBox {
       canvas.restore();
     }
 
+    /// After a few moments of inaction on the timeline, if there's enough space,
+    /// an arrow pointing to the next event on the timeline will appear on the bottom of the screen.
+    /// Draw it, and add it as another [TapTarget].
     if (_timeline.nextEntry != null && _timeline.nextEntryOpacity > 0.0) {
       double x = offset.dx + _timeline.gutterWidth - Timeline.GutterLeft;
       double opacity = _timeline.nextEntryOpacity;
       Color color = Color.fromRGBO(69, 211, 197, opacity);
       double pageSize = (_timeline.renderEnd - _timeline.renderStart);
-      double pageReference =
-          _timeline.renderEnd;
+      double pageReference = _timeline.renderEnd;
 
+      /// Use a Paragraph to draw the arrow's label and page scrolls on canvas:
+      /// 1. Create a [ParagraphBuilder] that'll be initialized with the correct styling information;
+      /// 2. Add some text to the builder;
+      /// 3. Build the [Paragraph];
+      /// 4. Lay out the text with custom [ParagraphConstraints].
+      /// 5. Draw the Paragraph at the right offset.
       const double MaxLabelWidth = 1200.0;
       ui.ParagraphBuilder builder = ui.ParagraphBuilder(ui.ParagraphStyle(
           textAlign: TextAlign.start, fontFamily: "Roboto", fontSize: 20.0))
@@ -442,12 +503,14 @@ class TimelineRenderObject extends RenderBox {
       canvas.drawParagraph(labelParagraph, Offset(labelX, y));
       y += labelParagraph.height;
 
+      /// Calculate the boundaries of the arrow icon.
       Rect nextEntryRect = Rect.fromLTWH(labelX, y,
           labelParagraph.maxIntrinsicWidth, offset.dy + size.height - y);
 
       const double radius = 25.0;
       labelX = x + size.width / 2.0;
       y += 15 + radius;
+      /// Draw the background circle.
       canvas.drawCircle(
           Offset(labelX, y),
           radius,
@@ -459,6 +522,7 @@ class TimelineRenderObject extends RenderBox {
       Path path = Path();
       double arrowSize = 6.0;
       double arrowOffset = 1.0;
+      /// Draw the stylized arrow on top of the circle.
       path.moveTo(x + size.width / 2.0 - arrowSize,
           y - arrowSize + arrowSize / 2.0 + arrowOffset);
       path.lineTo(x + size.width / 2.0, y + arrowSize / 2.0 + arrowOffset);
@@ -489,15 +553,18 @@ class TimelineRenderObject extends RenderBox {
       builder.addText(until);
       labelParagraph = builder.build();
       labelParagraph.layout(ui.ParagraphConstraints(width: size.width));
+      /// Draw the Paragraph beneath the circle.
       canvas.drawParagraph(labelParagraph, Offset(x, y));
       y += labelParagraph.height;
 
+      /// Add this to the list of *tappable* elements.
       _tapTargets.add(TapTarget()
         ..entry = _timeline.nextEntry
         ..rect = nextEntryRect
         ..zoom = true);
     }
 
+    /// Repeat the same procedure as above for the arrow pointing to the previous event on the timeline.
     if (_timeline.prevEntry != null && _timeline.prevEntryOpacity > 0.0) {
       double x = offset.dx + _timeline.gutterWidth - Timeline.GutterLeft;
       double opacity = _timeline.prevEntryOpacity;
@@ -576,6 +643,10 @@ class TimelineRenderObject extends RenderBox {
         ..zoom = true);
     }
 
+    /// When the user presses the heart button on the top right corner of the timeline
+    /// a gutter on the left side shows up so that favorite elements are quickly accessible.
+    /// 
+    /// Here the gutter gets drawn, and the elements are added as *tappable* targets.
     double favoritesGutter = _timeline.gutterWidth - Timeline.GutterLeft;
     if (_favorites != null && _favorites.length > 0 && favoritesGutter > 0.0) {
       Paint accentPaint = Paint()
@@ -599,7 +670,7 @@ class TimelineRenderObject extends RenderBox {
 
       double padFavorites = 20.0;
 
-      // Order favorites by distance from mid.
+      /// Order favorites by distance from mid.
       List<TimelineEntry> nearbyFavorites =
           List<TimelineEntry>.from(_favorites);
       double mid = timeline.renderStart +
@@ -608,7 +679,7 @@ class TimelineRenderObject extends RenderBox {
         return (a.start - mid).abs().compareTo((b.start - mid).abs());
       });
 
-      // layout favorites.
+      /// layout favorites.
       for (int i = 0; i < nearbyFavorites.length; i++) {
         TimelineEntry favorite = nearbyFavorites[i];
         double y = ((favorite.start - timeline.renderStart) * scale).clamp(
@@ -616,8 +687,8 @@ class TimelineRenderObject extends RenderBox {
             offset.dy + size.height - favoritesRadius - padFavorites);
         favorite.favoriteY = y;
 
-        // Check all closer events to see if this one is occluded by a previous closer one.
-        // Works because we sorted by distance.
+        /// Check all closer events to see if this one is occluded by a previous closer one.
+        /// Works because we sorted by distance.
         favorite.isFavoriteOccluded = false;
         for (int j = 0; j < i; j++) {
           TimelineEntry closer = nearbyFavorites[j];
@@ -628,13 +699,14 @@ class TimelineRenderObject extends RenderBox {
         }
       }
 
+      /// Iterate the list from the bottom.
       for (TimelineEntry favorite in nearbyFavorites.reversed) {
         if (favorite.isFavoriteOccluded) {
           continue;
         }
-        double y = favorite
-            .favoriteY;
+        double y = favorite.favoriteY;
 
+        /// Draw the favorite circle in the gutter for this item.
         canvas.drawCircle(
             Offset(x, y),
             favoritesRadius,
@@ -651,7 +723,8 @@ class TimelineRenderObject extends RenderBox {
 
         Alignment alignment = Alignment.center;
         BoxFit fit = BoxFit.cover;
-
+        /// Draw the assets statically within the circle.
+        /// Calculations here are the same as seen in [paint()] for the assets.
         if (asset is TimelineNima && asset.actorStatic != null) {
           nima.AABB bounds = asset.setupAABB;
 
@@ -795,7 +868,10 @@ class TimelineRenderObject extends RenderBox {
         }
       }
 
-      // do labels
+      /// If there are two or more favorites in the gutter, show a line connecting
+      /// the two circles, with the time between those two favorites as a label within a bubble.
+      /// 
+      /// Uses same [ui.ParagraphBuilder] logic as seen above.
       TimelineEntry previous;
       for (TimelineEntry favorite in _favorites) {
         if (favorite.isFavoriteOccluded) {
@@ -849,6 +925,11 @@ class TimelineRenderObject extends RenderBox {
     }
   }
 
+  /// Given a list of [entries], draw the label with its bubble beneath. 
+  /// Draw also the dots&lines on the left side of the timeline. These represent 
+  /// the starting/ending points for a given event and are meant to give the idea of 
+  /// the timespan encompassing that event, as well as putting the vent into context 
+  /// relative to the other events.
   void drawItems(PaintingContext context, Offset offset,
       List<TimelineEntry> entries, double x, double scale, int depth) {
     final Canvas canvas = context.canvas;
@@ -857,11 +938,13 @@ class TimelineRenderObject extends RenderBox {
       if (!item.isVisible ||
           item.y > size.height + Timeline.BubbleHeight ||
           item.endY < -Timeline.BubbleHeight) {
+        /// Don't paint this item.
         continue;
       }
 
       double legOpacity = item.legOpacity * item.opacity;
       Offset entryOffset = Offset(x + Timeline.LineWidth / 2.0, item.y);
+      /// Draw the small circle on the left side of the timeline.
       canvas.drawCircle(
           entryOffset,
           Timeline.EdgeRadius,
@@ -876,6 +959,7 @@ class TimelineRenderObject extends RenderBox {
                   ? item.accent
                   : LineColors[depth % LineColors.length])
               .withOpacity(legOpacity);
+        /// Draw the line connecting the start&point of this item on the timeline.
         canvas.drawRect(
             Offset(x, item.y) & Size(Timeline.LineWidth, item.length),
             legPaint);
@@ -887,8 +971,10 @@ class TimelineRenderObject extends RenderBox {
 
       const double MaxLabelWidth = 1200.0;
       const double BubblePadding = 20.0;
+      /// Let the timeline calculate the height for the current item's bubble.
       double bubbleHeight = timeline.bubbleHeight(item);
 
+      /// Use [ui.ParagraphBuilder] to construct the label for canvas.
       ui.ParagraphBuilder builder = ui.ParagraphBuilder(ui.ParagraphStyle(
           textAlign: TextAlign.start, fontFamily: "Roboto", fontSize: 20.0))
         ..pushStyle(
@@ -906,8 +992,10 @@ class TimelineRenderObject extends RenderBox {
 
       canvas.save();
       canvas.translate(bubbleX, bubbleY);
+      /// Get the bubble's path based on its width&height, draw it, and then add the label on top.
       Path bubble =
           makeBubblePath(textWidth + BubblePadding * 2.0, bubbleHeight);
+      
       canvas.drawPath(
           bubble,
           Paint()
@@ -928,12 +1016,15 @@ class TimelineRenderObject extends RenderBox {
               BubblePadding, bubbleHeight / 2.0 - labelParagraph.height / 2.0));
       canvas.restore();
       if (item.children != null) {
+        /// Draw the other elements in the hierarchy.
         drawItems(context, offset, item.children, x + Timeline.DepthOffset,
             scale, depth + 1);
       }
     }
   }
 
+  /// Given a width and a height, design a path for the bubble that lies behind events' labels
+  /// on the timeline, and return it.
   Path makeBubblePath(double width, double height) {
     const double ArrowSize = 19.0;
     const double CornerRadius = 10.0;

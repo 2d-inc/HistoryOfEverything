@@ -19,7 +19,7 @@ import 'package:nima/nima/math/aabb.dart' as nima;
 import 'package:nima/nima/math/vec2d.dart' as nima;
 import 'package:timeline/timeline/timeline_utils.dart';
 
-import "timeline_entry.dart";
+import 'timeline_entry.dart';
 
 typedef PaintCallback();
 typedef ChangeEraCallback(TimelineEntry era);

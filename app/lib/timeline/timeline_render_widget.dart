@@ -1,6 +1,6 @@
 import 'dart:math';
 import 'dart:ui';
-import "dart:ui" as ui;
+import 'dart:ui' as ui;
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -222,21 +222,18 @@ class TimelineRenderObject extends RenderBox {
       canvas.drawRect(
           Rect.fromLTWH(offset.dx, y1, size.width, y2 - y1), backgroundPaint);
 
-      //print("SIZE ${new Rect.fromLTWH(offset.dx, y1, size.width, y2-y1)}");
     }
     _tapTargets.clear();
     double renderStart = _timeline.renderStart;
     double renderEnd = _timeline.renderEnd;
     double scale = size.height / (renderEnd - renderStart);
 
-    //canvas.drawRect(new Offset(0.0, 0.0) & new Size(100.0, 100.0), new Paint()..color = Colors.red);
 
     if (timeline.renderAssets != null) {
       canvas.save();
       canvas.clipRect(offset & size);
       for (TimelineAsset asset in timeline.renderAssets) {
         if (asset.opacity > 0) {
-          //ctx.globalAlpha = asset.opacity;
           double rs = 0.2 + asset.scale * 0.8;
 
           double w = asset.width * Timeline.AssetScreenScale;
@@ -274,7 +271,6 @@ class TimelineRenderObject extends RenderBox {
             double scaleX = 1.0, scaleY = 1.0;
 
             canvas.save();
-            //canvas.clipRect(renderOffset & renderSize);
 
             switch (fit) {
               case BoxFit.fill:
@@ -319,9 +315,6 @@ class TimelineRenderObject extends RenderBox {
             canvas.scale(scaleX, -scaleY);
             canvas.translate(x, y);
 
-            // Comment in to see the AABB
-            // canvas.drawRect(new Rect.fromLTRB(bounds[0], bounds[1], bounds[2], bounds[3]), new Paint()..color = (asset.entry.accent != null ? asset.entry.accent : LineColors[depth%LineColors.length]).withOpacity(0.5));
-
             asset.actor.draw(canvas, asset.opacity);
             canvas.restore();
             _tapTargets.add(TapTarget()
@@ -348,7 +341,6 @@ class TimelineRenderObject extends RenderBox {
             double scaleX = 1.0, scaleY = 1.0;
 
             canvas.save();
-            //canvas.clipRect(renderOffset & renderSize);
 
             switch (fit) {
               case BoxFit.fill:
@@ -393,9 +385,6 @@ class TimelineRenderObject extends RenderBox {
             canvas.scale(scaleX, scaleY);
             canvas.translate(x, y);
 
-            // Comment in to see the AABB
-            // canvas.drawRect(new Rect.fromLTRB(bounds[0], bounds[1], bounds[2], bounds[3]), new Paint()..color = (asset.entry.accent != null ? asset.entry.accent : LineColors[depth%LineColors.length]).withOpacity(0.5));
-
             asset.actor.draw(canvas, opacity: asset.opacity);
             canvas.restore();
             _tapTargets.add(TapTarget()
@@ -436,7 +425,7 @@ class TimelineRenderObject extends RenderBox {
       Color color = Color.fromRGBO(69, 211, 197, opacity);
       double pageSize = (_timeline.renderEnd - _timeline.renderStart);
       double pageReference =
-          _timeline.renderEnd; //_timeline.renderStart + pageSize/2.0;
+          _timeline.renderEnd;
 
       const double MaxLabelWidth = 1200.0;
       ui.ParagraphBuilder builder = ui.ParagraphBuilder(ui.ParagraphStyle(
@@ -515,7 +504,7 @@ class TimelineRenderObject extends RenderBox {
       Color color = Color.fromRGBO(69, 211, 197, opacity);
       double pageSize = (_timeline.renderEnd - _timeline.renderStart);
       double pageReference =
-          _timeline.renderEnd; //_timeline.renderStart + pageSize/2.0;
+          _timeline.renderEnd;
 
       const double MaxLabelWidth = 1200.0;
       ui.ParagraphBuilder builder = ui.ParagraphBuilder(ui.ParagraphStyle(
@@ -526,7 +515,7 @@ class TimelineRenderObject extends RenderBox {
       ui.Paragraph labelParagraph = builder.build();
       labelParagraph.layout(ui.ParagraphConstraints(width: MaxLabelWidth));
 
-      double y = offset.dy + topOverlap + 20.0; //+ size.height - 200.0;
+      double y = offset.dy + topOverlap + 20.0;
       double labelX =
           x + size.width / 2.0 - labelParagraph.maxIntrinsicWidth / 2.0;
       canvas.drawParagraph(labelParagraph, Offset(labelX, y));
@@ -626,7 +615,6 @@ class TimelineRenderObject extends RenderBox {
             offset.dy + topOverlap + favoritesRadius + padFavorites,
             offset.dy + size.height - favoritesRadius - padFavorites);
         favorite.favoriteY = y;
-        //print("F ${favorite.label} $y");
 
         // Check all closer events to see if this one is occluded by a previous closer one.
         // Works because we sorted by distance.
@@ -645,7 +633,7 @@ class TimelineRenderObject extends RenderBox {
           continue;
         }
         double y = favorite
-            .favoriteY; //((favorite.start-timeline.renderStart)*scale).clamp(offset.dy + topOverlap + favoritesRadius + padFavorites, offset.dy + size.height - favoritesRadius - padFavorites);
+            .favoriteY;
 
         canvas.drawCircle(
             Offset(x, y),
@@ -882,8 +870,6 @@ class TimelineRenderObject extends RenderBox {
                     ? item.accent
                     : LineColors[depth % LineColors.length])
                 .withOpacity(item.opacity));
-      // Make dots clickable
-      // _tapTargets.add(new TapTarget()..entry=item..rect=new Rect.fromCircle(center:entryOffset, radius:Timeline.EdgeRadius*5.0)..zoom=true);
       if (legOpacity > 0.0) {
         Paint legPaint = Paint()
           ..color = (item.accent != null
@@ -911,13 +897,9 @@ class TimelineRenderObject extends RenderBox {
       builder.addText(item.label);
       ui.Paragraph labelParagraph = builder.build();
       labelParagraph.layout(ui.ParagraphConstraints(width: MaxLabelWidth));
-      //canvas.drawParagraph(labelParagraph, new Offset(offset.dx + Gutter - labelParagraph.minIntrinsicWidth-2, offset.dy + height - o - labelParagraph.height - 5));
 
       double textWidth =
           labelParagraph.maxIntrinsicWidth * item.opacity * item.labelOpacity;
-      // ctx.globalAlpha = labelOpacity*itemOpacity;
-      // ctx.save();
-      // let bubbleX = labelX-DepthOffset*renderOffsetDepth;
       double bubbleX = _timeline.renderLabelX -
           Timeline.DepthOffset * _timeline.renderOffsetDepth;
       double bubbleY = item.labelY - bubbleHeight / 2.0;
@@ -945,10 +927,6 @@ class TimelineRenderObject extends RenderBox {
           Offset(
               BubblePadding, bubbleHeight / 2.0 - labelParagraph.height / 2.0));
       canvas.restore();
-      // if(item.asset != null)
-      // {
-      // 	canvas.drawImageRect(item.asset.image, Rect.fromLTWH(0.0, 0.0, item.asset.width, item.asset.height), Rect.fromLTWH(bubbleX + textWidth + BubblePadding*2.0, bubbleY, item.asset.width, item.asset.height), new Paint()..isAntiAlias=true..filterQuality=ui.FilterQuality.low);
-      // }
       if (item.children != null) {
         drawItems(context, offset, item.children, x + Timeline.DepthOffset,
             scale, depth + 1);

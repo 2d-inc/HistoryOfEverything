@@ -184,6 +184,7 @@ class _TimelineWidgetState extends State<TimelineWidget> {
           _headerBackgroundColor = background;
         });
       };
+      /// Update the label for the [Timeline] object.
       timeline.onEraChanged = (TimelineEntry entry) {
         setState(() {
           _eraName = entry != null ? entry.label : DefaultEraName;

@@ -84,4 +84,8 @@ This is all made possible by relying on Flutter's `SchedulerBinding.scheduleFram
 This is just a brief overview of how the Flare widgets can be customized for every experience.
 
 ## License
-See the [LICENSE](LICENSE) file for license rights and limitations (MIT).
+All the animations in the `/assets` folder are distributed under the **CC-BY** license.
+
+All the articles in `assets/articles` are from [Wikipedia](https://www.wikipedia.org/), and are thus distributed under the **GNU Free Documentation License**.
+
+The rest of the repository's code and contents are distributed under the **MIT** license as specified in [LICENSE](LICENSE).

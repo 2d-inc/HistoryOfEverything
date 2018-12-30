@@ -82,3 +82,6 @@ To have the animation reproduce correctly, it's also necessary to call `advance(
 This is all made possible by relying on Flutter's `SchedulerBinding.scheduleFrameCallback()`.
 
 This is just a brief overview of how the Flare widgets can be customized for every experience.
+
+## License
+See the [LICENSE](LICENSE) file for license rights and limitations (MIT).

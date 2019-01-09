@@ -89,3 +89,12 @@ All the animations in the `/assets` folder are distributed under the **CC-BY** l
 All the articles in `assets/articles` are from [Wikipedia](https://www.wikipedia.org/), and are thus distributed under the **GNU Free Documentation License**.
 
 The rest of the repository's code and contents are distributed under the **MIT** license as specified in [LICENSE](LICENSE).
+
+### Code Visualization:
+
+Here is a cool visualization of the code evolution
+
+ [![Watch the video](https://img.youtube.com/vi/QnlD9_F4fzg/0.jpg)](https://www.youtube.com/watch?v=QnlD9_F4fzg)
+
+ [https://www.youtube.com/watch?v=QnlD9_F4fzg](https://www.youtube.com/watch?v=QnlD9_F4fzg)
+

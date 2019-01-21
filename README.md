@@ -17,7 +17,9 @@ cd HistoryOfEverything/app
 git submodule init
 git submodule update
 flutter run
+
 ```
+#### Remainder : The project directory is ```HistoryOfEverything/app``` not the git project root itself, i.e. Open ```app``` directory with Android Studio or VSCode.
 
 ## Overview
 <img align="right" src="https://cdn.2dimensions.com/2_Scroll.gif" height="400">

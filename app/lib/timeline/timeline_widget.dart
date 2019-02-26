@@ -267,85 +267,83 @@ class _TimelineWidgetState extends State<TimelineWidget> {
                 focusItem: widget.focusItem,
                 touchBubble: onTouchBubble,
                 touchEntry: onTouchEntry),
-            BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Container(
-                          height: devicePadding.top,
-                          color: _headerBackgroundColor != null
-                              ? _headerBackgroundColor
-                              : Color.fromRGBO(238, 240, 242, 0.81)),
-                      Container(
-                          color: _headerBackgroundColor != null
-                              ? _headerBackgroundColor
-                              : Color.fromRGBO(238, 240, 242, 0.81),
-                          height: 56.0,
-                          width: double.infinity,
-                          child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: <Widget>[
-                                IconButton(
-                                  padding:
-                                      EdgeInsets.only(left: 20.0, right: 20.0),
+            Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Container(
+                      height: devicePadding.top,
+                      color: _headerBackgroundColor != null
+                          ? _headerBackgroundColor
+                          : Color.fromRGBO(238, 240, 242, 0.81)),
+                  Container(
+                      color: _headerBackgroundColor != null
+                          ? _headerBackgroundColor
+                          : Color.fromRGBO(238, 240, 242, 0.81),
+                      height: 56.0,
+                      width: double.infinity,
+                      child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: <Widget>[
+                            IconButton(
+                              padding:
+                                  EdgeInsets.only(left: 20.0, right: 20.0),
+                              color: _headerTextColor != null
+                                  ? _headerTextColor
+                                  : Colors.black.withOpacity(0.5),
+                              alignment: Alignment.centerLeft,
+                              icon: Icon(Icons.arrow_back),
+                              onPressed: () {
+                                widget.timeline.isActive = false;
+                                Navigator.of(context).pop();
+                                return true;
+                              },
+                            ),
+                            Text(
+                              _eraName,
+                              textAlign: TextAlign.left,
+                              style: TextStyle(
+                                  fontFamily: "RobotoMedium",
+                                  fontSize: 20.0,
                                   color: _headerTextColor != null
                                       ? _headerTextColor
-                                      : Colors.black.withOpacity(0.5),
-                                  alignment: Alignment.centerLeft,
-                                  icon: Icon(Icons.arrow_back),
-                                  onPressed: () {
-                                    widget.timeline.isActive = false;
-                                    Navigator.of(context).pop();
-                                    return true;
-                                  },
-                                ),
-                                Text(
-                                  _eraName,
-                                  textAlign: TextAlign.left,
-                                  style: TextStyle(
-                                      fontFamily: "RobotoMedium",
-                                      fontSize: 20.0,
-                                      color: _headerTextColor != null
-                                          ? _headerTextColor
-                                          : darkText.withOpacity(
-                                              darkText.opacity * 0.75)),
-                                ),
-                                Expanded(
-                                    child: GestureDetector(
-                                        child: Transform.translate(
-                                            offset: const Offset(0.0, 0.0),
-                                            child: Container(
-                                              height: 60.0,
-                                              width: 60.0,
-                                              padding: EdgeInsets.all(18.0),
-                                              color:
-                                                  Colors.white.withOpacity(0.0),
-                                              child: FlareActor(
-                                                  "assets/heart_toolbar.flr",
-                                                  animation: _showFavorites
-                                                      ? "On"
-                                                      : "Off",
-                                                  shouldClip: false,
-                                                  color: _headerTextColor !=
-                                                          null
-                                                      ? _headerTextColor
-                                                      : darkText.withOpacity(
-                                                          darkText.opacity *
-                                                              0.75),
-                                                  alignment:
-                                                      Alignment.centerRight),
-                                            )),
-                                        onTap: () {
-                                          timeline.showFavorites =
-                                              !timeline.showFavorites;
-                                          setState(() {
-                                            _showFavorites =
-                                                timeline.showFavorites;
-                                          });
-                                        })),
-                              ]))
-                    ]))
+                                      : darkText.withOpacity(
+                                          darkText.opacity * 0.75)),
+                            ),
+                            Expanded(
+                                child: GestureDetector(
+                                    child: Transform.translate(
+                                        offset: const Offset(0.0, 0.0),
+                                        child: Container(
+                                          height: 60.0,
+                                          width: 60.0,
+                                          padding: EdgeInsets.all(18.0),
+                                          color:
+                                              Colors.white.withOpacity(0.0),
+                                          child: FlareActor(
+                                              "assets/heart_toolbar.flr",
+                                              animation: _showFavorites
+                                                  ? "On"
+                                                  : "Off",
+                                              shouldClip: false,
+                                              color: _headerTextColor !=
+                                                      null
+                                                  ? _headerTextColor
+                                                  : darkText.withOpacity(
+                                                      darkText.opacity *
+                                                          0.75),
+                                              alignment:
+                                                  Alignment.centerRight),
+                                        )),
+                                    onTap: () {
+                                      timeline.showFavorites =
+                                          !timeline.showFavorites;
+                                      setState(() {
+                                        _showFavorites =
+                                            timeline.showFavorites;
+                                      });
+                                    })),
+                          ]))
+                ])
           ])),
     );
   }

@@ -540,7 +540,7 @@ class TimelineRenderObject extends RenderBox {
           textAlign: TextAlign.center,
           fontFamily: "Roboto",
           fontSize: 14.0,
-          lineHeight: 1.3))
+          height: 1.3))
         ..pushStyle(ui.TextStyle(color: color));
 
       double timeUntil = _timeline.nextEntry.start - pageReference;
@@ -622,7 +622,7 @@ class TimelineRenderObject extends RenderBox {
           textAlign: TextAlign.center,
           fontFamily: "Roboto",
           fontSize: 14.0,
-          lineHeight: 1.3))
+          height: 1.3))
         ..pushStyle(ui.TextStyle(color: color));
 
       double timeUntil = _timeline.prevEntry.start - pageReference;

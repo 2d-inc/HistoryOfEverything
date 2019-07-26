@@ -2,8 +2,8 @@ import 'dart:math';
 import 'dart:ui';
 import 'dart:ui' as ui;
 
-import 'package:flare/flare/actor_image.dart' as flare;
-import 'package:flare/flare/math/aabb.dart' as flare;
+import 'package:flare_dart/actor_image.dart' as flare;
+import 'package:flare_dart/math/aabb.dart' as flare;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/scheduler.dart';

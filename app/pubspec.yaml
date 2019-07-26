@@ -17,8 +17,8 @@ dependencies:
     sdk: flutter
   nima:
     path: ../dependencies/Nima-Flutter
-  flare:
-    path: ../dependencies/Flare-Flutter
+  flare_flutter:
+    path: ../dependencies/Flare-Flutter/flare_flutter
   flutter_markdown: ^0.2.0
   share: ^0.5.3
   intl: ">=0.14.0"

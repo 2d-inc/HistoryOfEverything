@@ -1,6 +1,6 @@
-import 'package:flare/flare.dart' as flare;
-import 'package:flare/flare/math/mat2d.dart' as flare;
-import 'package:flare/flare/math/vec2d.dart' as flare;
+import 'package:flare_flutter/flare.dart' as flare;
+import 'package:flare_dart/math/mat2d.dart' as flare;
+import 'package:flare_dart/math/vec2d.dart' as flare;
 
 /// Controllers are used in our Flare library to provide custom behaviors for animations.
 abstract class FlareInteractionController {

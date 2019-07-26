@@ -1,10 +1,10 @@
 import 'dart:ui' as ui;
 import 'dart:ui';
 
-import 'package:flare/flare.dart' as flare;
-import 'package:flare/flare/animation/actor_animation.dart' as flare;
-import 'package:flare/flare/math/aabb.dart' as flare;
-import 'package:flare/flare/math/vec2d.dart' as flare;
+import 'package:flare_flutter/flare.dart' as flare;
+import 'package:flare_dart/animation/actor_animation.dart' as flare;
+import 'package:flare_dart/math/aabb.dart' as flare;
+import 'package:flare_dart/math/vec2d.dart' as flare;
 import 'package:nima/nima.dart' as nima;
 import 'package:nima/nima/animation/actor_animation.dart' as nima;
 import 'package:nima/nima/math/aabb.dart' as nima;

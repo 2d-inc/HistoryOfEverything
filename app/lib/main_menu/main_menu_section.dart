@@ -1,18 +1,18 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:timeline/main_menu/menu_data.dart';
-import "package:flare/flare_actor.dart" as flare;
+import "package:flare_flutter/flare_actor.dart" as flare;
 import 'package:timeline/main_menu/menu_vignette.dart';
 
 typedef NavigateTo(MenuItemData item);
 
 /// This widget displays the single menu section of the [MainMenuWidget].
-/// 
-/// There are three main sections, as loaded from the menu.json file in the 
+///
+/// There are three main sections, as loaded from the menu.json file in the
 /// assets folder.
 /// Each section has a backgroundColor, an accentColor, a background Flare asset,
 /// and a list of elements it needs to display when expanded.
-/// 
+///
 /// Since this widget expands and contracts when tapped, it needs to maintain a [State].
 class MenuSection extends StatefulWidget {
   final String title;
@@ -36,7 +36,6 @@ class MenuSection extends StatefulWidget {
 /// This allows the animation to run smoothly and avoids consuming unnecessary resources.
 class _SectionState extends State<MenuSection>
     with SingleTickerProviderStateMixin {
-  
   /// The [AnimationController] is a Flutter Animation object that generates a new value
   /// whenever the hardware is ready to draw a new frame.
   AnimationController _controller;
@@ -54,7 +53,6 @@ class _SectionState extends State<MenuSection>
   /// Detects which state the widget is currently in, and triggers the animation upon change.
   bool _isExpanded = false;
 
-
   /// Here we initialize the fields described above, and set up the widget to its initial state.
   @override
   initState() {
@@ -64,9 +62,11 @@ class _SectionState extends State<MenuSection>
       vsync: this,
       duration: const Duration(milliseconds: 200),
     );
-    /// This curve is controlled by [_controller]. 
+
+    /// This curve is controlled by [_controller].
     final CurvedAnimation curve =
         CurvedAnimation(parent: _controller, curve: Curves.fastOutSlowIn);
+
     /// [_sizeAnimation] will interpolate using this curve - [Curves.fastOutSlowIn].
     _sizeAnimation = _sizeTween.animate(curve);
     _controller.addListener(() {
@@ -100,12 +100,12 @@ class _SectionState extends State<MenuSection>
   }
 
   /// This method wraps the whole widget in a [GestureDetector] to handle taps appropriately.
-  /// 
-  /// A custom [BoxDecoration] is used to render the rounded rectangle on the screen, and a 
+  ///
+  /// A custom [BoxDecoration] is used to render the rounded rectangle on the screen, and a
   /// [MenuVignette] is used as a background decoration for the whole widget.
-  /// 
+  ///
   /// The [SizeTransition] opens up the section and displays the list underneath the section title.
-  /// 
+  ///
   /// Each section sub-element is wrapped into a [GestureDetector] too so that the Timeline can be displayed
   /// when that element is tapped.
   @override
@@ -135,16 +135,18 @@ class _SectionState extends State<MenuSection>
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Container(
-                                  height: 21.0,
-                                  width: 21.0,
-                                  margin: EdgeInsets.all(18.0),
-                                  /// Another [FlareActor] widget that
-                                  /// you can experiment with here: https://www.2dimensions.com/a/pollux/files/flare/expandcollapse/preview
-                                  child: flare.FlareActor(
-                                      "assets/ExpandCollapse.flr",
-                                      color: widget.accentColor,
-                                      animation:
-                                          _isExpanded ? "Collapse" : "Expand")),
+                                height: 21.0,
+                                width: 21.0,
+                                margin: EdgeInsets.all(18.0),
+
+                                /// Another [FlareActor] widget that
+                                /// you can experiment with here: https://www.2dimensions.com/a/pollux/files/flare/expandcollapse/preview
+                                child: flare.FlareActor(
+                                    "assets/ExpandCollapse.flr",
+                                    color: widget.accentColor,
+                                    animation:
+                                        _isExpanded ? "Collapse" : "Expand"),
+                              ),
                               Text(
                                 widget.title,
                                 style: TextStyle(

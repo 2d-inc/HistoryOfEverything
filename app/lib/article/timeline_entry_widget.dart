@@ -106,6 +106,7 @@ class VignetteRenderObject extends RenderBox {
         /// Instance [_flareActor] through the actor reference in the asset
         /// and set the initial starting value for its animation.
         _flareActor = asset.actor.makeInstance();
+		_flareActor.initializeGraphics();
         asset.animation.apply(asset.animation.duration, _flareActor, 1.0);
         _flareActor.advance(0.0);
         if (asset.filename == "assets/Amelia_Earhart/Amelia_Earhart.flr") {

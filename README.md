@@ -51,7 +51,7 @@ This file contains two classes:<br/>
 
 This class ([docs](https://docs.flutter.io/flutter/widgets/LeafRenderObjectWidget-class.html)) is a `Widget`: it can be inserted in any widget tree without any other default component: 
 
-```
+```dart
 Container(
   child: TimelineEntryWidget(
         isActive: true,

@@ -19,9 +19,9 @@ import "package:timeline/colors.dart";
 import "package:timeline/timeline/timeline_entry.dart";
 import 'package:timeline/timeline/timeline_widget.dart';
 
-/// The Main Page of the Timeline App. 
-/// 
-/// This Widget lays out the search bar at the top of the page, 
+/// The Main Page of the Timeline App.
+///
+/// This Widget lays out the search bar at the top of the page,
 /// the three card-sections for accessing the main events on the Timeline,
 /// and it'll provide on the bottom three links for quick access to your Favorites,
 /// a Share Menu and the About Page.
@@ -34,12 +34,12 @@ class MainMenuWidget extends StatefulWidget {
 
 class _MainMenuWidgetState extends State<MainMenuWidget> {
   /// State is maintained for two reasons:
-  /// 
+  ///
   /// 1. Search Functionality:
-  /// When the search bar is tapped, the Widget view is filled with all the 
+  /// When the search bar is tapped, the Widget view is filled with all the
   /// search info -- i.e. the [ListView] containing all the results.
   bool _isSearching = false;
-  
+
   /// 2. Section Animations:
   /// Each card section contains a Flare animation that's playing in the background.
   /// These animations are paused when they're not visible anymore (e.g. when search is visible instead),
@@ -69,7 +69,7 @@ class _MainMenuWidgetState extends State<MainMenuWidget> {
   /// Helper function which sets the [MenuItemData] for the [TimelineWidget].
   /// This will trigger a transition from the current menu to the Timeline,
   /// thus the push on the [Navigator], and by providing the [item] as
-  /// a parameter to the [TimelineWidget] constructor, this widget will know 
+  /// a parameter to the [TimelineWidget] constructor, this widget will know
   /// where to scroll to.
   navigateToTimeline(MenuItemData item) {
     _pauseSection();
@@ -95,8 +95,9 @@ class _MainMenuWidgetState extends State<MainMenuWidget> {
       return;
     }
     String txt = _searchTextController.text.trim();
+
     /// Perform search.
-    /// 
+    ///
     /// A [Timer] is used to prevent unnecessary searches while the user is typing.
     _searchTimer = Timer(Duration(milliseconds: txt.isEmpty ? 0 : 350), () {
       Set<TimelineEntry> res = SearchManager.init().performSearch(txt);
@@ -112,7 +113,7 @@ class _MainMenuWidgetState extends State<MainMenuWidget> {
     /// The [_menu] loads a JSON file that's stored in the assets folder.
     /// This asset provides all the necessary information for the cards,
     /// such as labels, background colors, the background Flare animation asset,
-    /// and for each element in the expanded card, the relative position on the [Timeline]. 
+    /// and for each element in the expanded card, the relative position on the [Timeline].
     _menu.loadFromBundle("assets/menu.json").then((bool success) {
       if (success) setState(() {}); // Load the menu.
     });
@@ -154,16 +155,16 @@ class _MainMenuWidgetState extends State<MainMenuWidget> {
     EdgeInsets devicePadding = MediaQuery.of(context).padding;
 
     List<Widget> tail = [];
+
     /// Check the current state before creating the layout for the menu (i.e. [tail]).
-    /// 
+    ///
     /// If the app is searching, lay out the results.
     /// Otherwise, insert the menu information with all the various sections.
     if (_isSearching) {
       for (int i = 0; i < _searchResults.length; i++) {
-        tail.add(RepaintBoundary(child: 
-            ThumbnailDetailWidget(_searchResults[i],
-            hasDivider: i != 0, tapSearchResult: _tapSearchResult)
-        ));
+        tail.add(RepaintBoundary(
+            child: ThumbnailDetailWidget(_searchResults[i],
+                hasDivider: i != 0, tapSearchResult: _tapSearchResult)));
       }
     } else {
       tail
@@ -212,8 +213,10 @@ class _MainMenuWidgetState extends State<MainMenuWidget> {
               )
             ])))
         ..add(FlatButton(
-            onPressed: () => Share.share(
-                "Check out The History of Everything! " + (Platform.isAndroid ? "https://play.google.com/store/apps/details?id=com.twodimensions.timeline" : "itms://itunes.apple.com/us/app/apple-store/id1441257460?mt=8")),
+            onPressed: () => Share.share("Check out The History of Everything! " +
+                (Platform.isAndroid
+                    ? "https://play.google.com/store/apps/details?id=com.twodimensions.timeline"
+                    : "itms://itunes.apple.com/us/app/apple-store/id1441257460?mt=8")),
             color: Colors.transparent,
             child:
                 Row(crossAxisAlignment: CrossAxisAlignment.center, children: [

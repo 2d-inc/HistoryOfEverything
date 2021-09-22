@@ -20,12 +20,13 @@ import 'package:timeline/article/controllers/newton_controller.dart';
 import 'package:timeline/article/controllers/nima_interaction_controller.dart';
 import 'package:timeline/timeline/timeline_entry.dart';
 
-/// This widget renders a single [TimelineEntry]. It relies on a [LeafRenderObjectWidget] 
+/// This widget renders a single [TimelineEntry]. It relies on a [LeafRenderObjectWidget]
 /// so it can implement a custom [RenderObject] and update it accordingly.
 class TimelineEntryWidget extends LeafRenderObjectWidget {
   /// A flag is used to animate the widget only when needed.
   final bool isActive;
   final TimelineEntry timelineEntry;
+
   /// If this widget also has a custom controller, the [interactOffset]
   /// parameter can be used to detect motion effects and alter the [FlareActor] accordingly.
   final Offset interactOffset;
@@ -59,15 +60,14 @@ class TimelineEntryWidget extends LeafRenderObjectWidget {
   }
 }
 
-
 /// When extending a [RenderBox] we provide a custom set of instructions for the widget being rendered.
-/// 
+///
 /// In particular this means overriding the [paint()] and [hitTestSelf()] methods to render the loaded
 /// Flare/Nima [FlutterActor] where the widget is being placed.
 class VignetteRenderObject extends RenderBox {
   static const Alignment alignment = Alignment.center;
   static const BoxFit fit = BoxFit.contain;
-  
+
   bool _isActive = false;
   bool _firstUpdate = true;
   bool _isFrameScheduled = false;
@@ -106,7 +106,7 @@ class VignetteRenderObject extends RenderBox {
         /// Instance [_flareActor] through the actor reference in the asset
         /// and set the initial starting value for its animation.
         _flareActor = asset.actor.makeInstance();
-		_flareActor.initializeGraphics();
+        _flareActor.initializeGraphics();
         asset.animation.apply(asset.animation.duration, _flareActor, 1.0);
         _flareActor.advance(0.0);
         if (asset.filename == "assets/Amelia_Earhart/Amelia_Earhart.flr") {
@@ -140,7 +140,6 @@ class VignetteRenderObject extends RenderBox {
     updateActor();
     updateRendering();
   }
-
 
   bool get isActive => _isActive;
   set isActive(bool value) {
@@ -204,7 +203,7 @@ class VignetteRenderObject extends RenderBox {
             ..color = Colors.white.withOpacity(asset.opacity));
     } else if (asset is TimelineNima && _nimaActor != null) {
       /// If we have a [TimelineNima] asset, set it up properly and paint it.
-      /// 
+      ///
       /// 1. Calculate the bounds for the current object.
       /// An Axis-Aligned Bounding Box (AABB) is already set up when the asset is first loaded.
       /// We rely on this AABB to perform screen-space calculations.
@@ -270,17 +269,21 @@ class VignetteRenderObject extends RenderBox {
           renderOffset.dy +
               renderSize.height / 2.0 +
               (alignment.y * renderSize.height / 2.0));
+
       /// 3. Scale depending on the [fit].
       canvas.scale(scaleX, -scaleY);
+
       /// 4. Move the canvas to the correct [_nimaActor] position calculated above.
       canvas.translate(x, y);
+
       /// 5. perform the drawing operations.
       _nimaActor.draw(canvas, 1.0);
+
       /// 6. Restore the canvas' original transform state.
       canvas.restore();
     } else if (asset is TimelineFlare && _flareActor != null) {
       /// If we have a [TimelineFlare] asset set it up properly and paint it.
-      /// 
+      ///
       /// 1. Calculate the bounds for the current object.
       /// An Axis-Aligned Bounding Box (AABB) is already set up when the asset is first loaded.
       /// We rely on this AABB to perform screen-space calculations.
@@ -345,19 +348,23 @@ class VignetteRenderObject extends RenderBox {
           renderOffset.dy +
               renderSize.height / 2.0 +
               (alignment.y * renderSize.height / 2.0));
+
       /// 3. Scale depending on the [fit].
       canvas.scale(scaleX, scaleY);
+
       /// 4. Move the canvas to the correct [_flareActor] position calculated above.
       canvas.translate(x, y);
+
       /// 5. perform the drawing operations.
       _flareActor.draw(canvas);
+
       /// 6. Restore the canvas' original transform state.
       canvas.restore();
     }
     canvas.restore();
   }
 
-  /// This callback is used by the [SchedulerBinding] in order to advance the Flare/Nima 
+  /// This callback is used by the [SchedulerBinding] in order to advance the Flare/Nima
   /// animations properly, and update the corresponding [FlutterActor]s.
   /// It is also responsible for advancing any attached components to said Actors,
   /// such as [_nimaController] or [_flareController].
@@ -383,6 +390,7 @@ class VignetteRenderObject extends RenderBox {
         if (asset.loop) {
           asset.animationTime %= asset.animation.duration;
         }
+
         /// Apply the current time to the [asset] animation.
         asset.animation.apply(asset.animationTime, _nimaActor, 1.0);
         if (_nimaController != null) {
@@ -449,6 +457,7 @@ class VignetteRenderObject extends RenderBox {
             /// be passed down to [NimaInteractionController.advance()].
             localTouchPosition = nima.Vec2D.fromValues(dx, dy);
           }
+
           /// This custom [NimaInteractionController] uses [localTouchPosition] to perform its calculations.
           _nimaController.advance(_nimaActor, localTouchPosition, elapsed);
         }
@@ -481,6 +490,7 @@ class VignetteRenderObject extends RenderBox {
           if (asset.loop && asset.animationTime >= 0) {
             asset.animationTime %= asset.animation.duration;
           }
+
           /// Apply the current time to this [ActorAnimation].
           asset.animation.apply(asset.animationTime, _flareActor, 1.0);
         }
@@ -543,13 +553,16 @@ class VignetteRenderObject extends RenderBox {
             dy /= scaleY;
             dx -= x;
             dy -= y;
+
             /// Use this logic to evaluate the correct touch position that will
             /// be passed down to [FlareInteractionController.advance()].
             localTouchPosition = flare.Vec2D.fromValues(dx, dy);
           }
+
           /// Perform the actual [advance()]ing.
           _flareController.advance(_flareActor, localTouchPosition, elapsed);
         }
+
         /// Advance the [FlutterActorArtboard].
         _flareActor.advance(elapsed);
       }
@@ -557,6 +570,7 @@ class VignetteRenderObject extends RenderBox {
 
     /// Invalidate the current widget visual state and let Flutter paint it again.
     markNeedsPaint();
+
     /// Schedule a new frame to update again - but only if needed.
     if (isActive && !_isFrameScheduled) {
       _isFrameScheduled = true;

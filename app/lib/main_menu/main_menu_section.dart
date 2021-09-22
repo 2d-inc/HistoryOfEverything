@@ -4,7 +4,7 @@ import 'package:timeline/main_menu/menu_data.dart';
 import "package:flare_flutter/flare_actor.dart" as flare;
 import 'package:timeline/main_menu/menu_vignette.dart';
 
-typedef NavigateTo(MenuItemData item);
+typedef NavigateTo = Function(MenuItemData item);
 
 /// This widget displays the single menu section of the [MainMenuWidget].
 ///

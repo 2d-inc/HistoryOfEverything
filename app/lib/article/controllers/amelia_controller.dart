@@ -13,11 +13,12 @@ class AmeliaController extends FlareInteractionController {
   /// to the users' touch input on the screen, we can move the plane and that'll be followed along by
   /// Amelia's face elements.
   ActorNode _ctrlFace;
+
   /// Get a reference to the touch position and the original translation values.
   Vec2D _lastTouchPosition;
   Vec2D _originalTranslation;
 
-  /// As seen in [FlareInteractionController], this method allows us to set up 
+  /// As seen in [FlareInteractionController], this method allows us to set up
   /// local variables as needed. In this case we grab a reference to the controlling node
   /// and the original translation position for the face.
   @override
@@ -37,6 +38,7 @@ class AmeliaController extends FlareInteractionController {
     if (touchPosition != null && _lastTouchPosition != null) {
       Vec2D move = Vec2D.subtract(Vec2D(), touchPosition, _lastTouchPosition);
       Mat2D toParentSpace = Mat2D();
+
       /// Transform world coordinates into object space. Then evaluate the move delta
       /// and apply it to the control.
       if (Mat2D.invert(toParentSpace, _ctrlFace.parent.worldTransform)) {

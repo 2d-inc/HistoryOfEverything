@@ -12,6 +12,7 @@ import 'package:timeline/timeline/timeline_entry.dart';
 /// It stores a reference to the [TimelineEntry] that contains the relevant information.
 class ArticleWidget extends StatefulWidget {
   final TimelineEntry article;
+
   ArticleWidget({this.article, Key key}) : super(key: key);
 
   @override
@@ -21,18 +22,19 @@ class ArticleWidget extends StatefulWidget {
 /// The [State] for the [ArticleWidget] will change based on the [article]
 /// parameter that's used to build it.
 /// It is stateful because we rely on some information like the title, subtitle, and the article
-/// contents to change when a new article is displayed. Moreover the [FlareWidget]s that are used 
+/// contents to change when a new article is displayed. Moreover the [FlareWidget]s that are used
 /// on this page (i.e. the top [TimelineEntryWidget] the favorite button) rely on life-cycle parameters.
 class _ArticleWidgetState extends State<ArticleWidget> {
   /// The information for the current page.
   String _articleMarkdown = "";
   String _title = "";
   String _subTitle = "";
+
   /// This page uses the `flutter_markdown` package, and thus needs its styles to be defined
   /// with a custom objects. This is created in [initState()].
   MarkdownStyleSheet _markdownStyleSheet;
 
-  /// Whether the [FlareActor] favorite button is active or not. 
+  /// Whether the [FlareActor] favorite button is active or not.
   /// Triggers a Flare animation upon change.
   bool _isFavorite = false;
 
@@ -89,7 +91,7 @@ class _ArticleWidgetState extends State<ArticleWidget> {
       img: style,
       blockSpacing: 20.0,
       listIndent: 20.0,
-      blockquotePadding: 20.0,
+      blockquotePadding: EdgeInsets.all(20.0),
     );
     setState(() {
       _title = widget.article.label;
@@ -112,8 +114,8 @@ class _ArticleWidgetState extends State<ArticleWidget> {
 
   /// This widget is wrapped in a [Scaffold] to have the classic Material Design visual layout structure.
   /// It uses the [BlocProvider] to find out if this element is part of the favorites, to have the icon properly set up.
-  /// A [SingleChildScrollView] contains a [Column] that lays out the [TimelineEntryWidget] on top, and the [MarkdownBody] 
-  /// right below it. 
+  /// A [SingleChildScrollView] contains a [Column] that lays out the [TimelineEntryWidget] on top, and the [MarkdownBody]
+  /// right below it.
   /// A [GestureDetector] is used to control the [TimelineEntryWidget], if it allows it (...try Amelia Earhart or Newton!)
   @override
   Widget build(BuildContext context) {
@@ -203,6 +205,7 @@ class _ArticleWidgetState extends State<ArticleWidget> {
                                           width: 60.0,
                                           padding: EdgeInsets.all(15.0),
                                           color: Colors.white,
+
                                           /// Check out the widget at:
                                           /// https://www.2dimensions.com/a/pollux/files/flare/heart-simple/preview
                                           child: FlareActor(

@@ -9,17 +9,17 @@ import 'package:timeline/timeline/timeline_entry.dart';
 import 'package:timeline/timeline/timeline_widget.dart';
 
 /// This widget is displayed when tapping on the Favorites button in the [MainMenuWidget].
-/// 
+///
 /// It displays the list of favorites kept by the [BlocProvider], and moves into the timeline
 /// when tapping on one of them.
-/// 
+///
 /// To add any item as favorite, go to the [ArticleWidget] and tap on the heart button.
 class FavoritesPage extends StatelessWidget {
-  
   /// This widget displays a [ListView] for all the elements in the favorites.
   @override
   Widget build(BuildContext context) {
     List<Widget> favorites = [];
+
     /// Access the favorites list from the [BlocProvider], which is available as a root
     /// element of the app.
     List<TimelineEntry> entries = BlocProvider.favorites(context).favorites;
@@ -37,9 +37,9 @@ class FavoritesPage extends StatelessWidget {
     }
 
     /// Use the same style for the top bar, with the usual colors and the correct icons.
-    /// By pressing the back arrow, [Navigator.pop()] smoothly closes this view and returns 
+    /// By pressing the back arrow, [Navigator.pop()] smoothly closes this view and returns
     /// the app back to the [MainMenuWidget].
-    /// If no entry has been added to the favorites yet, a placeholder [Column] is shown with a 
+    /// If no entry has been added to the favorites yet, a placeholder [Column] is shown with a
     /// a few lines of text and a [FlareActor] animation of a broken heart.
     /// Check it out at: https://www.2dimensions.com/a/pollux/files/flare/broken-heart/preview
     return Scaffold(
@@ -59,8 +59,9 @@ class FavoritesPage extends StatelessWidget {
               Navigator.pop(context, true);
             },
           ),
-          titleSpacing:
-              9.0, /// Note that the icon has 20 on the right due to its padding, so we add 10 to get our desired 29
+          titleSpacing: 9.0,
+
+          /// Note that the icon has 20 on the right due to its padding, so we add 10 to get our desired 29
           title: Text("Your Favorites",
               style: TextStyle(
                   fontFamily: "RobotoMedium",

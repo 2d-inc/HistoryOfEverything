@@ -7,10 +7,10 @@ import 'package:timeline/timeline/timeline.dart';
 import 'package:timeline/timeline/timeline_utils.dart';
 
 /// This class is used by the [TimelineRenderWidget] to render the ticks on the left side of the screen.
-/// 
+///
 /// It has a single [paint()] method that's called within [TimelineRenderObject.paint()].
 class Ticks {
-  /// The following `const` variables are used to properly align, pad and layout the ticks 
+  /// The following `const` variables are used to properly align, pad and layout the ticks
   /// on the left side of the timeline.
   static const double Margin = 20.0;
   static const double Width = 40.0;
@@ -22,7 +22,7 @@ class Ticks {
   static const double SmallTickSize = 5.0;
 
   /// Other than providing the [PaintingContext] to allow the ticks to paint themselves,
-  /// other relevant sizing information is passed to this `paint()` method, as well as 
+  /// other relevant sizing information is passed to this `paint()` method, as well as
   /// a reference to the [Timeline].
   void paint(PaintingContext context, Offset offset, double translation,
       double scale, double height, Timeline timeline) {
@@ -31,6 +31,7 @@ class Ticks {
     double bottom = height;
     double tickDistance = TickDistance.toDouble();
     double textTickDistance = TextTickDistance.toDouble();
+
     /// The width of the left panel can expand and contract if the favorites-view is activated,
     /// by pressing the button on the top-right corner of the timeline.
     double gutterWidth = timeline.gutterWidth;
@@ -50,11 +51,13 @@ class Ticks {
         textTickDistance *= 2.0;
       }
     }
+
     /// The number of ticks to draw.
     int numTicks = (height / scaledTickDistance).ceil() + 2;
     if (scaledTickDistance > TextTickDistance) {
       textTickDistance = tickDistance;
     }
+
     /// Figure out the position of the top left corner of the screen
     double tickOffset = 0.0;
     double startingTickMarkValue = 0.0;
@@ -65,6 +68,7 @@ class Ticks {
     /// Move back by one tick.
     tickOffset -= scaledTickDistance;
     startingTickMarkValue -= tickDistance;
+
     /// Ticks can change color because the timeline background will also change color
     /// depending on the current era. The [TickColors] object, in `timeline_utils.dart`,
     /// wraps this information.
@@ -81,6 +85,7 @@ class Ticks {
       }
       double s =
           timeline.computeScale(timeline.renderStart, timeline.renderEnd);
+
       /// y-coordinate for the starting and ending element.
       double y1 = (tickColors.first.start - timeline.renderStart) * s;
       double y2 = (tickColors.last.start - timeline.renderStart) * s;
@@ -104,10 +109,10 @@ class Ticks {
                 offset.dx, y2 - 1, gutterWidth, (offset.dy + height) - y2),
             ui.Paint()..color = tickColors.last.background);
       }
+
       /// Draw the gutter.
       canvas.drawRect(
           Rect.fromLTWH(offset.dx, y1, gutterWidth, y2 - y1), paint);
-
     } else {
       canvas.drawRect(Rect.fromLTWH(offset.dx, offset.dy, gutterWidth, height),
           Paint()..color = Color.fromRGBO(246, 246, 246, 0.95));
@@ -129,13 +134,14 @@ class Ticks {
             Rect.fromLTWH(offset.dx + gutterWidth - TickSize,
                 offset.dy + height - o, TickSize, 1.0),
             Paint()..color = colors.long);
+
         /// Drawing text to [canvas] is done by using the [ParagraphBuilder] directly.
         ui.ParagraphBuilder builder = ui.ParagraphBuilder(ui.ParagraphStyle(
             textAlign: TextAlign.end, fontFamily: "Roboto", fontSize: 10.0))
-          ..pushStyle(ui.TextStyle(
-              color: colors.text));
+          ..pushStyle(ui.TextStyle(color: colors.text));
 
         int value = tt.round().abs();
+
         /// Format the label nicely depending on how long ago the tick is placed at.
         String label;
         if (value < 9000) {

@@ -24,6 +24,7 @@ class MenuItemData {
   double padBottom = 0.0;
 
   MenuItemData();
+
   /// When initializing this object from a [TimelineEntry], fill in the
   /// fields according to the [entry] provided. The entry in fact specifies
   /// a [label], a [start] and [end] times.
@@ -34,6 +35,7 @@ class MenuItemData {
     /// Pad the edges of the screen.
     pad = true;
     TimelineAsset asset = entry.asset;
+
     /// Extra padding for the top base don the asset size.
     padTop = asset == null ? 0.0 : asset.height * Timeline.AssetScreenScale;
     if (asset is TimelineAnimatedAsset) {
@@ -71,9 +73,9 @@ class MenuItemData {
   }
 }
 
-/// This class has the sole purpose of loading the resources from storage and 
-/// de-serializing the JSON file appropriately. 
-/// 
+/// This class has the sole purpose of loading the resources from storage and
+/// de-serializing the JSON file appropriately.
+///
 /// `menu.json` contains an array of objects, each with:
 /// * label - the title for the section
 /// * background - the color on the section background

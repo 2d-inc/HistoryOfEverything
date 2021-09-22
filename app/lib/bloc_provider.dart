@@ -5,7 +5,7 @@ import 'package:timeline/timeline/timeline.dart';
 import 'package:timeline/timeline/timeline_entry.dart';
 
 /// This [InheritedWidget] wraps the whole app, and provides access
-/// to the user's favorites through the [FavoritesBloc] 
+/// to the user's favorites through the [FavoritesBloc]
 /// and the [Timeline] object.
 class BlocProvider extends InheritedWidget {
   final FavoritesBloc favoritesBloc;
@@ -31,11 +31,13 @@ class BlocProvider extends InheritedWidget {
           start: entries.first.start * 2.0,
           end: entries.first.start,
           animate: true);
+
       /// Advance the timeline to its starting position.
       timeline.advance(0.0, false);
 
       /// All the entries are loaded, we can fill in the [favoritesBloc]...
       favoritesBloc.init(entries);
+
       /// ...and initialize the [SearchManager].
       SearchManager.init(entries);
     });
@@ -44,7 +46,7 @@ class BlocProvider extends InheritedWidget {
   @override
   updateShouldNotify(InheritedWidget oldWidget) => true;
 
-  /// static accessor for the [FavoritesBloc]. 
+  /// static accessor for the [FavoritesBloc].
   /// e.g. [ArticleWidget] retrieves the favorites information using this static getter.
   static FavoritesBloc favorites(BuildContext context) {
     BlocProvider bp =
@@ -53,7 +55,7 @@ class BlocProvider extends InheritedWidget {
     return bloc;
   }
 
-  /// static accessor for the [Timeline]. 
+  /// static accessor for the [Timeline].
   /// e.g. [_MainMenuWidgetState.navigateToTimeline] uses this static getter to access build the [TimelineWidget].
   static Timeline getTimeline(BuildContext context) {
     BlocProvider bp =

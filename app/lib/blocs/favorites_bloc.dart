@@ -5,8 +5,8 @@ import "package:timeline/timeline/timeline_entry.dart";
 /// Stores the logic for handling favorites throughout the app.
 /// Relies on the shared_preferences Flutter library to persist app data
 /// and retrieve it upon restart.
-/// This library interfaces correctly with both iOS & Android for full platform 
-/// independence. 
+/// This library interfaces correctly with both iOS & Android for full platform
+/// independence.
 /// It's available at: https://pub.dartlang.org/packages/shared_preferences
 class FavoritesBloc {
   static const String FAVORITES_KEY = "Favorites";
@@ -18,6 +18,7 @@ class FavoritesBloc {
   init(List<TimelineEntry> entries) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     List<String> favs = prefs.getStringList(FavoritesBloc.FAVORITES_KEY);
+
     /// A [Map] is used to optimize retrieval times when checking if a favorite
     /// is already present - in fact the label's used as the key.
     /// Checking if an element is in the map is O(1), making this process O(n)
@@ -34,6 +35,7 @@ class FavoritesBloc {
         }
       }
     }
+
     /// Sort by starting time, so the favorites' list is always displayed in ascending order.
     _favorites.sort((TimelineEntry a, TimelineEntry b) {
       return a.start.compareTo(b.start);

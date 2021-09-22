@@ -4,10 +4,11 @@ import "package:timeline/timeline/timeline_entry.dart";
 import "package:timeline/article/timeline_entry_widget.dart";
 
 /// This widget is responsible for drawing the circular thumbnail within the [ThumbnailDetailWidget].
-/// 
+///
 /// It uses an inactive [TimelineEntryWidget] for the image, with a [CustomClipper] for the circular image.
 class ThumbnailWidget extends StatelessWidget {
   static const double radius = 17;
+
   /// Reference to the entry to get the thumbnail image information.
   final TimelineEntry entry;
 
@@ -17,7 +18,8 @@ class ThumbnailWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     TimelineAsset asset = entry.asset;
     Widget thumbnail;
-    /// Check if the [entry.asset] provided is already a [TimelineImage]. 
+
+    /// Check if the [entry.asset] provided is already a [TimelineImage].
     if (asset is TimelineImage) {
       thumbnail = RawImage(image: asset.image);
     } else if (asset is TimelineNima || asset is TimelineFlare) {

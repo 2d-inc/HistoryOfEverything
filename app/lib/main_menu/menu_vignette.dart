@@ -13,14 +13,16 @@ import 'package:timeline/bloc_provider.dart';
 import 'package:timeline/timeline/timeline.dart';
 import 'package:timeline/timeline/timeline_entry.dart';
 
-/// This widget renders a Flare/Nima [FlutterActor]. It relies on a [LeafRenderObjectWidget] 
+/// This widget renders a Flare/Nima [FlutterActor]. It relies on a [LeafRenderObjectWidget]
 /// so it can implement a custom [RenderObject] and update it accordingly.
 class MenuVignette extends LeafRenderObjectWidget {
   /// A flag is used to animate the widget only when needed.
   final bool isActive;
+
   /// The id of the [FlutterActor] that will be rendered.
   final String assetId;
-  /// A gradient color to give the section background a faded look. 
+
+  /// A gradient color to give the section background a faded look.
   /// Also makes the sub-section more readable.
   final Color gradientColor;
 
@@ -59,13 +61,14 @@ class MenuVignette extends LeafRenderObjectWidget {
 }
 
 /// When extending a [RenderBox] we provide a custom set of instructions for the widget being rendered.
-/// 
+///
 /// In particular this means overriding the [paint()] and [hitTestSelf()] methods to render the loaded
 /// Flare/Nima [FlutterActor] where the widget is being placed.
 class MenuVignetteRenderObject extends RenderBox {
   /// The [_timeline] object is used here to retrieve the asset through [getById()].
   Timeline _timeline;
   String _assetId;
+
   /// If this object is not active, stop playing. This optimizes resource consumption
   /// and makes sure that each [FlutterActor] remains coherent throughout its animation.
   bool _isActive = false;
@@ -97,6 +100,7 @@ class MenuVignetteRenderObject extends RenderBox {
     if (_isActive == value) {
       return;
     }
+
     /// When this [RenderBox] becomes active, start advancing it again.
     _isActive = value;
     updateRendering();
@@ -165,7 +169,7 @@ class MenuVignetteRenderObject extends RenderBox {
       BoxFit fit = BoxFit.cover;
 
       /// If we have a [TimelineNima] actor set it up properly and paint it.
-      
+
       /// 1. Calculate the bounds for the current object.
       /// An Axis-Aligned Bounding Box (AABB) is already set up when the asset is first loaded.
       /// We rely on this AABB to perform screen-space calculations.
@@ -231,16 +235,18 @@ class MenuVignetteRenderObject extends RenderBox {
           renderOffset.dy +
               renderSize.height / 2.0 +
               (alignment.y * renderSize.height / 2.0));
+
       /// 3. Scale depending on the [fit].
       canvas.scale(scaleX, -scaleY);
+
       /// 4. Move the canvas to the correct [_nimaActor] position calculated above.
       canvas.translate(x, y);
+
       /// 5. perform the drawing operations.
       asset.actor.draw(canvas, 1.0);
 
       /// 6. Restore the canvas' original transform state.
       canvas.restore();
-
 
       /// 7. Use the [gradientColor] field to customize the foreground element being rendered,
       /// and cover it with a linear gradient.
@@ -259,8 +265,9 @@ class MenuVignetteRenderObject extends RenderBox {
     } else if (asset is TimelineFlare && asset.actor != null) {
       Alignment alignment = Alignment.center;
       BoxFit fit = BoxFit.cover;
+
       /// If we have a [TimelineFlare]  actor set it up properly and paint it.
-      /// 
+      ///
       /// 1. Calculate the bounds for the current object.
       /// An Axis-Aligned Bounding Box (AABB) is already set up when the asset is first loaded.
       /// We rely on this AABB to perform screen-space calculations.
@@ -326,8 +333,10 @@ class MenuVignetteRenderObject extends RenderBox {
           renderOffset.dy +
               renderSize.height / 2.0 +
               (alignment.y * renderSize.height / 2.0));
+
       /// 3. Scale depending on the [fit].
       canvas.scale(scaleX, scaleY);
+
       /// 4. Move the canvas to the correct [_flareActor] position calculated above.
       canvas.translate(x, y);
 
@@ -355,12 +364,11 @@ class MenuVignetteRenderObject extends RenderBox {
     canvas.restore();
   }
 
-  /// This callback is used by the [SchedulerBinding] in order to advance the Flare/Nima 
+  /// This callback is used by the [SchedulerBinding] in order to advance the Flare/Nima
   /// animations properly, and update the corresponding [FlutterActor]s.
   /// It is also responsible for advancing any attached components to said Actors,
   /// such as [_nimaController] or [_flareController].
   void beginFrame(Duration timeStamp) {
-
     _isFrameScheduled = false;
     final double t =
         timeStamp.inMicroseconds / Duration.microsecondsPerMillisecond / 1000.0;
@@ -386,8 +394,10 @@ class MenuVignetteRenderObject extends RenderBox {
         if (asset.loop) {
           asset.animationTime %= asset.animation.duration;
         }
+
         /// Apply the current time to the [asset] animation.
         asset.animation.apply(asset.animationTime, asset.actor, 1.0);
+
         /// Use the library function to update the actor's time.
         asset.actor.advance(elapsed);
       } else if (asset is TimelineFlare && asset.actor != null) {
@@ -395,6 +405,7 @@ class MenuVignetteRenderObject extends RenderBox {
           /// Modulate the opacity value used by [gradientFade].
           opacity = min(opacity + elapsed, 1.0);
         }
+
         /// Some [TimelineFlare] assets have a custom intro that's played
         /// when they're painted for the first time.
         if (_firstUpdate) {
@@ -413,8 +424,10 @@ class MenuVignetteRenderObject extends RenderBox {
         if (asset.loop && asset.animationTime >= 0) {
           asset.animationTime %= asset.animation.duration;
         }
+
         /// Apply the current time to this [ActorAnimation].
         asset.animation.apply(asset.animationTime, asset.actor, 1.0);
+
         /// Use the library function to update the actor's time.
         asset.actor.advance(elapsed);
       }
@@ -422,6 +435,7 @@ class MenuVignetteRenderObject extends RenderBox {
 
     /// Invalidate the current widget visual state and let Flutter paint it again.
     markNeedsPaint();
+
     /// Schedule a new frame to update again - but only if needed.
     if (isActive && !_isFrameScheduled) {
       _isFrameScheduled = true;

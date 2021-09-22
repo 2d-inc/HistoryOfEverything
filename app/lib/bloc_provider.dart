@@ -48,7 +48,7 @@ class BlocProvider extends InheritedWidget {
   /// e.g. [ArticleWidget] retrieves the favorites information using this static getter.
   static FavoritesBloc favorites(BuildContext context) {
     BlocProvider bp =
-        (context.inheritFromWidgetOfExactType(BlocProvider) as BlocProvider);
+        context.dependOnInheritedWidgetOfExactType<BlocProvider>();
     FavoritesBloc bloc = bp?.favoritesBloc;
     return bloc;
   }
@@ -57,7 +57,7 @@ class BlocProvider extends InheritedWidget {
   /// e.g. [_MainMenuWidgetState.navigateToTimeline] uses this static getter to access build the [TimelineWidget].
   static Timeline getTimeline(BuildContext context) {
     BlocProvider bp =
-        (context.inheritFromWidgetOfExactType(BlocProvider) as BlocProvider);
+        context.dependOnInheritedWidgetOfExactType<BlocProvider>();
     Timeline bloc = bp?.timeline;
     return bloc;
   }

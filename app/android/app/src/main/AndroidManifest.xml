@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.twodimensions.timeline">
+          package="com.twodimensions.timeline">
 
     <!-- The INTERNET permission is required for development. Specifically,
          flutter needs it to communicate with the running application
@@ -13,23 +13,31 @@
          additional functionality it is fine to subclass or reimplement
          FlutterApplication and put your custom class here. -->
     <application
-        android:name="io.flutter.app.FlutterApplication"
-        android:label="History"
-        android:icon="@mipmap/ic_launcher_app">
+            android:label="History"
+            android:icon="@mipmap/ic_launcher_app">
+        <meta-data
+                android:name="flutterEmbedding"
+                android:value="2"/>
         <activity
-            android:name=".MainActivity"
-            android:launchMode="singleTop"
-            android:theme="@style/LaunchTheme"
-            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection|fontScale|screenLayout|density"
-            android:hardwareAccelerated="true"
-            android:windowSoftInputMode="adjustResize">
+                android:name=".MainActivity"
+                android:exported="true"
+                android:launchMode="singleTop"
+                android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection|fontScale|screenLayout|density"
+                android:hardwareAccelerated="true"
+                android:windowSoftInputMode="adjustResize">
             <!-- This keeps the window background of the activity showing
                  until Flutter renders its first frame. It can be removed if
                  there is no splash screen (such as the default splash screen
                  defined in @style/LaunchTheme). -->
             <meta-data
-                android:name="io.flutter.app.android.SplashScreenUntilFirstFrame"
-                android:value="true" />
+                    android:name="io.flutter.embedding.android.SplashScreenDrawable"
+                    android:resource="@drawable/launch_with_flutter"/>
+
+            <!-- Theme to apply as soon as Flutter begins rendering frames -->
+            <meta-data
+                    android:name="io.flutter.embedding.android.NormalTheme"
+                    android:resource="@style/NormalTheme"/>
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>

@@ -1,2 +1,8 @@
 /app/android/key.properties
 .DS_Store
+app/ios/Flutter/flutter_export_environment.sh
+# flutter plugins files
+.flutter-plugins*
+
+# vscode
+.vscode/

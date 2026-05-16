@@ -73,7 +73,7 @@ Any change to the parameters that are passed to the Widget can be reflected also
 
 ## RenderObject
 
-As specified in the [docs](https://docs.flutter.io/flutter/rendering/RenderObject-class.html), this is an object in the render tree, and it defines what and how its creator Widget will paint on the screen.
+As specified in the [docs](https://api.flutter.dev/flutter/rendering/RenderObject-class.html), this is an object in the render tree, and it defines what and how its creator Widget will paint on the screen.
 
 The key override here is `paint()`:<br />
 &nbsp;&nbsp;&nbsp;&nbsp;the current `PaintingContext` exposes the `canvas`, and this class can draw, taking full advantage of the exposed API. <br />

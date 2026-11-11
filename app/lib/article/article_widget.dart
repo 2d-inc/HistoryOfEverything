@@ -1,6 +1,5 @@
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:timeline/article/timeline_entry_widget.dart';
@@ -21,18 +20,19 @@ class ArticleWidget extends StatefulWidget {
 /// The [State] for the [ArticleWidget] will change based on the [article]
 /// parameter that's used to build it.
 /// It is stateful because we rely on some information like the title, subtitle, and the article
-/// contents to change when a new article is displayed. Moreover the [FlareWidget]s that are used 
+/// contents to change when a new article is displayed. Moreover the [FlareWidget]s that are used
 /// on this page (i.e. the top [TimelineEntryWidget] the favorite button) rely on life-cycle parameters.
 class _ArticleWidgetState extends State<ArticleWidget> {
   /// The information for the current page.
   String _articleMarkdown = "";
   String _title = "";
   String _subTitle = "";
+
   /// This page uses the `flutter_markdown` package, and thus needs its styles to be defined
   /// with a custom objects. This is created in [initState()].
   MarkdownStyleSheet _markdownStyleSheet;
 
-  /// Whether the [FlareActor] favorite button is active or not. 
+  /// Whether the [FlareActor] favorite button is active or not.
   /// Triggers a Flare animation upon change.
   bool _isFavorite = false;
 
@@ -103,24 +103,25 @@ class _ArticleWidgetState extends State<ArticleWidget> {
 
   /// Load the markdown file from the assets and set the contents of the page to its value.
   void loadMarkdown(String filename) async {
-    rootBundle.loadString("assets/Articles/" + filename).then((String data) {
-      setState(() {
-        _articleMarkdown = data;
-      });
+    widget.article.localizations.loadArticle(filename).then((String data) {
+      if (mounted)
+        setState(() {
+          _articleMarkdown = data;
+        });
     });
   }
 
   /// This widget is wrapped in a [Scaffold] to have the classic Material Design visual layout structure.
   /// It uses the [BlocProvider] to find out if this element is part of the favorites, to have the icon properly set up.
-  /// A [SingleChildScrollView] contains a [Column] that lays out the [TimelineEntryWidget] on top, and the [MarkdownBody] 
-  /// right below it. 
+  /// A [SingleChildScrollView] contains a [Column] that lays out the [TimelineEntryWidget] on top, and the [MarkdownBody]
+  /// right below it.
   /// A [GestureDetector] is used to control the [TimelineEntryWidget], if it allows it (...try Amelia Earhart or Newton!)
   @override
   Widget build(BuildContext context) {
     EdgeInsets devicePadding = MediaQuery.of(context).padding;
     List<TimelineEntry> favs = BlocProvider.favorites(context).favorites;
-    bool isFav = favs.any(
-        (TimelineEntry te) => te.label.toLowerCase() == _title.toLowerCase());
+    bool isFav = favs
+        .any((TimelineEntry te) => te.favoriteId == widget.article.favoriteId);
     return Scaffold(
         body: Container(
             color: Color.fromRGBO(255, 255, 255, 1),
@@ -203,6 +204,7 @@ class _ArticleWidgetState extends State<ArticleWidget> {
                                           width: 60.0,
                                           padding: EdgeInsets.all(15.0),
                                           color: Colors.white,
+
                                           /// Check out the widget at:
                                           /// https://www.2dimensions.com/a/pollux/files/flare/heart-simple/preview
                                           child: FlareActor(

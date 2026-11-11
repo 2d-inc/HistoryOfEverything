@@ -1,5 +1,6 @@
 import 'dart:ui' as ui;
 import 'dart:ui';
+import 'package:timeline/l10n/app_localizations.dart';
 
 import 'package:flare_flutter/flare.dart' as flare;
 import 'package:flare_dart/animation/actor_animation.dart' as flare;
@@ -10,7 +11,7 @@ import 'package:nima/nima/animation/actor_animation.dart' as nima;
 import 'package:nima/nima/math/aabb.dart' as nima;
 
 /// An object representing the renderable assets loaded from `timeline.json`.
-/// 
+///
 /// Each [TimelineAsset] encapsulates all the relevant properties for drawing,
 /// as well as maintaining a reference to its original [TimelineEntry].
 class TimelineAsset {
@@ -53,7 +54,7 @@ class TimelineFlare extends TimelineAnimatedAsset {
   flare.ActorAnimation animation;
 
   /// Some Flare assets will have multiple idle animations (e.g. 'Humans'),
-  /// others will have an intro&idle animation (e.g. 'Sun is Born'). 
+  /// others will have an intro&idle animation (e.g. 'Sun is Born').
   /// All this information is in `timeline.json` file, and it's de-serialized in the
   /// [Timeline.loadFromBundle()] method, called during startup.
   /// and custom-computed AABB bounds to properly position them in the timeline.
@@ -61,7 +62,6 @@ class TimelineFlare extends TimelineAnimatedAsset {
   flare.ActorAnimation idle;
   List<flare.ActorAnimation> idleAnimations;
   flare.AABB setupAABB;
-
 }
 
 /// A label for [TimelineEntry].
@@ -70,24 +70,32 @@ enum TimelineEntryType { Era, Incident }
 /// Each entry in the timeline is represented by an instance of this object.
 /// Each favorite, search result and detail page will grab the information from a reference
 /// to this object.
-/// 
+///
 /// They are all initialized at startup time by the [BlocProvider] constructor.
 class TimelineEntry {
   TimelineEntryType type;
 
   /// Used to calculate how many lines to draw for the bubble in the timeline.
   int lineCount = 1;
-  /// 
+
+  ///
   String _label;
+  String sourceLabel;
+  AppLocalizations localizations = const AppLocalizations();
   String articleFilename;
   String id;
 
+  /// Article filenames are unique and do not change when text is translated.
+  /// Keep an English-label fallback for entries without an article.
+  String get favoriteId => articleFilename ?? sourceLabel ?? label;
+
   Color accent;
 
-  /// Each entry constitues an element of a tree: 
+  /// Each entry constitues an element of a tree:
   /// eras are grouped into spanning eras and events are placed into the eras they belong to.
   TimelineEntry parent;
   List<TimelineEntry> children;
+
   /// All the timeline entries are also linked together to easily access the next/previous event.
   /// After a couple of seconds of inactivity on the timeline, a previous/next entry button will appear
   /// to allow the user to navigate faster between adjacent events.
@@ -119,6 +127,7 @@ class TimelineEntry {
   }
 
   String get label => _label;
+
   /// Some labels already have newline characters to adjust their alignment.
   /// Detect the occurrence and add information regarding the line-count.
   set label(String value) {
@@ -138,9 +147,10 @@ class TimelineEntry {
   /// Pretty-printing for the entry date.
   String formatYearsAgo() {
     if (start > 0) {
-      return start.round().toString();
+      return start.round().toString() + (localizations.isChinese ? '年' : '');
     }
-    return TimelineEntry.formatYears(start) + " Ago";
+    return localizations.interpolate(
+        'yearsAgo', {'years': TimelineEntry.formatYears(start, localizations)});
   }
 
   /// Debug information.
@@ -150,9 +160,23 @@ class TimelineEntry {
   }
 
   /// Helper method.
-  static String formatYears(double start) {
+  static String formatYears(double start,
+      [AppLocalizations localizations = const AppLocalizations()]) {
     String label;
     int valueAbs = start.round().abs();
+    if (localizations.isChinese) {
+      double divisor = valueAbs >= 100000000
+          ? 100000000.0
+          : valueAbs >= 10000 ? 10000.0 : 1.0;
+      String unit =
+          divisor == 100000000.0 ? '亿' : divisor == 10000.0 ? '万' : '';
+      double value = valueAbs / divisor;
+      String number =
+          value.toStringAsFixed(value == value.floorToDouble() ? 0 : 1);
+      if (number.endsWith('.0'))
+        number = number.substring(0, number.length - 2);
+      return '$number$unit年';
+    }
     if (valueAbs > 1000000000) {
       double v = (valueAbs / 100000000.0).floorToDouble() / 10.0;
 

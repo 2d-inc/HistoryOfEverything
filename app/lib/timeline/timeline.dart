@@ -18,6 +18,7 @@ import 'package:nima/nima/animation/actor_animation.dart' as nima;
 import 'package:nima/nima/math/aabb.dart' as nima;
 import 'package:nima/nima/math/vec2d.dart' as nima;
 import 'package:timeline/timeline/timeline_utils.dart';
+import 'package:timeline/l10n/app_localizations.dart';
 
 import 'timeline_entry.dart';
 
@@ -57,6 +58,7 @@ class Timeline {
   /// The current platform is initialized at boot, to properly initialize
   /// [ScrollPhysics] based on the platform we're on.
   final TargetPlatform _platform;
+  final AppLocalizations localizations;
 
   double _start = 0.0;
   double _end = 0.0;
@@ -142,7 +144,7 @@ class Timeline {
   ChangeEraCallback onEraChanged;
   ChangeHeaderColorCallback onHeaderColorsChanged;
 
-  Timeline(this._platform) {
+  Timeline(this._platform, [this.localizations = const AppLocalizations()]) {
     setViewport(start: 1536.0, end: 3072.0);
   }
 
@@ -273,7 +275,7 @@ class Timeline {
         /// Some entries will have a `start` element, but not an `end` specified.
         /// These entries specify a particular event such as the appeareance of 
         /// "Humans" in history, which hasn't come to an end -- yet.
-        TimelineEntry timelineEntry = TimelineEntry();
+        TimelineEntry timelineEntry = TimelineEntry()..localizations = localizations;
         if (map.containsKey("date")) {
           timelineEntry.type = TimelineEntryType.Incident;
           dynamic date = map["date"];
@@ -397,7 +399,8 @@ class Timeline {
 
         /// The label is a brief description for the current entry.
         if (map.containsKey("label")) {
-          timelineEntry.label = map["label"] as String;
+          timelineEntry.sourceLabel = map["label"] as String;
+          timelineEntry.label = localizations.label(timelineEntry.sourceLabel);
         }
 
         /// Some entries will also have an id 

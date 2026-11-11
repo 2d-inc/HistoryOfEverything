@@ -556,11 +556,14 @@ class TimelineRenderObject extends RenderBox {
 
       double timeUntil = _timeline.nextEntry.start - pageReference;
       double pages = timeUntil / pageSize;
-      NumberFormat formatter = NumberFormat.compact();
+      NumberFormat formatter =
+          NumberFormat.compact(locale: _timeline.localizations.numberLocale);
       String pagesFormatted = formatter.format(pages);
-      String until = "in " +
-          TimelineEntry.formatYears(timeUntil).toLowerCase() +
-          "\n($pagesFormatted page scrolls)";
+      String until = _timeline.localizations.interpolate('nextEvent', {
+        'years': TimelineEntry.formatYears(timeUntil, _timeline.localizations)
+            .toLowerCase(),
+        'pages': pagesFormatted,
+      });
       builder.addText(until);
       labelParagraph = builder.build();
       labelParagraph.layout(ui.ParagraphConstraints(width: size.width));
@@ -638,10 +641,14 @@ class TimelineRenderObject extends RenderBox {
 
       double timeUntil = _timeline.prevEntry.start - pageReference;
       double pages = timeUntil / pageSize;
-      NumberFormat formatter = NumberFormat.compact();
+      NumberFormat formatter =
+          NumberFormat.compact(locale: _timeline.localizations.numberLocale);
       String pagesFormatted = formatter.format(pages.abs());
-      String until = TimelineEntry.formatYears(timeUntil).toLowerCase() +
-          " ago\n($pagesFormatted page scrolls)";
+      String until = _timeline.localizations.interpolate('previousEvent', {
+        'years': TimelineEntry.formatYears(timeUntil, _timeline.localizations)
+            .toLowerCase(),
+        'pages': pagesFormatted,
+      });
       builder.addText(until);
       labelParagraph = builder.build();
       labelParagraph.layout(ui.ParagraphConstraints(width: size.width));
@@ -910,7 +917,8 @@ class TimelineRenderObject extends RenderBox {
               if (value < 9000) {
                 label = value.toStringAsFixed(0);
               } else {
-                NumberFormat formatter = NumberFormat.compact();
+                NumberFormat formatter = NumberFormat.compact(
+                    locale: _timeline.localizations.numberLocale);
                 label = formatter.format(value);
               }
 

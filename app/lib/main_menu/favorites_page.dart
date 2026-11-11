@@ -7,19 +7,21 @@ import 'package:timeline/main_menu/menu_data.dart';
 import 'package:timeline/main_menu/thumbnail_detail_widget.dart';
 import 'package:timeline/timeline/timeline_entry.dart';
 import 'package:timeline/timeline/timeline_widget.dart';
+import 'package:timeline/l10n/app_localizations.dart';
 
 /// This widget is displayed when tapping on the Favorites button in the [MainMenuWidget].
-/// 
+///
 /// It displays the list of favorites kept by the [BlocProvider], and moves into the timeline
 /// when tapping on one of them.
-/// 
+///
 /// To add any item as favorite, go to the [ArticleWidget] and tap on the heart button.
 class FavoritesPage extends StatelessWidget {
-  
   /// This widget displays a [ListView] for all the elements in the favorites.
   @override
   Widget build(BuildContext context) {
+    AppLocalizations strings = AppLocalizations.of(context);
     List<Widget> favorites = [];
+
     /// Access the favorites list from the [BlocProvider], which is available as a root
     /// element of the app.
     List<TimelineEntry> entries = BlocProvider.favorites(context).favorites;
@@ -37,9 +39,9 @@ class FavoritesPage extends StatelessWidget {
     }
 
     /// Use the same style for the top bar, with the usual colors and the correct icons.
-    /// By pressing the back arrow, [Navigator.pop()] smoothly closes this view and returns 
+    /// By pressing the back arrow, [Navigator.pop()] smoothly closes this view and returns
     /// the app back to the [MainMenuWidget].
-    /// If no entry has been added to the favorites yet, a placeholder [Column] is shown with a 
+    /// If no entry has been added to the favorites yet, a placeholder [Column] is shown with a
     /// a few lines of text and a [FlareActor] animation of a broken heart.
     /// Check it out at: https://www.2dimensions.com/a/pollux/files/flare/broken-heart/preview
     return Scaffold(
@@ -59,9 +61,10 @@ class FavoritesPage extends StatelessWidget {
               Navigator.pop(context, true);
             },
           ),
-          titleSpacing:
-              9.0, /// Note that the icon has 20 on the right due to its padding, so we add 10 to get our desired 29
-          title: Text("Your Favorites",
+          titleSpacing: 9.0,
+
+          /// Note that the icon has 20 on the right due to its padding, so we add 10 to get our desired 29
+          title: Text(strings.text('favorites'),
               style: TextStyle(
                   fontFamily: "RobotoMedium",
                   fontSize: 20.0,
@@ -85,7 +88,7 @@ class FavoritesPage extends StatelessWidget {
                           Container(
                             padding: EdgeInsets.only(bottom: 21),
                             width: 250,
-                            child: Text("You haven’t favorited anything yet.",
+                            child: Text(strings.text('emptyFavorites'),
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                   fontFamily: "RobotoMedium",
@@ -98,8 +101,7 @@ class FavoritesPage extends StatelessWidget {
                           Container(
                             width: 270,
                             margin: EdgeInsets.only(bottom: 114),
-                            child: Text(
-                                "Browse to an event in the timeline and tap on the heart icon to save something in this list.",
+                            child: Text(strings.text('favoritesHint'),
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                     fontFamily: "Roboto",

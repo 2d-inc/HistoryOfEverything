@@ -19,6 +19,38 @@ git submodule update
 flutter run
 ```
 
+## Languages
+
+The app follows the device language. English and Simplified Chinese are supported;
+Chinese device locales use the Simplified Chinese translation, and other languages
+fall back to English. On iOS, both languages are declared in `CFBundleLocalizations`.
+
+Interface strings have English defaults in `app/lib/l10n/app_localizations.dart`.
+`app/assets/l10n/zh.json` translates those keys and the original menu/timeline labels.
+All 45 bundled articles have Chinese translations in `app/assets/Articles/zh/`;
+article filenames, dates and animation identifiers are shared across languages.
+Missing translated strings, labels or articles fall back to their English originals.
+Search accepts both the displayed Chinese labels and the original English labels.
+Existing favorites saved with English titles are migrated to language-independent
+article filenames when loaded.
+
+To add a language, add a catalog and translated articles, extend the localization
+delegate and supported locales, register its assets in `app/pubspec.yaml`, and declare
+the locale in the iOS plist. Article translations retain the original articles'
+license described below.
+
+Run the localization checks with the project's legacy Flutter SDK (Flutter
+1.7.8+hotfix.4 / Dart 2.4.0):
+
+```
+cd app
+flutter packages get
+flutter test
+```
+
+The tests cover catalog and article completeness, locale resolution, fallback,
+Chinese/English search, date formatting, and migration of existing favorites.
+
 ## Overview
 <img align="right" src="https://cdn.2dimensions.com/2_Scroll.gif" height="400">
 

@@ -2,12 +2,13 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:timeline/colors.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:timeline/l10n/app_localizations.dart';
 
 /// This widget is visible when opening the about page from the [MainMenuWidget].
-/// 
-/// It displays all the information about the development of the application, 
+///
+/// It displays all the information about the development of the application,
 /// the inspiration sources and tools and SDK used throughout the development process.
-/// 
+///
 /// This page uses the package `url_launcher` available at https://pub.dartlang.org/packages/url_launcher
 /// to open up urls in a WebView on both iOS & Android.
 class AboutPage extends StatelessWidget {
@@ -22,6 +23,7 @@ class AboutPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppLocalizations strings = AppLocalizations.of(context);
     return Scaffold(
         appBar: AppBar(
           centerTitle: false,
@@ -39,7 +41,7 @@ class AboutPage extends StatelessWidget {
           ),
           titleSpacing:
               9.0, // Note that the icon has 20 on the right due to its padding, so we add 10 to get our desired 29
-          title: Text("About",
+          title: Text(strings.text('about'),
               textAlign: TextAlign.left,
               style: TextStyle(
                   fontFamily: "RobotoMedium",
@@ -52,7 +54,7 @@ class AboutPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "The History of\nEverything",
+                strings.text('aboutTitle'),
                 style: TextStyle(
                     fontFamily: "RobotoMedium",
                     fontSize: 34.0,
@@ -81,7 +83,7 @@ class AboutPage extends StatelessWidget {
                             height: 1.5),
                         children: [
                       TextSpan(
-                        text: "The History of Everything is built with ",
+                        text: strings.text('builtWithIntro'),
                       ),
                       TextSpan(
                           text: "Flutter",
@@ -92,7 +94,7 @@ class AboutPage extends StatelessWidget {
                             ..onTap =
                                 () => _launchUrl("https://www.flutter.io")),
                       TextSpan(
-                        text: " by ",
+                        text: strings.text('builtBy'),
                       ),
                       TextSpan(
                           text: "2Dimensions",
@@ -103,8 +105,7 @@ class AboutPage extends StatelessWidget {
                             ..onTap = () =>
                                 _launchUrl("https://www.2dimensions.com")),
                       TextSpan(
-                        text:
-                            ". The graphics and animations were created using tools by ",
+                        text: strings.text('graphicsCredit'),
                       ),
                       TextSpan(
                           text: "2Dimensions",
@@ -115,10 +116,10 @@ class AboutPage extends StatelessWidget {
                             ..onTap = () =>
                                 _launchUrl("https://www.2dimensions.com")),
                       TextSpan(
-                        text: ".\n\nInspired by the Kurzgesagt video ",
+                        text: strings.text('inspiration'),
                       ),
                       TextSpan(
-                          text: "The History & Future of Everything",
+                          text: strings.text('videoTitle'),
                           style: TextStyle(
                               fontWeight: FontWeight.bold,
                               decoration: TextDecoration.underline),
@@ -126,12 +127,12 @@ class AboutPage extends StatelessWidget {
                             ..onTap = () => _launchUrl(
                                 "https://www.youtube.com/watch?v=5TbUxGZtwGI")),
                       TextSpan(
-                        text: ".",
+                        text: strings.text('sentenceEnd'),
                       )
                     ]))
               ])),
               Text(
-                "Designed by",
+                strings.text('designedBy'),
                 style: TextStyle(
                     fontFamily: "Roboto",
                     fontSize: 17.0,
@@ -148,7 +149,7 @@ class AboutPage extends StatelessWidget {
                     )),
               ),
               Text(
-                "Built with",
+                strings.text('builtWith'),
                 style: TextStyle(
                     fontFamily: "Roboto",
                     fontSize: 17.0,

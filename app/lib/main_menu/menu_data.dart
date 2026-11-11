@@ -1,9 +1,11 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 import 'dart:ui';
 import "package:flutter/services.dart" show rootBundle;
 import 'package:timeline/timeline/timeline.dart';
 import 'package:timeline/timeline/timeline_entry.dart';
+import 'package:timeline/l10n/app_localizations.dart';
 
 /// Data container for the Section loaded in [MenuData.loadFromBundle()].
 class MenuSectionData {
@@ -24,6 +26,7 @@ class MenuItemData {
   double padBottom = 0.0;
 
   MenuItemData();
+
   /// When initializing this object from a [TimelineEntry], fill in the
   /// fields according to the [entry] provided. The entry in fact specifies
   /// a [label], a [start] and [end] times.
@@ -34,6 +37,7 @@ class MenuItemData {
     /// Pad the edges of the screen.
     pad = true;
     TimelineAsset asset = entry.asset;
+
     /// Extra padding for the top base don the asset size.
     padTop = asset == null ? 0.0 : asset.height * Timeline.AssetScreenScale;
     if (asset is TimelineAnimatedAsset) {
@@ -71,9 +75,9 @@ class MenuItemData {
   }
 }
 
-/// This class has the sole purpose of loading the resources from storage and 
-/// de-serializing the JSON file appropriately. 
-/// 
+/// This class has the sole purpose of loading the resources from storage and
+/// de-serializing the JSON file appropriately.
+///
 /// `menu.json` contains an array of objects, each with:
 /// * label - the title for the section
 /// * background - the color on the section background
@@ -83,7 +87,8 @@ class MenuItemData {
 /// as well as the label to display in the [MenuSection].
 class MenuData {
   List<MenuSectionData> sections = [];
-  Future<bool> loadFromBundle(String filename) async {
+  Future<bool> loadFromBundle(String filename,
+      [AppLocalizations localizations = const AppLocalizations()]) async {
     List<MenuSectionData> menu = List<MenuSectionData>();
     String data = await rootBundle.loadString(filename);
     List jsonEntries = json.decode(data) as List;
@@ -94,7 +99,7 @@ class MenuData {
         MenuSectionData menuSection = MenuSectionData();
         menu.add(menuSection);
         if (map.containsKey("label")) {
-          menuSection.label = map["label"] as String;
+          menuSection.label = localizations.label(map["label"] as String);
         }
         if (map.containsKey("background")) {
           menuSection.backgroundColor = Color(int.parse(
@@ -119,7 +124,7 @@ class MenuData {
             }
             MenuItemData itemData = MenuItemData();
             if (itemMap.containsKey("label")) {
-              itemData.label = itemMap["label"] as String;
+              itemData.label = localizations.label(itemMap["label"] as String);
             }
             if (itemMap.containsKey("start")) {
               dynamic start = itemMap["start"];
